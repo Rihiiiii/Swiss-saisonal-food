@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swiss food</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f7ee;--card:#fff;--ink:#1b2a1f;--mute:#5c6b60;--leaf:#2f7d4a;--leaf2:#dff0e3;--sun:#f5b83d;--line:#d9e4d6;--r:16px}
+@media(prefers-color-scheme:dark){:root{--bg:#121a14;--card:#1b261e;--ink:#eaf3ea;--mute:#9bb0a0;--leaf:#6cc487;--leaf2:#22362a;--line:#2b3b30}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
+header{padding:28px 16px 8px;max-width:1100px;margin:auto}
+h1{font-size:clamp(1.8rem,5vw,3rem);margin:0;font-weight:800;letter-spacing:-.02em}
+header p{margin:6px 0 0;color:var(--mute)}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px;max-width:1100px;margin:auto;display:flex;gap:8px}
+nav button{flex:1;padding:12px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
+nav button[aria-selected=true]{background:var(--leaf);border-color:var(--leaf);color:#fff}
+main{max-width:1100px;margin:auto;padding:8px 16px 60px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+input[type=search],select{font:inherit;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-width:0}
+input[type=search]{flex:1 1 220px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.chip{font:inherit;font-size:.92rem;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.count{color:var(--mute);margin:0 0 12px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px 12px;display:flex;flex-direction:column;gap:4px;position:relative}
+.item.off{opacity:.55}
+.emo{font-size:2.4rem;line-height:1}
+.item b{font-size:1.05rem}
+.tag{font-size:.75rem;color:var(--mute)}
+.top{position:absolute;top:10px;right:10px;background:var(--sun);color:#3a2b00;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px}
+.months{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin-top:6px}
+.months i{height:6px;border-radius:2px;background:var(--line)}
+.months i.on{background:var(--leaf)}
+.months i.now{outline:2px solid var(--ink);outline-offset:1px}
+.use{margin-top:6px;font:inherit;font-size:.82rem;padding:6px;border-radius:10px;border:1.5px solid var(--leaf);color:var(--leaf);background:transparent;cursor:pointer}
+.use:hover{background:var(--leaf2)}
+.rgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.rec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;text-align:left;padding:0;font:inherit;color:inherit}
+.rec .pic{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.6rem;letter-spacing:.1em}
+.rec .tx{padding:12px 14px 14px}
+.rec h3{margin:0 0 4px;font-size:1.1rem}
+.meta{font-size:.82rem;color:var(--mute)}
+.hit{display:inline-block;margin-top:6px;font-size:.75rem;background:var(--leaf2);color:var(--leaf);padding:2px 8px;border-radius:999px;font-weight:600}
+dialog{border:0;border-radius:20px;padding:0;max-width:520px;width:calc(100% - 24px);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:#0008}
+dialog .pic{height:120px;display:flex;align-items:center;justify-content:center;font-size:4rem}
+dialog .in{padding:18px 20px 22px}
+dialog h2{margin:0 0 4px}
+dialog ol{padding-left:20px}dialog li{margin-bottom:6px}
+.close{float:right;font:inherit;border:0;background:var(--leaf2);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;margin:10px}
+.empty{padding:30px;text-align:center;color:var(--mute);border:2px dashed var(--line);border-radius:var(--r)}
+.note{font-size:.8rem;color:var(--mute);margin-top:24px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+[hidden]{display:none!important}
+nav button[aria-selected=true]{color:var(--bg)}
+.go{font-family:inherit;font-weight:600;font-size:1rem;padding:12px 20px;border-radius:12px;border:0;background:var(--leaf);color:var(--bg);cursor:pointer}
+.lbl{font-size:.85rem;color:var(--mute);align-self:center;margin-right:2px}
+#rnote{font-size:.85rem;color:var(--mute);margin:0 0 10px}
+.rec{position:relative}
+.rec .pic,dialog .pic{position:relative;overflow:hidden}
+.rec .pic{height:150px}
+dialog .pic{height:210px}
+.pic span{font-size:3.4rem}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.heart{position:absolute;top:8px;right:8px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:#fffc;color:#8a8f8a;font-size:1.2rem;cursor:pointer}
+.heart.on{color:#e5484d}
+dialog{max-height:92vh}
+dialog ul{padding-left:20px}
+.mac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}
+.mac div{background:var(--leaf2);border-radius:12px;padding:8px 4px;text-align:center;font-size:.72rem;color:var(--mute)}
+.mac b{display:block;font-size:1.05rem;color:var(--ink)}
+.stp{display:flex;align-items:center;gap:10px;margin:14px 0}
+.stp button{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:1.2rem;cursor:pointer}
+.stp .fav{width:auto;padding:0 14px;border-radius:999px;font-size:.9rem;margin-left:auto}
+.stp .fav.on{color:#e5484d;border-color:#e5484d}
+</style>
+</head>
+<body>
+<header>
+<h1>🧺 Swiss food</h1>
+<p>Frisch aus der Region – das hat jetzt Saison und dazu passende Rezepte.</p>
+</header>
+<nav role="tablist">
+<button role="tab" id="t1" aria-selected="true">Saisonkalender</button>
+<button role="tab" id="t2" aria-selected="false">Rezepte</button>
+<button role="tab" id="t3" aria-selected="false">♥ Favoriten</button>
+</nav>
+<main>
+<section id="p1">
+<div class="bar">
+<input type="search" id="q" placeholder="Suchen, z. B. Tomaten …" aria-label="Suchen">
+<select id="month" aria-label="Monat"></select>
+<div class="chips" id="cat">
+<button class="chip" data-v="" aria-pressed="true">Alles</button>
+<button class="chip" data-v="G" aria-pressed="false">🥕 Gemüse</button>
+<button class="chip" data-v="O" aria-pressed="false">🍎 Obst</button>
+<button class="chip" id="all" aria-pressed="false">Auch ausser Saison</button>
+</div>
+</div>
+<p class="count" id="count"></p>
+<div class="grid" id="grid"></div>
+</section>
+<section id="p2" hidden>
+<div class="bar"><input type="search" id="rq" placeholder="Zutaten oder Lust, z. B. Avocado, Poulet, Taco, Momos …" aria-label="Zutaten oder Lust"><button class="go" id="go">Ideen generieren</button></div>
+<div class="chips" id="fv"><span class="lbl">Essen</span><button class="chip" data-v="all">Egal</button><button class="chip" data-v="veg">🌱 Vegi</button><button class="chip" data-v="meat">🍗 Mit Fleisch/Fisch</button></div>
+<div class="chips" id="fm" style="margin-top:6px"><span class="lbl">Ziel</span><button class="chip" data-v="protein">💪 Proteinreich</button><button class="chip" data-v="light">🥗 Kalorienarm</button><button class="chip" data-v="lowcarb">Low Carb</button><button class="chip" data-v="balanced">Ausgewogen</button></div>
+<div class="chips" id="fc" style="margin-top:6px"><span class="lbl">Küche</span><button class="chip" data-v="all">Alle</button><button class="chip" data-v="CH">Schweiz / DACH</button><button class="chip" data-v="IT">Italien</button><button class="chip" data-v="MED">Mittelmeer</button><button class="chip" data-v="LA">Lateinamerika</button><button class="chip" data-v="AS">Asien</button><button class="chip" data-v="OR">Orient &amp; Indien</button><button class="chip" data-v="US">USA</button></div>
+<div class="chips" style="margin:6px 0 12px"><button class="chip" id="fq" aria-pressed="false">⏱ Unter 20 Min.</button></div>
+<p class="count" id="rcount">Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.</p><p id="rnote"></p>
+<div class="rgrid" id="rgrid"></div>
+</section>
+<section id="p3" hidden><p class="count" id="fcount"></p><div class="rgrid" id="fgrid"></div></section>
+<p class="note">Rezepte werden per Zufallsgenerator zusammengestellt, Nährwerte sind Schätzwerte. Saisonangaben für Freiland- und Lagerware aus der Schweiz, grob und ohne Gewähr. Der schwarze Rahmen im Balken zeigt den gewählten Monat.</p>
+</main>
+<dialog id="dlg"></dialog>
+<script>
+// [Name, Emoji, G=Gemüse/O=Obst, Beliebtheit 1=sehr häufig … 3, Saison-Monate]
+const P=[
+["Karotten (Rüebli)","🥕","G",1,"6-3"],["Zwiebeln","🧅","G",1,"7-4"],["Kartoffeln","🥔","G",1,"7-4"],
+["Tomaten","🍅","G",1,"6-10"],["Gurken","🥒","G",1,"5-10"],["Salat","🥬","G",1,"4-11"],
+["Zucchetti","🥒","G",1,"6-10"],["Broccoli","🥦","G",1,"6-11"],["Peperoni","🫑","G",2,"7-10"],
+["Kürbis","🎃","G",2,"9-12"],["Lauch","🌿","G",2,"9-3"],["Spinat","🥬","G",2,"3-6,9-11"],
+["Randen","🟣","G",2,"7-3"],["Blumenkohl","🥦","G",2,"6-11"],["Knoblauch","🧄","G",2,"7-12"],
+["Mais","🌽","G",2,"7-10"],["Pilze","🍄","G",2,"1-12"],["Bohnen","🫘","G",2,"6-10"],
+["Wirz","🥬","G",2,"9-3"],["Nüsslisalat","🥬","G",2,"10-3"],["Weisskohl / Rotkohl","🥬","G",2,"7-4"],
+["Sellerie","🌿","G",3,"7-3"],["Fenchel","🌿","G",3,"6-11"],["Federkohl","🥬","G",3,"10-2"],
+["Rosenkohl","🥬","G",3,"10-2"],["Kohlrabi","🥬","G",3,"5-11"],["Radieschen","🔴","G",3,"4-10"],
+["Aubergine","🍆","G",3,"7-9"],["Pastinaken","🥕","G",3,"10-3"],["Chicorée","🥬","G",3,"10-4"],
+["Erbsen","🫛","G",3,"5-8"],["Spargel","🌱","G",3,"4-6"],["Rhabarber","🌱","G",3,"4-6"],
+["Äpfel","🍎","O",1,"8-4"],["Birnen","🍐","O",1,"8-2"],["Erdbeeren","🍓","O",1,"5-9"],
+["Zwetschgen","🟣","O",2,"7-10"],["Trauben","🍇","O",2,"9-11"],["Himbeeren","🍓","O",2,"6-10"],
+["Kirschen","🍒","O",2,"6-8"],["Aprikosen","🍑","O",2,"6-8"],["Heidelbeeren","🫐","O",3,"7-9"],
+["Brombeeren","🫐","O",3,"8-10"],["Pfirsiche","🍑","O",3,"7-9"],["Johannisbeeren","🍒","O",3,"6-8"],
+["Baumnüsse","🌰","O",3,"9-12"],["Quitten","🍋","O",3,"10-12"],["Kastanien","🌰","O",3,"10-11"]
+];
+const M=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+const $=s=>document.querySelector(s);
+const now=new Date().getMonth()+1;
+const inS=(m,spec)=>spec.split(",").some(r=>{let[a,b]=r.split("-").map(Number);b=b||a;return a<=b?m>=a&&m<=b:m>=a||m<=b});
+const norm=s=>s.toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const KEY="saisonmarkt_v2";let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};let cat=S.cat||"",showAll=!!S.showAll,month=now;
+
+$("#month").innerHTML=M.map((n,i)=>`<option value="${i+1}"${i+1===now?" selected":""}>${n}${i+1===now?" (jetzt)":""}</option>`).join("");
+
+function renderP(){
+  const q=norm($("#q").value.trim());
+  let l=P.filter(p=>(!cat||p[2]===cat)&&(!q||norm(p[0]).includes(q)));
+  const live=p=>inS(month,p[4]);
+  if(!showAll&&!q)l=l.filter(live);
+  l.sort((a,b)=>(live(b)-live(a))||(a[3]-b[3])||a[0].localeCompare(b[0],"de"));
+  $("#count").textContent=`${l.length} Treffer · ${M[month-1]}`;
+  $("#grid").innerHTML=l.length?l.map(p=>{
+    const on=live(p);
+    const bar=Array.from({length:12},(_,i)=>`<i class="${inS(i+1,p[4])?"on":""}${i+1===month?" now":""}" title="${M[i]}"></i>`).join("");
+    return `<div class="item${on?"":" off"}"><span class="emo">${p[1]}</span><b>${p[0]}</b><span class="tag">${p[2]==="G"?"Gemüse":"Obst"} · ${on?"hat Saison":"keine Saison"}</span><div class="months">${bar}</div><button class="use" data-n="${p[0].split(" ")[0]}">Rezepte dazu</button></div>`}).join("")
+    :`<div class="empty" style="grid-column:1/-1">Nichts gefunden. Probier einen anderen Begriff oder „Auch ausser Saison“.</div>`;
+}
+$("#q").oninput=renderP;
+$("#month").onchange=e=>{month=+e.target.value;renderP()};
+$("#cat").onclick=e=>{
+  const b=e.target.closest(".chip");if(!b)return;
+  if(b.id==="all"){showAll=!showAll;b.setAttribute("aria-pressed",showAll)}
+  else{cat=b.dataset.v;document.querySelectorAll("#cat .chip[data-v]").forEach(c=>c.setAttribute("aria-pressed",c===b))}
+  renderP();
+};
+$("#grid").onclick=e=>{
+  const b=e.target.closest(".use");if(!b)return;
+  $("#rq").value=b.dataset.n;
+  tab(2);gen();
+};
+
+/* ===== Rezept-Generator (läuft komplett im Browser) ===== */
+S.favs=S.favs||[];S.recs=S.recs||[];S.n=S.n||2;S.veg=S.veg||"all";S.mode=S.mode||"protein";S.cu=S.cu||"all";
+// key, Name, Englisch (für Bild), kcal/P/C/F pro 100 g, g pro Portion, Typ, Flags (m=Fleisch/Fisch, p=verderblich), Einheit, g je Einheit, Zubereitung, Suchwörter
+const DB=[
+["pasta","Pasta","pasta",360,12,72,1.5,110,"C","","",0,"","nudeln spaghetti penne fusilli tagliatelle"],
+["reis","Reis","rice",350,7,78,.6,90,"C","","",0,"","risotto basmati"],
+["kartoffeln","Kartoffeln","potatoes",77,2,17,.1,350,"C","","",0,"","kartoffel"],
+["couscous","Couscous","couscous",360,13,73,2,90,"C","","",0,"",""],
+["quinoa","Quinoa","quinoa",370,14,64,6,85,"C","","",0,"",""],
+["bulgur","Bulgur","bulgur",340,12,69,1.5,90,"C","","",0,"",""],
+["wrap","Wrap","tortilla wrap",300,8,50,7,100,"C","","Stk",50,"","wraps tortilla tortillas fladenbrot pita"],
+["eier","Eier","eggs",143,12.6,.7,9.5,150,"P","","Stk",50,"% verquirlen und zum Schluss unterrühren, bis sie stocken","ei ruehrei"],
+["feta","Feta","feta cheese",264,14,4,21,80,"P","","",0,"% zerbröseln und zum Schluss untermischen","hirtenkaese"],
+["halloumi","Halloumi","halloumi",320,22,2,25,100,"P","","",0,"% in Scheiben schneiden und goldbraun anbraten",""],
+["mozzarella","Mozzarella","mozzarella",250,18,2,19,100,"P","p","",0,"% zerzupfen und zum Schluss unterheben, bis er schmilzt",""],
+["kaese","Käse","gruyere cheese",400,27,0,32,40,"P","","",0,"% reiben und über das Gericht streuen","gruyere emmentaler parmesan raclette"],
+["tofu","Tofu","tofu",140,15,2,8,180,"P","","",0,"% würfeln und knusprig anbraten",""],
+["kichererbsen","Kichererbsen","chickpeas",120,8,18,2.5,200,"P","","",0,"% abspülen und 3 Min. mitwärmen","kichererbse"],
+["linsen","Linsen","lentils",115,9,20,.4,200,"P","","",0,"% abspülen und 3 Min. mitwärmen","linse"],
+["quark","Quark","quark",67,12,4,.3,150,"P","","",0,"% mit etwas Wasser glatt rühren und als cremige Sauce unterheben","skyr joghurt"],
+["poulet","Poulet","chicken",165,31,0,3.6,170,"P","mp","",0,"% in Streifen schneiden und 6–8 Min. durchbraten","huhn haehnchen chicken pouletbrust"],
+["hack","Rinderhack","ground beef",215,19,0,15,150,"P","mp","",0,"% krümelig und gut gebräunt anbraten","hack hackfleisch rind"],
+["lachs","Lachs","salmon",200,20,0,13,150,"P","mp","",0,"% in Stücke schneiden und 4 Min. anbraten","fisch lachsfilet"],
+["thon","Thon","tuna",130,29,1,1,120,"P","m","",0,"% abtropfen und zerzupfen untermischen","thunfisch"],
+["schinken","Schinken","ham",120,20,1,4,60,"P","m","",0,"% in Streifen schneiden und kurz mitbraten","speck"],
+["broccoli","Broccoli","broccoli",34,2.8,7,.4,180,"V","p","",0,"","brokoli brocoli"],
+["spinat","Spinat","spinach",23,2.9,3.6,.4,150,"V","p","",0,"",""],
+["tomaten","Tomaten","tomatoes",18,.9,3.9,.2,200,"V","p","",0,"","tomate"],
+["zucchetti","Zucchetti","zucchini",17,1.2,3,.3,200,"V","p","",0,"","zucchini"],
+["peperoni","Peperoni","bell pepper",31,1,6,.3,150,"V","p","",0,"","paprika"],
+["pilze","Pilze","mushrooms",22,3,3,.3,180,"V","p","",0,"","champignons pilz"],
+["karotten","Karotten","carrots",41,.9,10,.2,150,"V","","",0,"","rueebli karotte moehren"],
+["lauch","Lauch","leek",31,1.8,7,.3,150,"V","","",0,"","porree"],
+["zwiebeln","Zwiebeln","onion",40,1.1,9,.1,80,"V","","",0,"","zwiebel"],
+["kuerbis","Kürbis","pumpkin",26,1,6.5,.1,200,"V","","",0,"","hokkaido"],
+["blumenkohl","Blumenkohl","cauliflower",25,1.9,5,.3,180,"V","p","",0,"",""],
+["aubergine","Aubergine","eggplant",25,1,6,.2,180,"V","p","",0,"",""],
+["bohnen","Bohnen","green beans",31,1.8,7,.2,150,"V","p","",0,"",""],
+["erbsen","Erbsen","peas",81,5,14,.4,120,"V","p","",0,"","erbse"],
+["fenchel","Fenchel","fennel",31,1.2,7,.2,150,"V","","",0,"",""],
+["randen","Randen","beetroot",43,1.6,10,.2,150,"V","","",0,"",""],
+["oel","Olivenöl","olive oil",884,0,0,100,10,"F","","EL",10,"","oel olivenoel"],
+["rahm","Rahm","cream",300,2.5,3,30,30,"F","","",0,"","sahne"],
+["butter","Butter","butter",740,.5,0,82,10,"F","","",0,"",""],
+["knoblauch","Knoblauch","garlic",150,6,33,.5,5,"F","","Zehe",5,"",""],
+["sojasauce","Sojasauce","soy sauce",60,8,5,0,15,"F","","EL",15,"","soja"],
+["pesto","Pesto","pesto",450,5,5,45,25,"F","","",0,"",""],
+["polenta","Polenta","",360,8,78,1.5,90,"C","","",0,"","griess maisgriess"],
+["reisnudeln","Reisnudeln","",360,6,80,.6,90,"C","","",0,"","glasnudeln"],
+["gnocchi","Gnocchi","",150,4,32,.8,250,"C","","",0,"",""],
+["suesskartoffel","Süsskartoffel","",86,1.6,20,.1,300,"C","","",0,"","suesskartoffeln batate"],
+["mehl","Mehl","",350,10,73,1,60,"B","","",0,"",""],
+["haferflocken","Haferflocken","",370,13,60,7,60,"B","","",0,"","hafer"],
+["brot","Brot","",250,9,49,3,60,"B","","",0,"","toast baguette croutons"],
+["garnelen","Garnelen","",90,18,1,1.5,150,"P","mp","",0,"% 3 Min. scharf anbraten, bis sie rosa sind","shrimps crevetten scampi"],
+["schwein","Schweinefleisch","",240,18,0,18,150,"P","mp","",0,"% in Streifen schneiden und 6–8 Min. durchbraten","schweinsgeschnetzeltes geschnetzeltes"],
+["bratwurst","Bratwurst","",300,12,2,27,120,"P","m","",0,"% in Scheiben schneiden und goldbraun anbraten","wurst cervelat"],
+["schwarzebohnen","Schwarze Bohnen","",130,8,23,.5,200,"P","","",0,"% abspülen und 5 Min. mitköcheln","schwarze black kidneybohnen kidney"],
+["avocado","Avocado","",160,2,9,15,100,"V","p","",0,"","avokado"],
+["mais","Mais","",86,3.3,19,1.4,120,"V","","",0,"","maiskolben"],
+["kohlrabi","Kohlrabi","",27,1.7,6,.1,150,"V","","",0,"",""],
+["radieschen","Radieschen","",16,.7,3.4,.1,80,"V","","",0,"",""],
+["wirz","Wirz","",27,2,5,.1,150,"V","","",0,"","wirsing mangold"],
+["weisskohl","Weisskohl","",25,1.3,6,.1,150,"V","","",0,"","kabis rotkohl kohl"],
+["gurken","Gurken","",15,.7,3.6,.1,150,"V","p","",0,"","gurke"],
+["salat","Salat","",15,1.4,2.9,.2,100,"V","p","",0,"","kopfsalat nuesslisalat eisbergsalat romana rucola"],
+["sellerie","Sellerie","",16,.7,3,.2,100,"V","","",0,"",""],
+["spargel","Spargel","",20,2.2,3.9,.1,200,"V","p","",0,"",""],
+["federkohl","Federkohl","",49,4.3,9,.9,100,"V","p","",0,"","kale gruenkohl"],
+["rosenkohl","Rosenkohl","",43,3.4,9,.3,150,"V","","",0,"",""],
+["pastinaken","Pastinaken","",75,1.2,18,.3,150,"V","","",0,"","pastinake"],
+["chicoree","Chicorée","",17,.9,4,.1,120,"V","p","",0,"","endivie"],
+["rhabarber","Rhabarber","",21,.9,4.5,.2,150,"V","","",0,"",""],
+["aepfel","Äpfel","",52,.3,14,.2,150,"O","","",0,"","apfel"],
+["birnen","Birnen","",57,.4,15,.1,150,"O","","",0,"","birne"],
+["erdbeeren","Erdbeeren","",32,.7,7.7,.3,200,"O","p","",0,"","erdbeere"],
+["himbeeren","Himbeeren","",52,1.2,12,.7,150,"O","p","",0,"","himbeere"],
+["heidelbeeren","Heidelbeeren","",57,.7,14,.3,150,"O","p","",0,"","blaubeeren blaubeere heidelbeere"],
+["brombeeren","Brombeeren","",43,1.4,10,.5,150,"O","p","",0,"",""],
+["zwetschgen","Zwetschgen","",46,.7,11,.3,150,"O","","",0,"","pflaumen zwetschge"],
+["trauben","Trauben","",69,.7,18,.2,150,"O","","",0,"","traube"],
+["kirschen","Kirschen","",63,1,16,.2,150,"O","","",0,"","kirsche"],
+["aprikosen","Aprikosen","",48,1.4,11,.4,150,"O","","",0,"","aprikose marillen"],
+["pfirsiche","Pfirsiche","",39,.9,10,.3,150,"O","","",0,"","pfirsich nektarinen"],
+["johannisbeeren","Johannisbeeren","",56,1.4,14,.2,100,"O","p","",0,"",""],
+["quitten","Quitten","",57,.4,15,.1,150,"O","","",0,"","quitte"],
+["mango","Mango","",60,.8,15,.4,150,"O","","",0,"",""],
+["banane","Banane","",89,1.1,23,.3,120,"O","","",0,"","bananen"],
+["ananas","Ananas","",50,.5,13,.1,150,"O","","",0,"",""],
+["kokosmilch","Kokosmilch","",190,2,3,20,60,"F","","",0,"","kokos"],
+["limette","Limette","",30,.7,10,.2,20,"F","","Stk",40,"","limetten zitrone"],
+["ingwer","Ingwer","",80,1.8,18,.8,5,"F","","",0,"",""],
+["koriander","Koriander","",23,2,3,.5,5,"F","","",0,"",""],
+["currypaste","Currypaste","",100,3,15,3,15,"F","","EL",15,"",""],
+["honig","Honig","",300,0,82,0,15,"F","","EL",15,"",""],
+["milch","Milch","",64,3.4,5,3.6,100,"F","","",0,"",""],
+["baumnuesse","Baumnüsse","",650,15,14,65,25,"F","","",0,"","walnuesse nuesse mandeln erdnuesse kastanien"]
+];
+const I={};DB.forEach(a=>I[a[0]]={k:a[0],n:a[1],e:a[2],kc:a[3],p:a[4],c:a[5],f:a[6],g:a[7],t:a[8],fl:a[9],u:a[10],ug:a[11],how:a[12],al:norm(a[1]+" "+a[13]).split(" ").filter(Boolean)});
+const ALL=DB.map(a=>I[a[0]]);
+const FL=[ // Geschmacksrichtung, zusätzliche Zutaten, Schlusschritt, Küchen
+["Zitronen-Knoblauch",["knoblauch"],"Mit Zitronensaft, Salz und Pfeffer abschmecken.",["IT","MED","CH"]],
+["Rahm",["rahm","knoblauch"],"Mit einem Schuss Rahm binden und mit Pfeffer abschmecken.",["CH"]],
+["Pesto",["pesto"],"Pesto unterrühren und mit Pfeffer abschmecken.",["IT"]],
+["Soja-Knoblauch",["sojasauce","knoblauch","ingwer"],"Mit Sojasauce, Pfeffer und nach Wunsch Chili würzen.",["AS"]],
+["Tomaten-Kräuter",["tomaten","knoblauch"],"Mit Oregano, Basilikum, Salz und Pfeffer würzen.",["IT","MED"]],
+["Butter-Kräuter",["butter"],"Mit Butter, frischen Kräutern, Salz und Pfeffer abrunden.",["CH","US"]],
+["Curry",["kokosmilch","currypaste"],"Mit Currypaste und Kokosmilch würzen und kurz köcheln lassen.",["AS","OR"]],
+["Limetten-Avocado",["limette","avocado"],"Mit Limettensaft, Salz und Pfeffer abschmecken, Avocado in Würfeln darübergeben.",["LA"]],
+["Joghurt-Minze",["quark","knoblauch"],"Mit Quark, Knoblauch, Zitrone, Kreuzkümmel und frischer Minze abschmecken.",["OR","MED"]],
+["Honig-Senf",["honig"],"Mit Honig, Senf, Salz und Pfeffer glasieren.",["US"]]
+];
+const CS={polenta:"Polenta nach Packung in Salzwasser unter Rühren zu einem festen Brei kochen.",reisnudeln:"Reisnudeln nach Packung einweichen oder kochen.",gnocchi:"Gnocchi in Salzwasser garen, bis sie oben schwimmen.",suesskartoffel:"Süsskartoffeln würfeln und in Salzwasser 10 Min. vorkochen.",pasta:"Pasta in reichlich Salzwasser bissfest kochen (ca. 10 Min.), eine Tasse Kochwasser aufheben.",reis:"Reis nach Packungsangabe kochen (ca. 12–15 Min.).",kartoffeln:"Kartoffeln würfeln und in Salzwasser 12 Min. vorkochen.",couscous:"Couscous mit gleich viel heissem Wasser übergiessen und 5 Min. quellen lassen.",quinoa:"Quinoa abspülen und in doppelter Menge Wasser 12 Min. kochen.",bulgur:"Bulgur in doppelter Menge Wasser 10 Min. köcheln, dann quellen lassen.",wrap:"Wraps kurz in der trockenen Pfanne erwärmen."};
+const FM=[ // Gruppe, Titel, Minuten, schnell?, Schritte
+["pasta","{F}-{C}-Pfanne: {V} & {P}",19,1,["{CS}","Gemüse ({V}) in Olivenöl 6–8 Min. kräftig anbraten.","{PS}","Pasta abgiessen, mit etwas Kochwasser zum Gemüse geben und alles gut mischen.","{F}"]],
+["pasta","Überbackene {C}: {V} & {P}",40,0,["Ofen auf 200 °C vorheizen.","{CS}","Gemüse ({V}) 5 Min. anbraten, dann {PS}","Alles mischen, in eine Form geben und 15 Min. überbacken.","{F}"]],
+["reis","{F}-Reispfanne: {V} & {P}",19,1,["{CS}","Gemüse ({V}) in Olivenöl 6 Min. anbraten.","{PS}","Reis dazugeben und 2 Min. mitbraten.","{F}"]],
+["reis","Cremiges Risotto: {V} & {P}",35,0,["Reis in Olivenöl 2 Min. glasig dünsten.","Nach und nach heisse Brühe zugeben und ca. 18 Min. unter Rühren köcheln.","Gemüse ({V}) klein schneiden und die letzten 8 Min. mitgaren.","{PS}","{F}"]],
+["kart","Ofenkartoffeln: {V} & {P}",45,0,["Ofen auf 210 °C vorheizen.","{CS} Mit Öl, Salz und Paprika mischen und 30 Min. backen.","Gemüse ({V}) nach 15 Min. dazugeben.","{PS}","{F}"]],
+["kart","Knusper-Kartoffelpfanne: {V} & {P}",19,1,["Kartoffeln in sehr dünne Scheiben schneiden und in Olivenöl 12 Min. knusprig braten.","Gemüse ({V}) dazugeben und 5 Min. mitbraten.","{PS}","{F}"]],
+["bowl","{F}-{C}-Bowl: {V} & {P}",19,1,["{CS}","Gemüse ({V}) roh schneiden oder kurz anbraten.","{PS}","Alles in einer Schüssel anrichten.","{F}"]],
+["wrap","Gefüllter {C}: {V} & {P}",15,1,["{CS}","Gemüse ({V}) klein schneiden und 5 Min. anbraten.","{PS}","Wraps füllen und einrollen.","{F}"]],
+["none","{F}-Gemüsepfanne: {V} & {P}",19,1,["Gemüse ({V}) in Olivenöl 8 Min. anbraten.","{PS}","{F}"]],
+["none","Ofengemüse mit {P}: {V}",35,0,["Ofen auf 200 °C vorheizen.","Gemüse ({V}) mit Öl und Salz auf ein Blech geben und 25 Min. backen.","{PS}","{F}"]]
+];
+const GE={pasta:"🍝",reis:"🍚",kart:"🥔",bowl:"🥣",wrap:"🌯",none:"🥘"};
+const STOP=new Set("mit und oder lust auf ich habe noch zuhause der die das ein eine etwas dazu gerne".split(" "));
+const mw=(t,w)=>t===w||(w.length>=4&&t.startsWith(w))||(t.length>=5&&w.startsWith(t.slice(0,t.length-2)));
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const isS=v=>P.some(p=>inS(now,p[4])&&norm(p[0]).startsWith(v.al[0].slice(0,5)));
+const mac=m=>{const o={kc:0,p:0,c:0,f:0};m.forEach((g,k)=>{const x=I[k];o.kc+=g*x.kc/100;o.p+=g*x.p/100;o.c+=g*x.c/100;o.f+=g*x.f/100});return o};
+const join=a=>a.length>1?a.slice(0,-1).join(", ")+" & "+a[a.length-1]:(a[0]||"");
+
+let INP=[],EXTRA=[],MD=[];
+const lev=(a,b)=>{const d=[];for(let i=0;i<=a.length;i++)d[i]=[i];for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]};
+// erst exakte/Anfangs-Treffer, dann Tippfehler-Toleranz
+const fnd=(n,L)=>L.find(x=>x.al.some(w=>mw(n,w)))||L.find(x=>x.al.some(w=>n.length>=5&&w.length>=4&&lev(n,w)<=(n.length>=8?2:1)));
+const CULAB={CH:"Schweiz / DACH",IT:"Italien",MED:"Mittelmeer",LA:"Lateinamerika",AS:"Asien",OR:"Orient & Indien",US:"USA"};
+const CUC={CH:["kartoffeln","pasta"],IT:["pasta","reis","polenta","gnocchi"],MED:["couscous","bulgur","kartoffeln"],LA:["reis","wrap"],AS:["reis","reisnudeln"],OR:["couscous","bulgur","reis"],US:["wrap","kartoffeln","suesskartoffel"]};
+const GRP={pasta:"pasta",reisnudeln:"pasta",gnocchi:"pasta",reis:"reis",kartoffeln:"kart",suesskartoffel:"kart",wrap:"wrap"};
+const RAW=new Set(["salat","gurken","avocado","radieschen","rhabarber"]);
+// Weltküche & Spezialitäten: Name, Küchen, Min., Slots (P=Eiweiss V=Gemüse O=Obst), feste Zutaten, Schritte, Emoji, Herkunft, Suchwörter
+const DR=[
+["Tacos","LA",25,"P,V","wrap:1,avocado:.8,limette:1,koriander:1",["Wraps kurz in der trockenen Pfanne erwärmen.","Gemüse ({V}) klein schneiden, 5 Min. scharf anbraten und mit Salz, Kreuzkümmel und Paprikapulver würzen.","{PS}","Avocado würfeln und mit Limettensaft und Koriander mischen.","Tortillas füllen und sofort essen."],"🌮","Mexiko","taco tacos"],
+["Empanadas","LA",55,"P,V","mehl:1.4,butter:1,zwiebeln:.6",["Mehl, Butter, Salz und ca. 4 EL kaltes Wasser zu einem Teig kneten und 20 Min. kühlen.","Zwiebel, Gemüse ({V}) und {Pn} fein würfeln, 8 Min. anbraten, mit Kreuzkümmel und Paprika würzen und abkühlen lassen.","Teig ausrollen, Kreise ausstechen, Füllung daraufgeben und zu Halbmonden falten.","Bei 200 °C ca. 25 Min. goldbraun backen."],"🥟","Argentinien","empanada empanadas"],
+["Momos","AS",50,"P,V","mehl:1.3,ingwer:1,knoblauch:1,sojasauce:.6",["Mehl mit lauwarmem Wasser zu einem festen Teig kneten und 15 Min. ruhen lassen.","Gemüse ({V}) und {Pn} fein hacken, mit Ingwer und Knoblauch 8 Min. anbraten.","Teig dünn ausrollen, Kreise ausstechen, Füllung hineingeben und zu Täschchen formen.","Momos 10–12 Min. im Dampf garen und mit Sojasauce servieren."],"🥟","Nepal","momo momos dumpling dumplings gyoza jiaozi"],
+["Rösti","CH",35,"P,V","kartoffeln:1,zwiebeln:.6,butter:1.3",["Kartoffeln (am besten vom Vortag) raffeln und salzen.","Butter erhitzen, Kartoffeln flach andrücken und pro Seite ca. 10 Min. goldbraun braten.","Gemüse ({V}) separat anbraten.","{PS}","Rösti mit Gemüse und Eiweiss anrichten."],"🥔","Schweiz","roesti roeschti"],
+["Capuns","CH",45,"P,V","mehl:1.2,eier:1,milch:1,kaese:1,wirz:1",["Wirzblätter (oder Mangold) 2 Min. blanchieren.","Mehl, Eier, Milch und Salz zu einem zähen Teig rühren, Gemüse ({V}) und {Pn} fein hacken und untermischen.","Je einen Löffel Teig auf ein Blatt geben und zu Päckli rollen.","In Salzwasser 15 Min. sanft köcheln, dann mit Käse überbacken."],"🥬","Graubünden","capuns kapuns"],
+["Caesar Salad","US",18,"P","salat:2,kaese:.8,brot:.6,quark:.5,knoblauch:1",["Brot würfeln und in Olivenöl knusprig rösten (Croutons).","{PS}","Quark mit Zitronensaft, Knoblauch, Salz und Pfeffer zum Dressing rühren.","Salat zerzupfen, mit Dressing mischen und mit {Pn}, Croutons und Käse anrichten."],"🥗","USA","caesar ceasar cesar caesarsalat salad"],
+["Polenta-Gratin","IT",35,"P,V","polenta:1,kaese:1,butter:.5,zwiebeln:.5",["Polenta nach Packung in Salzwasser unter Rühren zu einem festen Brei kochen.","Gemüse ({V}) 6 Min. anbraten, dann {PS}","Polenta in eine Form streichen, Gemüse und Eiweiss verteilen, Käse darüberstreuen.","Bei 200 °C 10–15 Min. überbacken."],"🌽","Italien","polenta gratin"],
+["Gnocchi-Pfanne","IT",19,"P,V","gnocchi:1,butter:.6,kaese:.8",["Gnocchi in Butter 6–8 Min. goldbraun braten.","Gemüse ({V}) dazugeben und 5 Min. mitbraten.","{PS}","Mit Käse, Salz und Pfeffer abschmecken."],"🥘","Italien","gnocchi"],
+["Shakshuka","OR",25,"V","tomaten:1.4,eier:1.1,zwiebeln:.6,peperoni:.7,knoblauch:1,feta:.5",["Zwiebel, Knoblauch und Gemüse ({V}) in Olivenöl 6 Min. anbraten.","Tomaten würfeln, dazugeben, mit Kreuzkümmel und Paprikapulver 10 Min. einkochen.","Mulden formen, Eier hineingleiten lassen und zugedeckt 6 Min. stocken lassen.","Feta darüberbröseln und mit Brot servieren."],"🍳","Nordafrika / Nahost","shakshuka schakschuka"],
+["Falafel-Wrap","OR",40,"V","kichererbsen:1.2,wrap:1,quark:.6,knoblauch:1,mehl:.3",["Kichererbsen abspülen, mit Knoblauch, Salz, Kreuzkümmel und Mehl zerstampfen und zu Bällchen formen.","Falafel in Olivenöl pro Seite 3 Min. braten.","Quark mit Knoblauch und Zitronensaft zur Sauce rühren.","Gemüse ({V}) schneiden, Wraps mit Falafel, Gemüse und Sauce füllen."],"🌯","Naher Osten","falafel hummus"],
+["Dal","OR",35,"V","linsen:1.3,zwiebeln:.6,tomaten:.7,ingwer:1,knoblauch:1,currypaste:.7,reis:.8",["Reis nach Packung kochen.","Zwiebel, Ingwer, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten, Currypaste einrühren.","Tomaten und Linsen mit 200 ml Wasser dazugeben und 15 Min. köcheln.","Dal mit Reis servieren."],"🍛","Indien","dal dhal linsencurry"],
+["Curry","AS,OR",30,"P,V","kokosmilch:1,currypaste:1,reis:1,ingwer:1",["Reis nach Packung kochen.","Ingwer und Currypaste in Öl 1 Min. anrösten, Gemüse ({V}) dazugeben und 5 Min. braten.","{PS}","Mit Kokosmilch ablöschen, 10 Min. köcheln und mit Reis servieren."],"🍛","Thailand / Indien","curry thai"],
+["Pad Thai","AS",25,"P,V","reisnudeln:1,eier:1,sojasauce:1,limette:1,knoblauch:1",["Reisnudeln nach Packung einweichen oder kochen.","Gemüse ({V}) und Knoblauch scharf anbraten.","{PS}","Nudeln und Sojasauce dazugeben, Eier unterrühren und mit Limettensaft abschmecken."],"🍜","Thailand","padthai pad"],
+["Bibimbap","AS",35,"P,V","reis:1,eier:1,sojasauce:.8,karotten:.5,spinat:.6",["Reis kochen.","Karotten, Spinat und Gemüse ({V}) einzeln kurz anbraten.","{PS}","Alles auf dem Reis anrichten, mit Spiegelei und Sojasauce servieren."],"🍚","Korea","bibimbap korea"],
+["Poke Bowl","AS,US",19,"P,V","reis:.9,avocado:.8,sojasauce:.6,gurken:.7",["Reis kochen und abkühlen lassen.","{PS}","Gemüse ({V}), Gurke und Avocado würfeln.","Alles auf dem Reis anrichten und mit Sojasauce beträufeln."],"🥣","Hawaii","poke pokebowl sushi"],
+["Burrito Bowl","LA",25,"P,V","reis:1,schwarzebohnen:.7,mais:.7,avocado:.8,limette:1",["Reis kochen.","Gemüse ({V}) 6 Min. anbraten, Bohnen und Mais dazugeben.","{PS}","Reis, Gemüse und Avocado in eine Schale schichten und mit Limettensaft beträufeln."],"🥣","Mexiko","burrito burritobowl"],
+["Quesadilla","LA",15,"P,V","wrap:1,kaese:1.3",["Gemüse ({V}) klein schneiden und 4 Min. anbraten.","{PS}","Wrap mit Käse, Gemüse und Eiweiss belegen und zusammenklappen.","Pro Seite 2–3 Min. knusprig braten."],"🫓","Mexiko","quesadilla"],
+["Chili","LA,US",40,"P,V","schwarzebohnen:1,tomaten:1.2,mais:.6,zwiebeln:.6,knoblauch:1",["Zwiebel, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten.","{PS}","Tomaten, Bohnen, Mais und Chili dazugeben und 25 Min. köcheln.","Mit Salz, Kreuzkümmel und Paprikapulver abschmecken."],"🌶️","Texas / Mexiko","chili chilli carne"],
+["Käsespätzli","CH",35,"V","mehl:1.4,eier:1.2,milch:.6,kaese:1.6,zwiebeln:.8,butter:.8",["Mehl, Eier, Milch und Salz zu einem zähen Teig rühren und portionsweise ins kochende Salzwasser hobeln.","Zwiebeln und Gemüse ({V}) in Butter goldbraun braten.","Spätzli mit Käse schichten und in der Pfanne schmelzen lassen."],"🧀","Schweiz","spaetzli spaetzle kaesespaetzli kaesespaetzle"],
+["Ratatouille","MED",35,"P,V","zucchetti:1,aubergine:1,tomaten:1,peperoni:.8,zwiebeln:.5,knoblauch:1",["Gemüse ({V}) und das übrige Gemüse in Würfel schneiden.","In Olivenöl nacheinander anbraten, dann 20 Min. schmoren.","{PS}","Mit Thymian, Salz und Pfeffer abschmecken."],"🍆","Frankreich","ratatouille"],
+["Griechischer Salat","MED",15,"V","gurken:1,tomaten:1,zwiebeln:.4,feta:1.3,kichererbsen:.8,oel:1.2",["Gemüse ({V}), Gurken, Tomaten und Zwiebel in grobe Stücke schneiden.","Kichererbsen abspülen und dazugeben.","Mit Olivenöl, Oregano und Salz mischen und Feta darüberbröseln."],"🥗","Griechenland","griechischer horiatiki bauernsalat"],
+["Tortilla Española","MED",35,"V","kartoffeln:.8,eier:1.6,zwiebeln:.7,oel:2",["Kartoffeln und Zwiebeln in dünne Scheiben schneiden und in reichlich Olivenöl 12 Min. weich braten.","Gemüse ({V}) kurz mitbraten.","Alles mit verquirlten Eiern mischen, zurück in die Pfanne geben und pro Seite 5 Min. stocken lassen."],"🍳","Spanien","espanola spanische"],
+["Kaiserschmarrn","CH",25,"O","mehl:.9,eier:1.1,milch:1.2,butter:.7,honig:.6",["Mehl, Eier, Milch und eine Prise Salz zu einem Teig rühren.","Butter erhitzen, Teig eingiessen, Früchte ({O}) darauf verteilen und goldgelb backen.","Wenden, mit zwei Gabeln zerreissen und mit Honig beträufeln."],"🥞","Österreich","kaiserschmarrn schmarrn"],
+["Porridge","US",10,"O","haferflocken:1,milch:1.5,quark:.8,baumnuesse:.8",["Haferflocken mit Milch 5 Min. unter Rühren köcheln.","Früchte ({O}) waschen und klein schneiden.","In eine Schale geben, Quark, Früchte und Nüsse darüber."],"🥣","Frühstück","porridge haferbrei oatmeal haferflocken"],
+["Quark-Bowl","CH",10,"O","quark:1.5,haferflocken:.5,honig:.6",["Quark in eine Schale geben.","Früchte ({O}) schneiden und darauf verteilen.","Mit Haferflocken und Honig toppen."],"🍓","Frühstück","quarkbowl"],
+["Crumble","CH,MED",45,"O","haferflocken:.7,mehl:.5,butter:1.2,honig:.8,quark:.8",["Ofen auf 180 °C vorheizen, Früchte ({O}) in eine Form geben.","Haferflocken, Mehl, Butter und Honig zu Streuseln verreiben und darüber verteilen.","30 Min. backen und mit Quark servieren."],"🍰","Dessert","crumble"],
+["Pfannkuchen","CH,US",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.6",["Mehl, Eier, Milch und Salz zu einem glatten Teig rühren, 10 Min. ruhen lassen.","Pfannkuchen in Butter pro Seite 2 Min. goldbraun backen.","Mit Quark und Früchten ({O}) füllen oder belegen."],"🥞","Frühstück","pfannkuchen crepes pancakes palatschinken"]
+];
+const D=DR.map(a=>({n:a[0],c:a[1],t:a[2],s:a[3],fx:a[4].split(",").map(p=>{const q=p.split(":");return[q[0],+q[1]]}),st:a[5],em:a[6],l:a[7],al:norm(a[8]).split(" ").filter(Boolean)}));
+
+function build(o){
+  const{veg,mode,quick,cu}=o;
+  const cuOK=c=>cu==="all"||(Array.isArray(c)?c:c.split(",")).includes(cu);
+  const B2=x=>"CB".includes(x.t);
+  let inp=INP.slice();
+  if(veg==="veg")inp=inp.filter(x=>!x.fl.includes("m"));
+  if(mode==="lowcarb")inp=inp.filter(x=>x.t!=="C");
+  const T=t=>inp.filter(x=>x.t===t);
+  const inC=shuffle(T("C")),inP=shuffle(T("P")),inV=T("V"),inO=T("O");
+  const poolP=ALL.filter(x=>x.t==="P"&&(veg==="veg"?!x.fl.includes("m"):veg==="meat"?x.fl.includes("m"):true));
+  const poolC=ALL.filter(x=>x.t==="C"),poolV=ALL.filter(x=>x.t==="V"&&!RAW.has(x.k)),poolO=ALL.filter(x=>x.t==="O");
+  const cuC=mode==="lowcarb"?[]:(CUC[cu]||[]).map(k=>I[k]);
+  const pf=mode==="protein"?1.2:mode==="light"?.85:1,vf=mode==="light"?1.3:mode==="lowcarb"?1.4:1,cf=mode==="light"?.55:1;
+  const seen=new Set();
+  // Priorität: 1. verderbliche Zutaten, 2. Eiweiss, 3. Beilage (alle Kohlenhydrate gleichwertig)
+  const getP=i=>{const must=inP.filter(x=>x.fl.includes("p"));
+    const Ps=must.length?must.slice(0,2):inP.length?[inP[i%inP.length]]:[rnd(poolP)];
+    const rest=inP.filter(x=>!Ps.includes(x));if(rest.length&&Ps.length<2&&Math.random()<.6)Ps.push(rnd(rest));
+    if(veg==="meat"&&!Ps.some(x=>x.fl.includes("m")))Ps.unshift(rnd(poolP));return Ps};
+  const getV=min=>{const Vs=shuffle(inV).sort((a,b)=>b.fl.includes("p")-a.fl.includes("p")).slice(0,3);
+    const free=poolV.filter(x=>!Vs.includes(x)),seas=free.filter(isS);
+    const want=Vs.length?(Vs.length<min&&Math.random()<.6?1:0):min;
+    for(let j=0;j<want;j++){const c=rnd(seas.length>2?seas:free);if(!Vs.includes(c))Vs.push(c)}return Vs};
+  const getO=()=>{const Os=shuffle(inO).slice(0,3);const free=poolO.filter(x=>!Os.includes(x)),seas=free.filter(isS);
+    const want=Os.length?(Os.length<2&&Math.random()<.5?1:0):2;
+    for(let j=0;j<want;j++){const c=rnd(seas.length>1?seas:free);if(!Os.includes(c))Os.push(c)}return Os};
+  const rec=({title,em,t,lab,rare,steps,C,Ps,Vs,Os,fx,F,top,sweet})=>{
+    const m=new Map(),add=(x,f=1)=>{if(x&&!m.has(x.k))m.set(x.k,x.g*f)};
+    if(C)add(C,cf);Ps.forEach(p=>add(p,pf));Vs.forEach(v=>add(v,vf));Os.forEach(x=>add(x));
+    fx.forEach(([k,f])=>add(I[k],f*(mode==="light"&&B2(I[k])?.6:1)));
+    if(F)F[1].forEach(k=>add(I[k],k==="tomaten"?.6:1));
+    if(!sweet){T("F").forEach(x=>add(x));add(I.oel,mode==="light"?.5:1)}
+    let ma=mac(m);
+    if(top)for(let k=0;ma.p<(mode==="protein"?35:25)&&k<2;k++){
+      const cand=poolP.filter(x=>!m.has(x.k)&&(mode!=="light"||x.f<12));
+      if(!cand.length)break;const x=rnd(cand);Ps.push(x);add(x,.8);ma=mac(m)}
+    const ps=Ps.map(p=>p.how.replace("%",p.n)+".").join(" ");
+    const st=steps.map(s=>s.replace("{CS}",C?CS[C.k]||"":"").replace("{V}",join(Vs.map(v=>v.n))).replace("{PS}",ps).replace("{Pn}",join(Ps.map(p=>p.n))).replace("{O}",join(Os.map(x=>x.n))).replace("{F}",F?F[2]:"")).filter(Boolean);
+    if(EXTRA.length)st.push(EXTRA.map(e=>e[0].toUpperCase()+e.slice(1)).join(", ")+" nach Belieben dazugeben oder zum Servieren verwenden.");
+    const ord={C:0,B:0,P:1,V:2,O:2,F:3};
+    return{id:Math.random().toString(36).slice(2,9),title,em,col:`hsl(${Math.floor(Math.random()*360)},65%,85%)`,t,lab,rare,
+      veg:!Ps.some(x=>x.fl.includes("m")),extra:EXTRA.slice(),steps:st,
+      ings:[...m].map(([k,g])=>({k,g})).sort((a,b)=>ord[I[a.k].t]-ord[I[b.k].t]),
+      kcal:Math.round(ma.kc),p:Math.round(ma.p),c:Math.round(ma.c),f:Math.round(ma.f)}};
+  const mkComp=g=>{ // Alltagsgerichte
+    const C=mode==="lowcarb"?null:inC.length?inC[g%inC.length]:rnd(cuC.length?cuC:poolC);
+    const Ps=getP(g),Vs=getV(2);
+    let fl=FL.filter(f=>cuOK(f[3])&&(mode!=="light"||!f[1].some(k=>["rahm","pesto","butter","kokosmilch"].includes(k))));
+    if(!fl.length)fl=FL.filter(f=>cuOK(f[3]));
+    const F=rnd(fl),grp=C?(GRP[C.k]||"bowl"):"none";
+    const fo=rnd(FM.filter(f=>f[0]===grp&&(!quick||f[3])));
+    const title=fo[1].replace("{F}",F[0]).replace("{C}",C?C.n:"").replace("{V}",Vs[0].n).replace("{P}",Ps[0].n);
+    if(seen.has(title))return null;seen.add(title);
+    return rec({title,em:GE[grp],t:fo[2],lab:cu==="all"?CULAB[F[3][0]]:CULAB[cu],rare:0,steps:fo[4],C,Ps,Vs,Os:[],fx:[],F,top:1})};
+  const mkDish=(d,g)=>{ // Weltküche & Spezialitäten
+    const sweet=d.s.includes("O"),hasP=d.s.includes("P");
+    const Ps=hasP?getP(g):[],Vs=d.s.includes("V")?getV(1):[],Os=sweet?getO():[];
+    const names=(sweet?Os.slice(0,2):[Ps[0],Vs[0]]).filter(Boolean).map(x=>x.n);
+    const title=d.n+(names.length?": "+names.join(" & "):"");
+    if(seen.has(title))return null;seen.add(title);
+    return rec({title,em:d.em,t:d.t,lab:d.l,rare:1,steps:d.st,C:null,Ps,Vs,Os,fx:d.fx,F:null,top:hasP&&!sweet,sweet})};
+  const dAll=D.filter(d=>cuOK(d.c)&&(!quick||d.t<20)&&(veg!=="meat"||d.s.includes("P"))&&(mode!=="lowcarb"||!d.fx.some(([k])=>B2(I[k]))));
+  const fruit=inO.length>0,md=dAll.filter(d=>MD.includes(d));
+  let dp=dAll.filter(d=>!md.includes(d)&&(fruit?d.s.includes("O"):!d.s.includes("O")));
+  if(inP.length&&!fruit){const f=dp.filter(d=>d.s.includes("P"));if(f.length)dp=f}
+  const q=[];for(let r=0;r<3;r++)md.forEach(d=>q.push(d));shuffle(dp).forEach(d=>q.push(d));
+  const nA=fruit?0:md.length?1:3,A=[],Bq=[];
+  for(let g=0;A.length<nA&&g<40;g++){const r=mkComp(g);if(r)A.push(r)}
+  for(let g=0;Bq.length<6-nA&&g<q.length;g++){const r=mkDish(q[g],g);if(r)Bq.push(r)}
+  for(let g=40;!fruit&&A.length+Bq.length<6&&g<80;g++){const r=mkComp(g);if(r)A.push(r)}
+  const res=[],f1=md.length?Bq:A,f2=md.length?A:Bq;
+  for(let k=0;k<Math.max(A.length,Bq.length);k++){if(f1[k])res.push(f1[k]);if(f2[k])res.push(f2[k])}
+  return res.slice(0,6);
+}
+
+function gen(){
+  const txt=$("#rq").value;S.rq=txt;
+  INP=[];EXTRA=[];MD=[];
+  txt.toLowerCase().split(/[,;\n]+|\s+/).map(s=>s.trim()).filter(s=>s.length>1&&!STOP.has(s)).forEach(t=>{
+    const n=norm(t),it=fnd(n,ALL),dd=fnd(n,D);
+    if(it&&!INP.includes(it))INP.push(it);
+    if(dd&&!MD.includes(dd))MD.push(dd);
+    if(!it&&!dd&&!EXTRA.includes(t))EXTRA.push(t)});
+  const o={veg:S.veg,mode:S.mode,quick:!!S.quick,cu:S.cu},notes=[];
+  if(o.veg==="veg"&&INP.some(x=>x.fl.includes("m")))notes.push("Fleisch und Fisch aus deiner Eingabe wurden für die vegetarische Auswahl weggelassen.");
+  if(o.mode==="lowcarb"&&INP.some(x=>x.t==="C"))notes.push("Low Carb: Pasta, Reis & Co. wurden weggelassen.");
+  let out=build(o);
+  if(!out.length&&o.cu!=="all"){o.cu="all";out=build(o);notes.push("In dieser Küche gibt es dazu noch nichts, deshalb Ideen aus allen Küchen.")}
+  if(!out.length&&o.veg==="meat"){o.veg="all";out=build(o);notes.push("Dazu gibt es keine Fleisch-Variante.")}
+  if(!out.length&&o.mode==="lowcarb"){o.mode="balanced";out=build(o);notes.push("Dazu gibt es keine Low-Carb-Variante.")}
+  if(!out.length&&o.quick){o.quick=false;out=build(o);notes.push("Unter 20 Min. gab es dazu nichts, deshalb ohne Zeitfilter.")}
+  S.recs=out;S.notes=notes.join(" ");save();renderR();
+}
+
+const isFav=r=>S.favs.some(f=>f.id===r.id);
+const card=r=>`<div class="rec" data-id="${r.id}"><div class="pic" style="background:${r.col}"><span>${r.em}</span></div><button class="heart${isFav(r)?" on":""}" data-h="${r.id}" aria-label="Favorit">♥</button><div class="tx"><h3>${r.title}</h3><span class="meta">⏱ ${r.t} Min. · ${r.kcal} kcal · ${r.p} g Eiweiss</span><br><span class="hit">${r.veg?"🌱 Vegi":"🍗 mit Fleisch/Fisch"}</span> ${r.lab?`<span class="hit">${r.rare?"✨ ":""}${r.lab}</span>`:""}</div></div>`;
+function renderR(){
+  $("#rcount").textContent=S.recs.length?`${S.recs.length} Ideen · tippe auf eine Karte für Zutaten und Anleitung`:"Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.";
+  $("#rnote").textContent=S.notes||"";
+  $("#rgrid").innerHTML=S.recs.map(card).join("");
+}
+function renderF(){
+  $("#fcount").textContent=S.favs.length?`${S.favs.length} gespeichert`:"";
+  $("#fgrid").innerHTML=S.favs.map(card).join("")||`<div class="empty" style="grid-column:1/-1">Noch keine Favoriten. Tippe bei einem Rezept auf ♥.</div>`;
+}
+let cur=null;
+const find=id=>S.recs.concat(S.favs).find(r=>r.id===id);
+const amt=(x,n)=>{const it=I[x.k],t=x.g*n;
+  if(it.u){const q=it.u==="Stk"?Math.max(1,Math.round(t/it.ug)):Math.max(.5,Math.round(t/it.ug*2)/2);return String(q).replace(".",",")+" "+it.u}
+  return Math.max(5,Math.round(t/5)*5)+" g"};
+function showDlg(){
+  const r=cur,n=S.n,d=$("#dlg");
+  d.innerHTML=`<div class="pic" style="background:${r.col}"><span>${r.em}</span></div><div class="in"><button class="close" data-a="x">Schliessen</button><h2>${r.title}</h2><p class="meta">⏱ ${r.t} Min. · ${r.veg?"vegetarisch":"mit Fleisch/Fisch"}${r.lab?" · "+r.lab:""}</p>
+<div class="mac"><div><b>${r.kcal}</b>kcal</div><div><b>${r.p} g</b>Eiweiss</div><div><b>${r.c} g</b>Kohlenhydrate</div><div><b>${r.f} g</b>Fett</div></div><p class="meta">Nährwerte pro Portion (Schätzung)</p>
+<div class="stp"><span>Portionen</span><button data-a="m" aria-label="Weniger">−</button><b>${n}</b><button data-a="p" aria-label="Mehr">+</button><button class="fav${isFav(r)?" on":""}" data-a="f">♥ Favorit</button></div>
+<b>Zutaten</b><ul>${r.ings.map(x=>`<li><b>${amt(x,n)}</b> ${I[x.k].n}</li>`).join("")}${r.extra.map(e=>`<li>${e[0].toUpperCase()+e.slice(1)} (nach Belieben)</li>`).join("")}<li>Salz, Pfeffer</li></ul>
+<b>Zubereitung</b><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol></div>`;
+  if(!d.open)d.showModal();
+}
+function toggleFav(r){
+  if(!r)return;
+  S.favs=isFav(r)?S.favs.filter(f=>f.id!==r.id):[r,...S.favs];
+  save();renderR();renderF();
+}
+$("#dlg").onclick=e=>{
+  if(e.target===e.currentTarget)return e.currentTarget.close();
+  const a=e.target.closest("[data-a]");if(!a)return;
+  const k=a.dataset.a;
+  if(k==="x")return $("#dlg").close();
+  if(k==="m")S.n=Math.max(1,S.n-1);
+  if(k==="p")S.n=Math.min(12,S.n+1);
+  if(k==="f")toggleFav(cur);
+  save();showDlg();
+};
+["#rgrid","#fgrid"].forEach(s=>$(s).onclick=e=>{
+  const h=e.target.closest("[data-h]");if(h)return toggleFav(find(h.dataset.h));
+  const c=e.target.closest("[data-id]");if(c){cur=find(c.dataset.id);showDlg()}
+});
+
+function sync(){
+  document.querySelectorAll("#fv .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.veg));
+  document.querySelectorAll("#fm .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.mode));
+  document.querySelectorAll("#fc .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.cu));
+  $("#fq").setAttribute("aria-pressed",!!S.quick);
+  document.querySelectorAll("#cat .chip[data-v]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===cat));
+  $("#all").setAttribute("aria-pressed",showAll);
+}
+[["#fv","veg"],["#fm","mode"],["#fc","cu"]].forEach(([id,key])=>$(id).onclick=e=>{const b=e.target.closest(".chip");if(!b)return;S[key]=b.dataset.v;sync();save();gen()});
+$("#fq").onclick=()=>{S.quick=!S.quick;sync();save();gen()};
+$("#cat").addEventListener("click",()=>{S.cat=cat;S.showAll=showAll;save()});
+$("#go").onclick=gen;
+$("#rq").onkeydown=e=>{if(e.key==="Enter")gen()};
+$("#rq").oninput=()=>{S.rq=$("#rq").value;save()};
+
+function tab(n){
+  [1,2,3].forEach(i=>{$("#p"+i).hidden=i!==n;$("#t"+i).setAttribute("aria-selected",i===n)});
+  S.tab=n;save();scrollTo({top:0});
+  if(n===2&&!S.recs.length)gen();
+  if(n===3)renderF();
+}
+[1,2,3].forEach(i=>$("#t"+i).onclick=()=>tab(i));
+$("#rq").value=S.rq||"";
+sync();renderP();renderR();renderF();tab(S.tab||1);
+</script>
+</body>
+</html>
