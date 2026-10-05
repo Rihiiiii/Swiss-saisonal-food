@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Swiss food</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23d52b1e'/%3E%3Cpath fill='%23fff' d='M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f2f7ee;--card:#fff;--ink:#1b2a1f;--mute:#5c6b60;--leaf:#2f7d4a;--leaf2:#dff0e3;--sun:#f5b83d;--line:#d9e4d6;--r:16px}
 [data-theme="light"]{--bg:#f7f8f4;--card:#fff;--ink:#202721;--mute:#66716a;--leaf:#287248;--leaf2:#e2f0e6;--line:#dce3dc}
@@ -18,7 +16,7 @@
 [data-theme="rose"]{--bg:#faeef1;--card:#fff;--ink:#422932;--mute:#80636d;--leaf:#b64f70;--leaf2:#f4dfe6;--line:#e9cfd8}
 @media(prefers-color-scheme:dark){:root:not([data-theme]),:root[data-theme=""]{--bg:#121a14;--card:#1b261e;--ink:#eaf3ea;--mute:#9bb0a0;--leaf:#6cc487;--leaf2:#22362a;--line:#2b3b30}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI Variable","Segoe UI",system-ui,sans-serif;line-height:1.5;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 header{padding:28px 64px 8px 16px;max-width:1100px;margin:auto;position:relative}
 h1{font-size:clamp(1.8rem,5vw,3rem);margin:0;font-weight:800;letter-spacing:-.02em}
 header p{margin:6px 0 0;color:var(--mute)}
@@ -64,10 +62,23 @@ dialog ol{padding-left:20px}dialog li{margin-bottom:6px}
 .close{float:right;font:inherit;border:0;background:var(--leaf2);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;margin:10px}
 .empty{padding:30px;text-align:center;color:var(--mute);border:2px dashed var(--line);border-radius:var(--r)}
 .note{font-size:.8rem;color:var(--mute);margin-top:24px}
+.online-search{font-size:.85rem;margin:0 0 14px}
+.online-search a,.recipe-source a{color:var(--leaf);font-weight:600}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 [hidden]{display:none!important}
 nav button[aria-selected=true]{color:var(--bg)}
 .go{font-family:inherit;font-weight:600;font-size:1rem;padding:12px 20px;border-radius:12px;border:0;background:var(--leaf);color:var(--bg);cursor:pointer}
+.go.is-floating{position:fixed;right:18px;bottom:18px;z-index:10;padding:9px 15px;border-radius:999px;font-size:.88rem;box-shadow:0 4px 18px #0003}
+.custom-form{display:grid;gap:10px;margin:14px 0}
+.custom-form label{display:grid;gap:5px;font-weight:600}
+.custom-form input,.custom-form select,.custom-form textarea{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink)}
+.custom-form textarea{min-height:82px;resize:vertical}
+.custom-form .meta{font-weight:400}
+.custom-recipe-list{display:grid;gap:8px;margin-top:10px}
+.custom-recipe-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.custom-recipe-row button{font:inherit;border:0;border-radius:8px;background:var(--leaf2);color:var(--ink);padding:5px 9px;cursor:pointer}
+.custom-edit-state{padding:9px 12px;border-radius:10px;background:var(--leaf2);color:var(--ink);font-size:.9rem}
+.recipe-edit{float:right;margin:10px 0 0 8px;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);cursor:pointer;font-size:1rem}
 .lbl{font-size:.85rem;color:var(--mute);align-self:center;margin-right:2px}
 #rnote{font-size:.85rem;color:var(--mute);margin:0 0 10px}
 .rec{position:relative}
@@ -102,6 +113,7 @@ dialog .pic{height:210px}
 .heart{position:absolute;top:8px;right:8px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:#fffc;color:#8a8f8a;font-size:1.2rem;cursor:pointer}
 .heart.on{color:#e5484d}
 dialog{max-height:92vh}
+dialog#settingsDlg{overflow:auto}
 dialog ul{padding-left:20px}
 .mac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 2px}
 .mac div{background:var(--leaf2);border-radius:12px;padding:8px 4px;text-align:center;font-size:.72rem;color:var(--mute)}
@@ -157,18 +169,18 @@ dialog ul{padding-left:20px}
 <summary>Filter und Essensart</summary>
 <div class="chips filter-group" id="fv"><span class="lbl">Auswahl</span><button class="chip" data-v="all">🍽️ Alles</button><button class="chip" data-v="veg">🌱 Vegi</button><button class="chip" data-v="vegan">🌿 Vegan</button><button class="chip" data-v="fish">🐟 Fisch</button></div>
 <div class="chips filter-group" id="fmeal"><span class="lbl">Mahlzeit</span><button class="chip" data-v="all">🍽️ Alle</button><button class="chip" data-v="breakfast">🌅 Z'morga</button><button class="chip" data-v="main">🍲 Z'mittag/Z'nacht</button><button class="chip" data-v="snack">🥨 Snacks</button><button class="chip" data-v="dessert">🍰 Dessert</button></div>
-<div class="chips filter-group" id="fm"><span class="lbl">Ziel</span><button class="chip" data-v="protein">💪 Proteinreich</button><button class="chip" data-v="light">🥗 Kalorienarm</button><button class="chip" data-v="lowcarb">🥑 Low Carb</button><button class="chip" data-v="balanced">⚖️ Ausgewogen</button></div>
+<div class="chips filter-group" id="fm"><span class="lbl">Ziel</span><button class="chip" data-v="none">🎲 Kein Ziel</button><button class="chip" data-v="protein">💪 Proteinreich</button><button class="chip" data-v="light">🥗 Kalorienarm</button><button class="chip" data-v="lowcarb">🥑 Low Carb</button><button class="chip" data-v="balanced">⚖️ Ausgewogen</button></div>
 <div class="chips filter-group" id="fc"><span class="lbl">Küche</span><button class="chip" data-v="all">🌍 Alle</button><button class="chip" data-v="CH">🇨🇭 Schweiz / DACH</button><button class="chip" data-v="IT">🇮🇹 Italien</button><button class="chip" data-v="EEB">🥟 Osteuropa, Balkan &amp; Türkei</button><button class="chip" data-v="LA">🌮 Lateinamerika</button><button class="chip" data-v="AS">🥢 Asien</button><button class="chip" data-v="OR">🧆 Orient &amp; Indien</button></div>
 <label class="time-filter"><span>⏱ Zeitaufwand</span><input id="timeLimit" type="range" min="10" max="90" step="5" value="60" aria-label="Maximaler Zeitaufwand"><output id="timeValue" for="timeLimit">bis 60 Min.</output></label>
 </details>
-<p class="count" id="rcount">Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.</p><p id="rnote"></p>
+<p class="count" id="rcount">Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.</p><p id="rnote"></p><p id="sharedRecipeStatus" class="meta" aria-live="polite"></p><p class="online-search" id="onlineSearch"><a target="_blank" rel="noopener noreferrer">Weitere Rezeptideen im Web suchen ↗</a></p>
 <div class="rgrid" id="rgrid"></div>
 </section>
 <section id="p3" hidden><p class="count" id="fcount"></p><div class="rgrid" id="fgrid"></div></section>
-<p class="note">Rezepte werden per Zufallsgenerator zusammengestellt, Nährwerte sind Schätzwerte. Saisonangaben für Freiland- und Lagerware aus der Schweiz, grob und ohne Gewähr. Der schwarze Rahmen im Balken zeigt den gewählten Monat.</p>
+<p class="note">Die Grund-Rezept- und Zutatenliste liegt in dieser Website-Datei; eigene Rezepte werden bei aktiver Verbindung gemeinsam in Supabase gespeichert. Einen KI-Dienst gibt es nicht. Rezeptideen basieren auf hinterlegten Gerichten und passenden Zutaten; Nährwerte sind Schätzwerte. Wenn nötig, werden zuerst Ziel und Zeit gelockert; Mahlzeit, Küche und Ernährung bleiben erhalten. Für weitere oder nicht hinterlegte Rezepte kannst du kostenlos im Web suchen. Saisonangaben für Freiland- und Lagerware aus der Schweiz, grob und ohne Gewähr. Der schwarze Rahmen im Balken zeigt den gewählten Monat.</p>
 </main>
 <dialog id="dlg"></dialog>
-<dialog id="settingsDlg"><div class="in"><button class="close" data-settings-close aria-label="Einstellungen schliessen">Schliessen</button><h2>Einstellungen</h2><form class="settings-form" id="settingsForm"><label for="dislikes">Zutaten, die du nicht magst<input id="dislikes" type="text" placeholder="z. B. Pilze, Oliven, Koriander"><span class="meta">Mit Komma trennen. Diese Zutaten werden möglichst ausgeschlossen.</span></label><label for="theme">Hintergrundfarbe<select id="theme"><option value="auto">Systemeinstellung</option><option value="light">Hell</option><option value="dark">Dunkel</option><option value="mint">Minze</option><option value="lavender">Lavendel</option><option value="ocean">Ozean</option><option value="sunset">Sonnenuntergang</option><option value="rose">Rosé</option></select></label><label for="defaultServings">Standard-Portionen<input id="defaultServings" type="number" min="1" max="12" value="2"></label><label for="motion">Bewegung<select id="motion"><option value="system">Systemeinstellung</option><option value="reduce">Animationen reduzieren</option></select></label></form><div class="settings-actions"><button type="button" data-settings-close>Abbrechen</button><button class="go" id="settingsSave" type="button">Speichern</button></div></div></dialog>
+<dialog id="settingsDlg"><div class="in"><button class="close" data-settings-close aria-label="Einstellungen schliessen">Schliessen</button><h2>Einstellungen</h2><form class="settings-form" id="settingsForm"><label for="dislikes">Zutaten, die du nicht magst<input id="dislikes" type="text" placeholder="z. B. Pilze, Oliven, Koriander"><span class="meta">Mit Komma trennen. Diese Zutaten werden möglichst ausgeschlossen.</span></label><label for="theme">Hintergrundfarbe<select id="theme"><option value="auto">Systemeinstellung</option><option value="light">Hell</option><option value="dark">Dunkel</option><option value="mint">Minze</option><option value="lavender">Lavendel</option><option value="ocean">Ozean</option><option value="sunset">Sonnenuntergang</option><option value="rose">Rosé</option></select></label><label for="defaultServings">Standard-Portionen<input id="defaultServings" type="number" min="1" max="12" value="2"></label><label for="motion">Bewegung<select id="motion"><option value="system">Systemeinstellung</option><option value="reduce">Animationen reduzieren</option></select></label></form><hr><h3>Eigenes Rezept hinzufügen</h3><form class="custom-form" id="customRecipeForm"><div id="customEditState" class="custom-edit-state" hidden></div><label for="customTitle">Rezepttitel<input id="customTitle" maxlength="100" required placeholder="z. B. Mein Gemüse-Couscous"></label><label for="customCuisine">Küche<select id="customCuisine"><option value="CH">Schweiz / DACH</option><option value="IT">Italien</option><option value="EEB">Osteuropa, Balkan &amp; Türkei</option><option value="LA">Lateinamerika</option><option value="AS">Asien</option><option value="OR">Orient &amp; Indien</option><option value="INT">International</option></select></label><label for="customMeal">Mahlzeit<select id="customMeal"><option value="main">Hauptgericht</option><option value="breakfast">Frühstück</option><option value="snack">Snack</option><option value="dessert">Dessert</option></select></label><label for="customDiet">Ernährung<select id="customDiet"><option value="all">Alles</option><option value="veg">Vegetarisch</option><option value="vegan">Vegan</option><option value="fish">Fisch</option></select></label><label for="customTime">Zubereitungszeit in Minuten<input id="customTime" type="number" min="5" max="240" value="30"></label><label for="customIngredients">Zutaten<textarea id="customIngredients" required placeholder="Eine Zutat pro Zeile, z. B. 200 g Couscous&#10;1 Dose Kichererbsen"></textarea><span class="meta">Bekannte Zutaten werden mit Nährwerten erkannt; neue Zutaten werden ebenfalls gespeichert. Mengen sind optional.</span></label><label for="customSteps">Zubereitung (optional)<textarea id="customSteps" placeholder="Schritt für Schritt, eine Zeile pro Schritt"></textarea></label><div class="settings-actions"><button class="go" id="customRecipeAdd" type="submit">Rezept speichern</button><button type="button" id="customRecipeCancel" hidden>Bearbeitung abbrechen</button></div></form><h3>Eigene Rezepte</h3><p id="customSyncStatus" class="meta" aria-live="polite"></p><div class="custom-recipe-list" id="customRecipeList"></div><div class="settings-actions"><button type="button" data-settings-close>Schliessen</button><button class="go" id="settingsSave" type="button">Einstellungen speichern</button></div></div></dialog>
 <script>
 // [Name, Emoji, G=Gemüse/O=Obst, Beliebtheit 1=sehr häufig … 3, Saison-Monate]
 const P=[
@@ -194,7 +206,13 @@ const $=s=>document.querySelector(s);
 const now=new Date().getMonth()+1;
 const inS=(m,spec)=>spec.split(",").some(r=>{let[a,b]=r.split("-").map(Number);b=b||a;return a<=b?m>=a&&m<=b:m>=a||m<=b});
 const norm=s=>s.toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-const KEY="saisonmarkt_v2";let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};let cat=S.cat||"",showAll=!!S.showAll,month=now;
+const KEY="saisonmarkt_v2";
+// Use only the public anon/publishable key here; table access is controlled by RLS.
+const SUPABASE_URL="https://rhvvbvxevjvuyhsssnsq.supabase.co",SUPABASE_ANON_KEY="sb_publishable_wNn_RCSpNzCV2Q8IYG_AkA_yTYq8wyq";
+const SUPABASE_SESSION_KEY="saisonal_supabase_anon_session";
+let sharedSession=null,sharedAuthReady=Promise.resolve();
+try{sharedSession=JSON.parse(localStorage.getItem(SUPABASE_SESSION_KEY))}catch(e){}
+let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};let cat=S.cat||"",showAll=!!S.showAll,month=now;
 
 $("#month").innerHTML=M.map((n,i)=>`<option value="${i+1}"${i+1===now?" selected":""}>${n}${i+1===now?" (jetzt)":""}</option>`).join("");
 
@@ -225,7 +243,7 @@ $("#grid").onclick=e=>{
 };
 
 /* ===== Rezept-Generator (läuft komplett im Browser) ===== */
-S.favs=S.favs||[];S.recs=(S.recs||[]).slice(0,8);S.n=S.n||2;S.veg=S.veg==="meat"||!S.veg?"all":S.veg;S.meal=["lunch","dinner"].includes(S.meal)?"main":S.meal||"all";S.mode=S.mode||"protein";S.cu=["all","CH","IT","EEB","LA","AS","OR"].includes(S.cu)?S.cu:"all";S.maxTime=S.maxTime||60;S.dislikes=S.dislikes||"";S.theme=["auto","light","dark","mint","lavender","ocean","sunset","rose"].includes(S.theme)?S.theme:"auto";S.motion=S.motion||"system";
+S.favs=S.favs||[];S.recs=(S.recs||[]).slice(0,8);S.customRecipes=Array.isArray(S.customRecipes)?S.customRecipes:[];S.n=S.n||2;S.veg=S.veg==="meat"||!S.veg?"all":S.veg;S.meal=["lunch","dinner"].includes(S.meal)?"main":S.meal||"all";S.mode=["none","protein","light","lowcarb","balanced"].includes(S.mode)?S.mode:"protein";S.cu=["all","CH","IT","EEB","LA","AS","OR"].includes(S.cu)?S.cu:"all";S.maxTime=S.maxTime||60;S.dislikes=S.dislikes||"";S.theme=["auto","light","dark","mint","lavender","ocean","sunset","rose"].includes(S.theme)?S.theme:"auto";S.motion=S.motion||"system";
 // key, Name, Englisch (für Bild), kcal/P/C/F pro 100 g, g pro Portion, Typ, Flags (m=Fleisch/Fisch, p=verderblich), Einheit, g je Einheit, Zubereitung, Suchwörter
 const DB=[
 ["pasta","Pasta","pasta",360,12,72,1.5,110,"C","","",0,"","nudeln spaghetti penne fusilli tagliatelle"],
@@ -248,6 +266,8 @@ const DB=[
 ["hack","Rinderhack","ground beef",215,19,0,15,150,"P","mp","",0,"% krümelig und gut gebräunt anbraten","hack hackfleisch rind"],
 ["lachs","Lachs","salmon",200,20,0,13,150,"P","mp","",0,"% in Stücke schneiden und 4 Min. anbraten","fisch lachsfilet"],
 ["thon","Thon","tuna",130,29,1,1,120,"P","m","",0,"% abtropfen und zerzupfen untermischen","thunfisch"],
+["kabeljau","Kabeljau","cod",82,18,0,0.7,160,"P","mp","",0,"% trocken tupfen, würzen und 3–4 Min. pro Seite braten, bis er sich leicht zerteilen lässt","dorsch cod bacalao weissfisch white fish"],
+["muscheln","Miesmuscheln","mussels",86,12,4,2,200,"P","mp","",0,"% gründlich säubern und in einem geschlossenen Topf 5–7 Min. kochen; geschlossene Muscheln entsorgen","miesmuschel venusmuscheln"],
 ["schinken","Schinken","ham",120,20,1,4,60,"P","m","",0,"% in Streifen schneiden und kurz mitbraten","speck"],
 ["broccoli","Broccoli","broccoli",34,2.8,7,.4,180,"V","p","",0,"","brokoli brocoli"],
 ["spinat","Spinat","spinach",23,2.9,3.6,.4,150,"V","p","",0,"",""],
@@ -282,6 +302,7 @@ const DB=[
 ["schwein","Schweinefleisch","",240,18,0,18,150,"P","mp","",0,"% in Streifen schneiden und 6–8 Min. durchbraten","schweinsgeschnetzeltes geschnetzeltes"],
 ["bratwurst","Bratwurst","",300,12,2,27,120,"P","m","",0,"% in Scheiben schneiden und goldbraun anbraten","wurst cervelat"],
 ["schwarzebohnen","Schwarze Bohnen","",130,8,23,.5,200,"P","","",0,"% abspülen und 5 Min. mitköcheln","schwarze black kidneybohnen kidney"],
+["weissebohnen","Weisse Bohnen","",127,8.7,23,.5,150,"P","","",0,"% abspülen und 5 Min. mitköcheln","white beans cannellini cannellini beans"],
 ["avocado","Avocado","",160,2,9,15,100,"V","p","",0,"","avokado"],
 ["mais","Mais","",86,3.3,19,1.4,120,"V","","",0,"","maiskolben"],
 ["kohlrabi","Kohlrabi","",27,1.7,6,.1,150,"V","","",0,"",""],
@@ -320,10 +341,37 @@ const DB=[
 ["currypaste","Currypaste","",100,3,15,3,15,"F","","EL",15,"",""],
 ["honig","Honig","",300,0,82,0,15,"F","","EL",15,"",""],
 ["milch","Milch","",64,3.4,5,3.6,100,"F","","",0,"",""],
-["baumnuesse","Baumnüsse","",650,15,14,65,25,"F","","",0,"","walnuesse nuesse mandeln erdnuesse kastanien"]
+["baumnuesse","Baumnüsse","",650,15,14,65,25,"F","","",0,"","walnuesse nuesse mandeln erdnuesse kastanien"],
+["filoteig","Filoteig","",290,8,50,6,50,"B","","",0,"","filo phyllo yufka"],
+["zucker","Zucker","",400,0,100,0,25,"S","","",0,"",""],
+["zimt","Zimt","",247,4,81,1.2,1,"S","","",0,"","cinnamon"],
+["mascarpone","Mascarpone","",430,4,4,42,100,"P","","",0,"",""],
+["savoiardi","Löffelbiskuits","",390,8,78,5,50,"B","","",0,"","loeffelbiskuit ladyfingers biscuits"],
+["kaffee","Kaffee","",2,0,0,0,50,"F","","",0,"","espresso"],
+["kakao","Kakao","",230,20,14,14,5,"F","","",0,"","kakaopulver cocoa"],
+["agar","Agar-Agar","",26,0.5,6,0,2,"F","","",0,"","agaragar"],
+["klebreismehl","Klebreismehl","",360,6,80,1,60,"B","","",0,"","glutinous rice flour shiratamako mochiko"],
+["klebreis","Klebreis","",360,6,80,1,90,"C","","",0,"","sticky rice sweet rice"],
+["rotebohnenpaste","Süsse rote Bohnenpaste","",240,7,45,1,40,"F","","",0,"","anko anko paste red bean paste azuki"],
+["tapioka","Tapiokaperlen","",350,.2,88,.1,30,"B","","",0,"","tapioca tapioca pearls"],
+["staerke","Maisstärke","",381,.3,91,.1,10,"F","","",0,"","cornstarch maize starch"],
+["sesam","Sesam","",573,18,23,50,10,"F","","",0,"","sesame sesame seeds"],
+["tahin","Tahini","",595,17,21,54,15,"F","","",0,"","tahini tahina sesampaste"],
+["matcha","Matcha","",324,30,39,5,2,"F","","",0,"","matchatee green tea powder"],
+["datteln","Datteln","",282,2.5,75,.4,30,"O","","",0,"","date dates"],
+["mungbohnen","Mungbohnen","",105,7,19,.4,100,"P","","",0,"","mung beans mungbohne"],
+["chiasamen","Chiasamen","",486,17,42,31,15,"F","","",0,"","chia chia seeds"],
+["maisgriess","Maisgriess","",370,8,79,2,70,"C","","",0,"","cornmeal maize meal"],
+["rosinen","Rosinen","",299,3.1,79,.5,20,"O","","",0,"","raisin raisins sultanas"],
+["hartweizengriess","Hartweizengriess","",360,12,72,1.5,60,"B","","",0,"","semolina durum wheat semolina"],
+["favabohnen","Favabohnen","",110,8,19,.5,150,"P","","",0,"% abspülen und 5 Min. mitköcheln","fava beans broad beans ful"],
+["edamame","Edamame","",121,12,9,5,120,"P","","",0,"% nach Packungsangabe garen und abgiessen","soybeans edamame"],
+["miso","Misopaste","",200,12,26,6,15,"F","","EL",15,"","miso miso paste"],
+["zaatar","Za'atar","",300,10,45,12,2,"F","","",0,"","zaatar thyme sesame spice"]
 ];
 const I={};DB.forEach(a=>I[a[0]]={k:a[0],n:a[1],e:a[2],kc:a[3],p:a[4],c:a[5],f:a[6],g:a[7],t:a[8],fl:a[9],u:a[10],ug:a[11],how:a[12],al:norm(a[1]+" "+a[13]).split(" ").filter(Boolean)});
 const ALL=DB.map(a=>I[a[0]]);
+const builtInIngredientCount=ALL.length,customIngredientKeys=new Set();
 const FL=[ // Geschmacksrichtung, zusätzliche Zutaten, Schlusschritt, Küchen
 ["Zitronen-Knoblauch",["knoblauch"],"Mit Zitronensaft, Salz und Pfeffer abschmecken.",["IT","CH"]],
 ["Rahm",["rahm","knoblauch"],"Mit einem Schuss Rahm binden und mit Pfeffer abschmecken.",["CH"]],
@@ -350,19 +398,20 @@ const FM=[ // Gruppe, Titel, Minuten, schnell?, Schritte
 ["none","Ofengemüse mit {P}: {V}",35,0,["Ofen auf 200 °C vorheizen.","Gemüse ({V}) mit Öl und Salz auf ein Blech geben und 25 Min. backen.","{PS}","{F}"]]
 ];
 const GE={pasta:"🍝",reis:"🍚",kart:"🥔",bowl:"🥣",wrap:"🌯",none:"🥘"};
-const STOP=new Set("mit und oder lust auf ich habe noch zuhause der die das ein eine etwas dazu gerne".split(" "));
-const mw=(t,w)=>t===w||(w.length>=4&&t.startsWith(w))||(t.length>=5&&w.startsWith(t.slice(0,t.length-2)));
+const STOP=new Set("mit und oder lust auf ich habe noch zuhause der die das ein eine etwas dazu gerne dessert desserts desert deserts kuchen süss suess süssspeise suessspeise frühstück fruehstueck zmorgen mittag nacht abendessen snack asiatisch asiatische asiatischen asiatisches asiatischer asiatischem asian asien asia schweizer schweiz italien italienisch italienische italienischen italienisches osteuropa balkan tuerkei türkei lateinamerika mexikanisch mexikanische mexikanisches orient indien indisch indische indischen indisches".split(" "));
+const mw=(t,w)=>t===w||(w.length>=4&&t.startsWith(w));
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 const isS=v=>P.some(p=>inS(now,p[4])&&norm(p[0]).startsWith(v.al[0].slice(0,5)));
-const excludedKeys=new Set("eier feta halloumi mozzarella kaese quark rahm butter honig milch pesto poulet hack lachs thon schinken garnelen schwein bratwurst".split(" "));
+const excludedKeys=new Set("eier feta halloumi mozzarella kaese quark rahm butter honig milch pesto poulet hack lachs thon kabeljau muscheln schinken garnelen schwein bratwurst".split(" "));
 const veganOK=x=>!excludedKeys.has(x.k)&&!x.fl.includes("m");
-const fishOK=x=>["lachs","thon","garnelen"].includes(x.k);
+const fishOK=x=>["lachs","thon","kabeljau","muscheln","garnelen"].includes(x.k);
 const excluded=()=>S.dislikes.split(/[,;]+/).map(x=>norm(x.trim())).filter(Boolean);
 const isExcluded=x=>excluded().some(word=>x.al.some(a=>mw(word,a)||mw(a,word)));
-const mealOf=d=>d.l==="Frühstück"||d.n==="Pfannkuchen"?"breakfast":d.l==="Dessert"||d.n==="Kaiserschmarrn"?"dessert":"main";
-const snackDishes=new Set(["Porridge","Quark-Bowl","Pfannkuchen","Kaiserschmarrn","Crumble"]);
-const mealFits=(d,meal)=>meal==="all"||(meal==="snack"?snackDishes.has(d.n):meal==="main"?mealOf(d)==="main":mealOf(d)===meal);
+const dessertDishes=new Set(["Kaiserschmarrn","Crumble","Süsse Frucht-Pfannkuchen","Fruchtkompott mit Quark","Frucht-Quark-Creme","Frucht-Smoothie-Bowl","Fruchtwähe","Warme Honigfrüchte mit Quark","Baklava","Vegane Baklava","Tiramisu","Panna Cotta","Palacinke","Tufahije","Tulumba","Sorbetto","Mango Sticky Rice (Khao Niao Mamuang)","Thai-Bananen in Kokosmilch","Thai-Bananen-Krapfen","Kokos-Agar-Gelee","Daifuku Mochi","Dorayaki","Vietnamesisches Bananen-Kokos-Dessert","Matcha-Pudding","Chè Ba Màu","Kheer","Sesam-Tangyuan","Kokos-Klebreiskuchen"]);
+const mealOf=d=>d.customMeal||d.meal||(d.l==="Frühstück"||d.n==="Pfannkuchen"?"breakfast":d.l==="Dessert"||dessertDishes.has(d.n)?"dessert":"main");
+const snackDishes=new Set(["Porridge","Quark-Bowl","Pfannkuchen","Kaiserschmarrn","Crumble","Onigiri","Hummus mit Fladenbrot","Bruschetta","Guacamole mit Tortilla-Chips","Chia-Pudding","Birchermüesli","Gebratene Polenta-Schnitten"]);
+const mealFits=(d,meal)=>meal==="all"||(meal==="snack"?(d.customMeal?d.customMeal==="snack":d.meal?d.meal==="snack":snackDishes.has(d.n)):meal==="main"?mealOf(d)==="main":mealOf(d)===meal);
 const mac=m=>{const o={kc:0,p:0,c:0,f:0};m.forEach((g,k)=>{const x=I[k];o.kc+=g*x.kc/100;o.p+=g*x.p/100;o.c+=g*x.c/100;o.f+=g*x.f/100});return o};
 const join=a=>a.length>1?a.slice(0,-1).join(", ")+" & "+a[a.length-1]:(a[0]||"");
 
@@ -379,11 +428,11 @@ const RAW=new Set(["salat","gurken","avocado","radieschen","rhabarber"]);
 const DR=[
 ["Tacos","LA",25,"P,V","wrap:1,avocado:.8,limette:1,koriander:1",["Wraps kurz in der trockenen Pfanne erwärmen.","Gemüse ({V}) klein schneiden, 5 Min. scharf anbraten und mit Salz, Kreuzkümmel und Paprikapulver würzen.","{PS}","Avocado würfeln und mit Limettensaft und Koriander mischen.","Tortillas füllen und sofort essen."],"🌮","Mexiko","taco tacos"],
 ["Empanadas","LA",55,"P,V","mehl:1.4,butter:1,zwiebeln:.6",["Mehl, Butter, Salz und ca. 4 EL kaltes Wasser zu einem Teig kneten und 20 Min. kühlen.","Zwiebel, Gemüse ({V}) und {Pn} fein würfeln, 8 Min. anbraten, mit Kreuzkümmel und Paprika würzen und abkühlen lassen.","Teig ausrollen, Kreise ausstechen, Füllung daraufgeben und zu Halbmonden falten.","Bei 200 °C ca. 25 Min. goldbraun backen."],"🥟","Argentinien","empanada empanadas"],
-["Momos","AS",50,"P,V","mehl:1.3,ingwer:1,knoblauch:1,sojasauce:.6",["Mehl mit lauwarmem Wasser zu einem festen Teig kneten und 15 Min. ruhen lassen.","Gemüse ({V}) und {Pn} fein hacken, mit Ingwer und Knoblauch 8 Min. anbraten.","Teig dünn ausrollen, Kreise ausstechen, Füllung hineingeben und zu Täschchen formen.","Momos 10–12 Min. im Dampf garen und mit Sojasauce servieren."],"🥟","Nepal","momo momos dumpling dumplings gyoza jiaozi"],
+["Momos","AS",50,"P,V","mehl:1.3,ingwer:1,knoblauch:1,sojasauce:.6",["Mehl mit einer Prise Salz in eine Schüssel geben. Nach und nach etwa 120 ml lauwarmes Wasser einarbeiten und 8–10 Minuten zu einem glatten, festen Teig kneten. Abdecken und 15 Minuten ruhen lassen.","Gemüse ({V}) und {Pn} sehr fein hacken. Mit geriebenem Ingwer, Knoblauch, Sojasauce und etwas Pfeffer mischen. Die Füllung soll saftig, aber nicht wässrig sein.","Teig auf einer leicht bemehlten Fläche dünn ausrollen und Kreise von etwa 8 cm ausstechen. Je einen Löffel Füllung in die Mitte setzen, den Rand mit Wasser befeuchten und die Teigränder über der Füllung fest zusammendrücken.","Momos mit Abstand in einen leicht geölten Dämpfeinsatz legen. Über kochendem Wasser 10–12 Minuten dämpfen, bis der Teig leicht durchscheinend und die Füllung vollständig gar ist. Heiss mit Sojasauce servieren."],"🥟","Nepal","momo momos dumpling dumplings gyoza jiaozi"],
 ["Rösti","CH",35,"P,V","kartoffeln:1,zwiebeln:.6,butter:1.3",["Kartoffeln (am besten vom Vortag) raffeln und salzen.","Butter erhitzen, Kartoffeln flach andrücken und pro Seite ca. 10 Min. goldbraun braten.","Gemüse ({V}) separat anbraten.","{PS}","Rösti mit Gemüse und Eiweiss anrichten."],"🥔","Schweiz","roesti roeschti"],
 ["Capuns","CH",45,"P,V","mehl:1.2,eier:1,milch:1,kaese:1,wirz:1",["Wirzblätter (oder Mangold) 2 Min. blanchieren.","Mehl, Eier, Milch und Salz zu einem zähen Teig rühren, Gemüse ({V}) und {Pn} fein hacken und untermischen.","Je einen Löffel Teig auf ein Blatt geben und zu Päckli rollen.","In Salzwasser 15 Min. sanft köcheln, dann mit Käse überbacken."],"🥬","Graubünden","capuns kapuns"],
 ["Caesar Salad","INT",18,"P","salat:2,kaese:.8,brot:.6,quark:.5,knoblauch:1",["Brot würfeln und in Olivenöl knusprig rösten (Croutons).","{PS}","Quark mit Zitronensaft, Knoblauch, Salz und Pfeffer zum Dressing rühren.","Salat zerzupfen, mit Dressing mischen und mit {Pn}, Croutons und Käse anrichten."],"🥗","USA","caesar ceasar cesar caesarsalat salad"],
-["Polenta-Gratin","IT",35,"P,V","polenta:1,kaese:1,butter:.5,zwiebeln:.5",["Polenta nach Packung in Salzwasser unter Rühren zu einem festen Brei kochen.","Gemüse ({V}) 6 Min. anbraten, dann {PS}","Polenta in eine Form streichen, Gemüse und Eiweiss verteilen, Käse darüberstreuen.","Bei 200 °C 10–15 Min. überbacken."],"🌽","Italien","polenta gratin"],
+["Polenta-Gratin","IT",35,"P,V","polenta:1,kaese:1,butter:.5,zwiebeln:.5",["Backofen auf 200 °C Ober-/Unterhitze vorheizen und eine Auflaufform leicht einfetten.","Salzwasser aufkochen. Polenta unter ständigem Rühren langsam einrieseln lassen und nach Packungsangabe garen. Wenn sie zu fest wird, etwas heisses Wasser einrühren.","Gemüse ({V}) gleichmässig klein schneiden und in einer Pfanne mit etwas Öl 6–8 Minuten anbraten. {PS}","Polenta in der Form verstreichen. Gemüse und Eiweiss darauf verteilen, Käse darüberstreuen und 10–15 Minuten überbacken, bis der Käse geschmolzen und leicht gebräunt ist."],"🌽","Italien","polenta gratin"],
 ["Gnocchi-Pfanne","IT",19,"P,V","gnocchi:1,butter:.6,kaese:.8",["Gnocchi in Butter 6–8 Min. goldbraun braten.","Gemüse ({V}) dazugeben und 5 Min. mitbraten.","{PS}","Mit Käse, Salz und Pfeffer abschmecken."],"🥘","Italien","gnocchi"],
 ["Pasta Carbonara","IT",25,"","pasta:1,eier:1.2,kaese:.6,schinken:.6",["Pasta in Salzwasser bissfest kochen und etwas Kochwasser aufheben.","Schinken in einer Pfanne knusprig braten.","Eier mit geriebenem Käse und Pfeffer verquirlen.","Pasta abgiessen, mit dem Schinken mischen und die Pfanne vom Herd nehmen. Eiermischung mit etwas Kochwasser unterrühren, bis eine cremige Sauce entsteht."],"🍝","Italien","pasta carbonara spaghetti"],
 ["Pasta al Pomodoro","IT",25,"V","pasta:1,tomaten:1.4,knoblauch:.5,oel:.5",["Pasta in Salzwasser bissfest kochen und etwas Kochwasser aufheben.","Knoblauch in Olivenöl kurz anbraten, Tomaten dazugeben und 10 Min. köcheln lassen.","Pasta mit der Sauce mischen und mit Salz, Pfeffer und Kräutern abschmecken."],"🍝","Italien","pasta pomodoro tomato"],
@@ -391,15 +440,18 @@ const DR=[
 ["Falafel-Wrap","OR",40,"V","kichererbsen:1.2,wrap:1,quark:.6,knoblauch:1,mehl:.3",["Kichererbsen abspülen, mit Knoblauch, Salz, Kreuzkümmel und Mehl zerstampfen und zu Bällchen formen.","Falafel in Olivenöl pro Seite 3 Min. braten.","Quark mit Knoblauch und Zitronensaft zur Sauce rühren.","Gemüse ({V}) schneiden, Wraps mit Falafel, Gemüse und Sauce füllen."],"🌯","Naher Osten","falafel hummus"],
 ["Dal","OR",35,"V","linsen:1.3,zwiebeln:.6,tomaten:.7,ingwer:1,knoblauch:1,currypaste:.7,reis:.8",["Reis nach Packung kochen.","Zwiebel, Ingwer, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten, Currypaste einrühren.","Tomaten und Linsen mit 200 ml Wasser dazugeben und 15 Min. köcheln.","Dal mit Reis servieren."],"🍛","Indien","dal dhal linsencurry"],
 ["Curry","AS,OR",30,"P,V","kokosmilch:1,currypaste:1,reis:1,ingwer:1",["Reis nach Packung kochen.","Ingwer und Currypaste in Öl 1 Min. anrösten, Gemüse ({V}) dazugeben und 5 Min. braten.","{PS}","Mit Kokosmilch ablöschen, 10 Min. köcheln und mit Reis servieren."],"🍛","Thailand / Indien","curry thai"],
-["Pad Thai","AS",25,"P,V","reisnudeln:1,eier:1,sojasauce:1,limette:1,knoblauch:1",["Reisnudeln nach Packung einweichen oder kochen.","Gemüse ({V}) und Knoblauch scharf anbraten.","{PS}","Nudeln und Sojasauce dazugeben, Eier unterrühren und mit Limettensaft abschmecken."],"🍜","Thailand","padthai pad"],
+["Pad Thai","AS",25,"P,V","reisnudeln:1,eier:1,sojasauce:1,limette:1,knoblauch:1",["Reisnudeln nach Packungsangabe in heissem Wasser einweichen, bis sie biegsam, aber noch bissfest sind. Abgiessen und kurz kalt abspülen.","Gemüse ({V}) in feine Streifen schneiden. Knoblauch fein hacken. Sojasauce, Limettensaft, eine Prise Zucker und 2 Esslöffel Wasser verrühren.","Knoblauch in einer grossen, heissen Pfanne mit etwas Öl kurz anbraten. Gemüse hineingeben und 2–3 Minuten unter Rühren braten. {PS}","Nudeln und Sauce zugeben und alles gut durchschwenken. Bei Bedarf einen Schluck Wasser ergänzen, damit nichts ansetzt.","Nudeln an den Pfannenrand schieben. Verquirlte Eier in die freie Fläche giessen und unter Rühren stocken lassen, dann mit den Nudeln mischen. Mit Limettensaft abschmecken und sofort servieren."],"🍜","Thailand","padthai pad"],
 ["Bibimbap","AS",35,"P,V","reis:1,eier:1,sojasauce:.8,karotten:.5,spinat:.6",["Reis kochen.","Karotten, Spinat und Gemüse ({V}) einzeln kurz anbraten.","{PS}","Alles auf dem Reis anrichten, mit Spiegelei und Sojasauce servieren."],"🍚","Korea","bibimbap korea"],
 ["Poke Bowl","AS,INT",19,"P,V","reis:.9,avocado:.8,sojasauce:.6,gurken:.7",["Reis kochen und abkühlen lassen.","{PS}","Gemüse ({V}), Gurke und Avocado würfeln.","Alles auf dem Reis anrichten und mit Sojasauce beträufeln."],"🥣","Hawaii","poke pokebowl sushi"],
 ["Burrito Bowl","LA",25,"P,V","reis:1,schwarzebohnen:.7,mais:.7,avocado:.8,limette:1",["Reis kochen.","Gemüse ({V}) 6 Min. anbraten, Bohnen und Mais dazugeben.","{PS}","Reis, Gemüse und Avocado in eine Schale schichten und mit Limettensaft beträufeln."],"🥣","Mexiko","burrito burritobowl"],
 ["Quesadilla","LA",15,"P,V","wrap:1,kaese:1.3",["Gemüse ({V}) klein schneiden und 4 Min. anbraten.","{PS}","Wrap mit Käse, Gemüse und Eiweiss belegen und zusammenklappen.","Pro Seite 2–3 Min. knusprig braten."],"🫓","Mexiko","quesadilla"],
 ["Chili","LA",40,"P,V","schwarzebohnen:1,tomaten:1.2,mais:.6,zwiebeln:.6,knoblauch:1",["Zwiebel, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten.","{PS}","Tomaten, Bohnen, Mais und Chili dazugeben und 25 Min. köcheln.","Mit Salz, Kreuzkümmel und Paprikapulver abschmecken."],"🌶️","Texas / Mexiko","chili chilli carne"],
-["Käsespätzli","CH",35,"V","mehl:1.4,eier:1.2,milch:.6,kaese:1.6,zwiebeln:.8,butter:.8",["Mehl, Eier, Milch und Salz zu einem zähen Teig rühren und portionsweise ins kochende Salzwasser hobeln.","Zwiebeln und Gemüse ({V}) in Butter goldbraun braten.","Spätzli mit Käse schichten und in der Pfanne schmelzen lassen."],"🧀","Schweiz","spaetzli spaetzle kaesespaetzli kaesespaetzle"],
+["Käsespätzli","CH",35,"V","mehl:1.4,eier:1.2,milch:.6,kaese:1.6,zwiebeln:.8,butter:.8",["Mehl, Eier, Milch und Salz zu einem zähen Teig rühren und portionsweise ins kochende Salzwasser hobeln.","Zwiebeln und Gemüse ({V}) in Butter goldbraun braten.","Spätzli mit Käse schichten und in der Pfanne schmelzen lassen."],"🧀","Schweiz","spaetzle spetzle spaetzli kaesespaetzli kaesespaetzle"],
+["Pilzrahm-Spätzle","CH",30,"","mehl:1,eier:.8,pilze:1,rahm:.5,zwiebeln:.4,butter:.3",["Mehl, Eier, Wasser und Salz zu einem glatten, zähen Teig verrühren und durch ein Spätzlesieb portionsweise in siedendes Salzwasser schaben.","Spätzle herausheben, sobald sie an die Oberfläche steigen.","Zwiebeln und Pilze in Butter anbraten, Rahm angiessen und kurz cremig einkochen lassen. Spätzle darin schwenken und abschmecken."],"🍄","Schweiz / DACH","spaetzle spetzle pilzrahm spaetzle mit pilzen"],
+["Spinatspätzle","CH",35,"V","mehl:1,eier:.8,spinat:.8,kaese:.6,butter:.3",["Spinat fein hacken und mit Mehl, Eiern, Wasser und Salz zu einem zähen Teig verrühren.","Teig portionsweise durch ein Spätzlesieb in siedendes Salzwasser schaben. Wenn die Spätzle oben schwimmen, herausheben und abtropfen lassen.","Butter in einer Pfanne schmelzen, Spätzle darin schwenken und mit geriebenem Käse bestreuen."],"🥬","Schweiz / DACH","spaetzle spetzle spinatspaetzle spinach spaetzle"],
+["Schwäbische Spätzle mit Linsen","CH",50,"","mehl:1,eier:.8,linsen:1.2,zwiebeln:.4",["Mehl, Eier, Wasser und Salz zu einem glatten, zähen Teig verrühren und 10 Min. ruhen lassen.","Linsen nach Packungsangabe in Wasser weich kochen und abgiessen.","Teig portionsweise durch ein Spätzlesieb in siedendes Salzwasser schaben. Sobald die Spätzle oben schwimmen, herausheben und mit den Linsen servieren."],"🍲","Schwaben","spaetzle spetzle linsen spaetzle lentils"],
 ["Ratatouille","IT",35,"P,V","zucchetti:1,aubergine:1,tomaten:1,peperoni:.8,zwiebeln:.5,knoblauch:1",["Gemüse ({V}) und das übrige Gemüse in Würfel schneiden.","In Olivenöl nacheinander anbraten, dann 20 Min. schmoren.","{PS}","Mit Thymian, Salz und Pfeffer abschmecken."],"🍆","Frankreich","ratatouille"],
-["Griechischer Salat","EEB",15,"V","gurken:1,tomaten:1,zwiebeln:.4,feta:1.3,kichererbsen:.8,oel:1.2",["Gemüse ({V}), Gurken, Tomaten und Zwiebel in grobe Stücke schneiden.","Kichererbsen abspülen und dazugeben.","Mit Olivenöl, Oregano und Salz mischen und Feta darüberbröseln."],"🥗","Griechenland","griechischer horiatiki bauernsalat"],
+["Griechischer Salat","INT",15,"V","gurken:1,tomaten:1,zwiebeln:.4,feta:1.3,kichererbsen:.8,oel:1.2",["Gemüse ({V}), Gurken, Tomaten und Zwiebel in grobe Stücke schneiden.","Kichererbsen abspülen und dazugeben.","Mit Olivenöl, Oregano und Salz mischen und Feta darüberbröseln."],"🥗","Griechenland","griechischer horiatiki bauernsalat"],
 ["Bulgarischer Shopska-Salat","EEB",15,"V","tomaten:1,gurken:1,peperoni:.7,zwiebeln:.3,feta:1,oel:.5",["Tomaten, Gurken und Peperoni würfeln, Zwiebel fein schneiden.","Gemüse mit Olivenöl, Salz und Pfeffer mischen.","Feta darüberreiben und frisch servieren."],"🥗","Bulgarien","shopska shopska salat"],
 ["Slowakische Bryndzové Halušky","EEB",40,"","kartoffeln:1.5,mehl:.8,kaese:1.2,schwein:.5",["Kartoffeln fein reiben und mit Mehl und Salz zu einem weichen Teig verrühren.","Teig portionsweise durch ein grobes Sieb in siedendes Salzwasser drücken und garen, bis die Nocken an die Oberfläche steigen.","Abgiessen, mit Käse vermischen und mit knusprig gebratenem Schweinefleisch servieren."],"🥔","Slowakei","halusky bryndzove bryndzové"],
 ["Türkisches Menemen","EEB",20,"V","eier:1.5,tomaten:1.2,peperoni:.8,zwiebeln:.4,oel:.5",["Zwiebel und Peperoni klein schneiden und in Olivenöl weich braten.","Tomaten würfeln, dazugeben und köcheln lassen, bis sie weich sind.","Eier verquirlen, unterrühren und bei kleiner Hitze stocken lassen. Mit Brot servieren."],"🍳","Türkei","menemen"],
@@ -408,10 +460,174 @@ const DR=[
 ["Kaiserschmarrn","CH",25,"O","mehl:.9,eier:1.1,milch:1.2,butter:.7,honig:.6",["Mehl, Eier, Milch und eine Prise Salz zu einem Teig rühren.","Butter erhitzen, Teig eingiessen, Früchte ({O}) darauf verteilen und goldgelb backen.","Wenden, mit zwei Gabeln zerreissen und mit Honig beträufeln."],"🥞","Österreich","kaiserschmarrn schmarrn"],
 ["Porridge","INT",10,"O","haferflocken:1,milch:1.5,quark:.8,baumnuesse:.8",["Haferflocken mit Milch 5 Min. unter Rühren köcheln.","Früchte ({O}) waschen und klein schneiden.","In eine Schale geben, Quark, Früchte und Nüsse darüber."],"🥣","Frühstück","porridge haferbrei oatmeal haferflocken"],
 ["Quark-Bowl","CH",10,"O","quark:1.5,haferflocken:.5,honig:.6",["Quark in eine Schale geben.","Früchte ({O}) schneiden und darauf verteilen.","Mit Haferflocken und Honig toppen."],"🍓","Frühstück","quarkbowl"],
-["Crumble","CH,FR",45,"O","haferflocken:.7,mehl:.5,butter:1.2,honig:.8,quark:.8",["Ofen auf 180 °C vorheizen, Früchte ({O}) in eine Form geben.","Haferflocken, Mehl, Butter und Honig zu Streuseln verreiben und darüber verteilen.","30 Min. backen und mit Quark servieren."],"🍰","Dessert","crumble"],
-["Pfannkuchen","CH,INT",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.6",["Mehl, Eier, Milch und Salz zu einem glatten Teig rühren, 10 Min. ruhen lassen.","Pfannkuchen in Butter pro Seite 2 Min. goldbraun backen.","Mit Quark und Früchten ({O}) füllen oder belegen."],"🥞","Frühstück","pfannkuchen crepes pancakes palatschinken"]
+["Crumble","INT",45,"O","haferflocken:.7,mehl:.5,butter:1.2,honig:.8,quark:.8",["Ofen auf 180 °C vorheizen, Früchte ({O}) in eine Form geben.","Haferflocken, Mehl, Butter und Honig zu Streuseln verreiben und darüber verteilen.","30 Min. backen und mit Quark servieren."],"🍰","Grossbritannien","crumble"],
+["Pfannkuchen","CH,INT",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.6",["Mehl, Eier, Milch und Salz zu einem glatten Teig rühren, 10 Min. ruhen lassen.","Pfannkuchen in Butter pro Seite 2 Min. goldbraun backen.","Mit Quark und Früchten ({O}) füllen oder belegen."],"🥞","Frühstück","pfannkuchen crepes pancakes palatschinken"],
+["Süsse Frucht-Pfannkuchen","CH",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.5,honig:.4",["Mehl, Eier, Milch und eine Prise Salz zu einem glatten Teig rühren und 10 Min. ruhen lassen.","In wenig Butter dünne Pfannkuchen bei mittlerer Hitze von beiden Seiten goldgelb backen.","Früchte ({O}) klein schneiden, mit Quark auf die Pfannkuchen geben und aufrollen."],"🥞","Dessert","suesse frucht pfannkuchen dessert crepes"],
+["Fruchtkompott mit Quark","CH",25,"O","quark:.8,honig:.4,butter:.2",["Früchte ({O}) klein schneiden und mit 2 EL Wasser in einem Topf aufkochen.","Bei kleiner Hitze 8–12 Min. weich dünsten; dabei gelegentlich umrühren und bei Bedarf etwas Wasser nachgiessen.","Kompott abkühlen lassen und mit Quark servieren."],"🍎","Dessert","fruchtkompott kompott"],
+["Frucht-Quark-Creme","CH",10,"O","quark:1,honig:.4,baumnuesse:.3",["Quark mit etwas Wasser cremig rühren und mit Honig abschmecken.","Früchte ({O}) klein schneiden und vorsichtig unterheben.","Mit gehackten Nüssen bestreuen und direkt servieren."],"🍓","Dessert","fruchtquark creme quarkcreme"],
+["Frucht-Smoothie-Bowl","CH",10,"O","quark:.5,milch:.6,haferflocken:.3,baumnuesse:.2",["Früchte ({O}) mit Milch und Quark fein pürieren; falls nötig schluckweise mehr Milch zugeben.","In Schalen füllen und mit Haferflocken und gehackten Nüssen bestreuen."],"🥣","Dessert","smoothie bowl fruchtsmoothie"],
+["Fruchtwähe","CH",55,"O","mehl:1.5,butter:4,eier:.5,milch:.3,quark:.5",["Ofen auf 200 °C Ober-/Unterhitze vorheizen.","Mehl, kalte Butter, eine Prise Salz und 2–3 EL kaltes Wasser rasch zu einem Teig kneten. Ausrollen und in eine Wähenform legen.","Früchte ({O}) darauf verteilen. Ei mit Milch und Quark verrühren und darübergiessen.","Auf der untersten Schiene 35–40 Min. backen, bis der Rand goldbraun ist."],"🥧","Dessert","waehe obstkuchen fruchtkuchen"],
+["Warme Honigfrüchte mit Quark","CH",15,"O","quark:.8,honig:.5,butter:.3,baumnuesse:.3",["Früchte ({O}) in mundgerechte Stücke schneiden.","Butter in einer Pfanne schmelzen, Früchte 4–6 Min. bei mittlerer Hitze anbraten und mit Honig glasieren.","Warm mit Quark anrichten und mit gehackten Nüssen bestreuen."],"🍯","Dessert","warme fruechte honigfruechte"],
+["Baklava","EEB",60,"","filoteig:1,zucker:.7,baumnuesse:1,butter:.8,honig:.6,zimt:.1",["Ofen auf 180 °C Ober-/Unterhitze vorheizen. Nüsse fein hacken und mit Zimt mischen.","Eine Form buttern. Filoteigblätter einzeln hineinlegen und jede zweite Lage dünn mit Butter bestreichen. Nach etwa der Hälfte die Nussmischung verteilen und mit den restlichen Blättern bedecken.","Baklava rautenförmig einschneiden und 35–40 Min. goldbraun backen.","Zucker mit 100 ml Wasser 5 Min. köcheln lassen, Honig einrühren und den warmen Sirup gleichmässig über das heisse Gebäck giessen. Vor dem Servieren abkühlen lassen."],"🥮","Türkei","baklava"],
+["Vegane Baklava","EEB",60,"","filoteig:1,zucker:.7,baumnuesse:1,oel:.6,limette:.3,zimt:.1",["Ofen auf 180 °C Ober-/Unterhitze vorheizen. Nüsse fein hacken und mit Zimt mischen.","Eine Form dünn mit Öl bestreichen. Filoteigblätter hineinlegen und jede zweite Lage mit wenig Öl bepinseln. Nach etwa der Hälfte die Nussmischung verteilen und mit den restlichen Blättern bedecken.","Baklava rautenförmig einschneiden und 35–40 Min. goldbraun backen.","Zucker mit 100 ml Wasser und etwas Limettensaft 5 Min. köcheln lassen. Den warmen Sirup über das heisse Gebäck giessen und abkühlen lassen."],"🥮","Türkei","vegane baklava vegan baklava"],
+["Tiramisu","IT",35,"","mascarpone:1.2,savoiardi:1,kaffee:.8,eier:.7,zucker:.5,kakao:.1",["Kaffee stark aufbrühen und vollständig abkühlen lassen.","Eier trennen. Eigelbe mit Zucker hell-cremig schlagen und Mascarpone glatt unterrühren.","Löffelbiskuits kurz in den Kaffee tauchen und in eine Form legen. Die Hälfte der Creme darauf verstreichen, eine zweite getränkte Biskuitschicht darauflegen und mit der restlichen Creme bedecken.","Mindestens 4 Stunden kalt stellen und vor dem Servieren mit Kakao bestäuben."],"🍰","Italien","tiramisu"],
+["Panna Cotta","IT",20,"O","rahm:1.8,zucker:.5,agar:.1",["Rahm und Zucker in einem Topf bei mittlerer Hitze erwärmen und rühren, bis sich der Zucker aufgelöst hat. Nicht stark kochen lassen.","Agar-Agar nach Packungsangabe mit der kalten Flüssigkeit verrühren, dann in den warmen Rahm einrühren. Die Mischung mindestens 2 Minuten sanft köcheln lassen, damit das Agar später fest wird.","Förmchen kurz mit kaltem Wasser ausspülen. Rahm durch ein feines Sieb hineingiessen und auf Zimmertemperatur abkühlen lassen.","Mindestens 4 Stunden kalt stellen. Zum Stürzen die Förmchen kurz in warmes Wasser tauchen und auf Teller drehen. Mit frischen Früchten servieren."],"🍮","Italien","panna cotta"],
+["Palacinke","EEB",30,"O","mehl:1,eier:.8,milch:1,butter:.3,zucker:.2",["Mehl, Eier, Milch, Zucker und eine Prise Salz zu einem glatten, dünnflüssigen Teig verrühren und 10 Min. ruhen lassen.","Eine beschichtete Pfanne dünn mit Butter ausstreichen. Teig portionsweise hineingeben, schwenken und die dünnen Pfannkuchen beidseitig goldgelb backen.","Mit Früchten ({O}) füllen, einrollen und servieren."],"🥞","Balkan","palacinke palačinke"],
+["Tufahije","EEB",45,"","aepfel:1.5,zucker:.7,baumnuesse:.8,limette:.3",["Äpfel schälen und mit einem kleinen Löffel das Kerngehäuse entfernen, ohne den Boden durchzustechen.","Zucker mit 700 ml Wasser und Limettensaft aufkochen. Äpfel darin bei kleiner Hitze 12–18 Min. weich, aber noch formstabil pochieren.","Äpfel herausheben. Gehackte Baumnüsse in die Öffnung füllen und mit etwas Pochiersirup servieren."],"🍎","Bosnien","tufahije tufahija bosnian apple dessert"],
+["Tulumba","EEB",50,"","mehl:.8,eier:.7,butter:.3,oel:.8,zucker:.7,limette:.2",["Zucker mit 150 ml Wasser und Limettensaft 8 Min. zu einem Sirup köcheln und vollständig abkühlen lassen.","100 ml Wasser mit Butter aufkochen. Mehl auf einmal einrühren und den Teig unter Rühren trocknen, bis er sich vom Topf löst. Abkühlen lassen, dann die Eier einzeln einarbeiten.","Teig in einen Spritzbeutel mit Sterntülle füllen und kurze Stücke in kaltes Öl spritzen. Bei mittlerer Hitze goldbraun und gar frittieren.","Tulumba abtropfen lassen und noch warm in den kalten Sirup legen. Vor dem Servieren gut durchziehen lassen."],"🥮","Türkei","tulumba tulumba tatlisi"],
+["Sorbetto","IT",15,"O","zucker:.5,limette:.2",["Früchte ({O}) mit Zucker und Limettensaft fein pürieren.","Die Masse in eine flache Form füllen und mindestens 4 Stunden einfrieren. Während der ersten 2 Stunden jede halbe Stunde kräftig durchrühren, damit das Sorbet cremig bleibt.","Vor dem Servieren kurz antauen lassen."],"🍧","Italien","sorbetto sorbet"]
+,
+["Mango Sticky Rice (Khao Niao Mamuang)","AS",50,"","klebreis:1,kokosmilch:.8,mango:1,zucker:.2",["Klebreis gründlich waschen, mindestens 4 Stunden (am besten über Nacht) einweichen und anschliessend im Dämpfeinsatz etwa 20 Minuten garen.","Kokosmilch mit Zucker und einer Prise Salz erwärmen, bis sich der Zucker aufgelöst hat. Nicht kochen lassen.","Den heissen Klebreis mit etwa zwei Dritteln der Kokosmilch mischen und 10 Minuten ziehen lassen.","Mango schälen, in Stücke schneiden und mit dem Klebreis sowie der übrigen Kokosmilch servieren."],"🥭","Thailand","mango sticky rice khao niao mamuang thai dessert"],
+["Thai-Bananen in Kokosmilch","AS",20,"","banane:1,kokosmilch:1,zucker:.2",["Kokosmilch mit Zucker und einer Prise Salz sanft erhitzen.","Banane in Stücke schneiden und in der Kokosmilch 5–7 Minuten sanft garen, bis sie weich, aber noch formstabil ist.","Warm oder abgekühlt servieren."],"🍌","Thailand","thai bananen kokosmilch kluai buat chi banana coconut dessert"],
+["Daifuku Mochi","AS",40,"","klebreismehl:1,rotebohnenpaste:.8,zucker:.3,staerke:.3",["Klebreismehl, Zucker und 100 ml Wasser in einer hitzefesten Schüssel klümpchenfrei verrühren.","Die Schüssel abdecken und die Masse in der Mikrowelle bei 600 Watt 1 Minute erhitzen. Umrühren und diesen Schritt zwei- bis dreimal wiederholen, bis der Teig dick, glänzend und elastisch ist.","Die Arbeitsfläche grosszügig mit Maisstärke bestäuben. Den heissen Teig daraufgeben, kurz abkühlen lassen und in 6 Stücke teilen.","Jedes Stück flach drücken, einen Teelöffel süsse Bohnenpaste in die Mitte setzen und den Teig rundherum verschliessen. Mit der Naht nach unten abkühlen lassen."],"🍡","Japan","daifuku mochi daifuku japanese dessert"],
+["Thai-Bananen-Krapfen","AS",25,"","banane:1,mehl:.5,zucker:.2",["Mehl, Zucker, eine Prise Salz und etwa 80 ml Wasser zu einem glatten, dickflüssigen Teig verrühren.","Bananen längs halbieren und in mundgerechte Stücke schneiden. In den Teig tauchen, bis sie rundherum bedeckt sind.","Etwas Öl in einer Pfanne erhitzen. Bananenstücke portionsweise bei mittlerer Hitze rundum goldbraun ausbacken und auf Küchenpapier abtropfen lassen.","Warm servieren. Beim Braten darauf achten, dass das Öl nicht raucht."],"🍌","Thailand","thai fried bananas kluay khaek dessert"],
+["Kokos-Agar-Gelee","AS",20,"O","kokosmilch:1,agar:.1,zucker:.3",["Agar-Agar mit 100 ml kaltem Wasser verrühren und 5 Minuten quellen lassen.","Kokosmilch, Zucker und Agar-Mischung in einem Topf unter ständigem Rühren aufkochen. 2 Minuten sanft kochen lassen, damit das Agar geliert.","Die heisse Mischung in kleine Förmchen giessen und auf Zimmertemperatur abkühlen lassen.","Mindestens 2 Stunden kalt stellen. Aus den Förmchen lösen und mit frischen Früchten ({O}) servieren."],"🥥","Südostasien","coconut agar jelly dessert"],
+["Dorayaki","AS",35,"","mehl:.8,eier:.8,zucker:.4,honig:.2,rotebohnenpaste:.8",["Eier, Zucker und Honig 2 Minuten schaumig schlagen. Mehl portionsweise unterrühren und den Teig 15 Minuten ruhen lassen.","Eine beschichtete Pfanne auf mittlere bis niedrige Hitze erwärmen. Kleine Teigportionen hineingeben und backen, bis sich an der Oberfläche Bläschen bilden.","Die Küchlein wenden und die zweite Seite etwa 30 Sekunden backen. Auf einem Teller abkühlen lassen.","Die Hälfte der Küchlein mit süsser Bohnenpaste bestreichen und jeweils mit einem zweiten Küchlein zusammensetzen."],"🥞","Japan","dorayaki japanese pancake red bean dessert"],
+["Vietnamesisches Bananen-Kokos-Dessert","AS",25,"","banane:1,kokosmilch:1,tapioka:.25,zucker:.2,sesam:.1",["Tapiokaperlen in kaltem Wasser 10 Minuten einweichen und danach abgiessen.","Kokosmilch mit 150 ml Wasser, Zucker und den Tapiokaperlen in einem Topf erwärmen. Bei kleiner Hitze 10 Minuten köcheln und regelmässig umrühren.","Bananen in dicke Scheiben schneiden, vorsichtig einrühren und weitere 5 Minuten garen, bis die Tapiokaperlen durchsichtig sind.","In Schälchen füllen und mit geröstetem Sesam bestreuen. Warm oder kalt servieren."],"🍌","Vietnam","che chuoi vietnamese banana coconut tapioca dessert"],
+["Matcha-Pudding","AS",20,"","milch:1,kokosmilch:.4,agar:.08,matcha:.04,zucker:.3",["Matcha mit 2 Esslöffeln kalter Milch glatt rühren, damit keine Klümpchen bleiben.","Übrige Milch, Kokosmilch, Zucker und Agar-Agar in einem Topf verrühren. Unter Rühren aufkochen und mindestens 2 Minuten sanft köcheln lassen.","Den Topf vom Herd nehmen. Matcha einrühren, die Mischung durch ein feines Sieb in Förmchen giessen und abkühlen lassen.","Mindestens 2 Stunden kalt stellen, bis der Pudding fest ist."],"🍵","Japan","matcha pudding japanese green tea dessert"],
+["Chè Ba Màu","AS",50,"","mungbohnen:.6,rotebohnenpaste:.6,kokosmilch:.7,tapioka:.3,zucker:.3",["Mungbohnen abspülen und in Wasser 20–25 Minuten weich kochen. Abgiessen und mit einer Gabel grob zerdrücken.","Tapiokaperlen nach Packungsangabe in Wasser garen, bis sie durchsichtig sind. Abgiessen und kalt abspülen.","Kokosmilch mit Zucker und 100 ml Wasser erwärmen, bis sich der Zucker aufgelöst hat. Abkühlen lassen.","In Gläsern nacheinander Mungbohnen, süsse rote Bohnenpaste und Tapiokaperlen schichten. Kokosmilch darübergiessen und gut gekühlt servieren."],"🍧","Vietnam","che ba mau three colour dessert vietnam"],
+["Sesam-Tangyuan","AS",40,"","klebreismehl:1,sesam:.5,zucker:.4",["Sesam in einer trockenen Pfanne bei mittlerer Hitze rösten, bis er duftet. Abkühlen lassen, fein mahlen und mit der Hälfte des Zuckers zu einer formbaren Füllung mischen.","Klebreismehl mit etwa 100 ml lauwarmem Wasser zu einem weichen, glatten Teig verkneten. Falls er bröckelt, teelöffelweise Wasser ergänzen.","Teig in 8 Stücke teilen, jedes flach drücken und etwas Sesamfüllung hineingeben. Die Ränder sorgfältig verschliessen und zu Kugeln rollen.","Die Kugeln portionsweise in leicht siedendes Wasser geben. Sobald sie an die Oberfläche steigen, noch 2 Minuten gar ziehen lassen und mit etwas Kochwasser und dem übrigen Zucker servieren."],"🍡","China","tangyuan sesame glutinous rice balls chinese dessert"],
+["Chia-Pudding","CH",15,"O","chiasamen:.3,milch:1.2,honig:.2",["Chiasamen, Milch und Honig in einem Glas gründlich verrühren.","Nach 5 Minuten nochmals umrühren, damit sich keine Klümpchen bilden.","Abdecken und mindestens 2 Stunden, am besten über Nacht, kalt stellen. Wenn der Pudding zu fest ist, etwas Milch unterrühren.","Vor dem Servieren mit frischen Früchten ({O}) garnieren."],"🥣","Frühstück","chia pudding overnight breakfast"],
+["Overnight-Oats","CH",10,"O","haferflocken:.8,milch:1,quark:.4,honig:.2",["Haferflocken, Milch, Quark und Honig in einem verschliessbaren Glas verrühren.","Abdecken und mindestens 4 Stunden, am besten über Nacht, in den Kühlschrank stellen.","Am Morgen die Mischung umrühren. Falls sie zu dick ist, einen Schluck Milch ergänzen.","Mit gewürfelten Früchten ({O}) belegen und kalt servieren."],"🥣","Frühstück","overnight oats haferflocken breakfast"],
+["Reis-Congee","AS",45,"","reis:.6,ingwer:.1,sojasauce:.2",["Reis in einem Sieb unter fliessendem Wasser waschen, bis das Wasser fast klar bleibt.","Reis mit 1,2 Litern Wasser in einen Topf geben und aufkochen. Hitze reduzieren und ohne Deckel 35–40 Minuten sanft köcheln lassen. Häufig umrühren, damit nichts ansetzt.","Wenn die Reiskörner zerfallen und der Brei cremig ist, Ingwer einrühren und 5 Minuten mitköcheln.","Mit Sojasauce abschmecken und heiss servieren. Bei Bedarf etwas heisses Wasser einrühren, bis die gewünschte Konsistenz erreicht ist."],"🍚","Frühstück","congee rice porridge breakfast"],
+["Kokos-Klebreiskuchen","AS",60,"","klebreismehl:1,kokosmilch:1,zucker:.5,sesam:.1",["Klebreismehl, Kokosmilch, Zucker und eine Prise Salz zu einem dickflüssigen Teig verrühren.","Eine kleine Backform einölen und den Teig einfüllen. Die Oberfläche glatt streichen und mit Sesam bestreuen.","Im auf 180 °C vorgeheizten Ofen 40–45 Minuten backen, bis der Kuchen durchgegart und oben leicht gebräunt ist.","Vor dem Schneiden mindestens 20 Minuten abkühlen lassen, damit der Klebreiskuchen seine Form behält."],"🍰","Südostasien","biko filipino sticky rice cake coconut dessert"],
+["Couscous mit Kichererbsen und Gemüse","OR",30,"","couscous:1,kichererbsen:.8,karotten:.7,kuerbis:.7,tomaten:.5,zwiebeln:.4",["Couscous in eine Schüssel geben. Mit der gleichen Menge kochendem Wasser übergiessen, abdecken und 5 Minuten quellen lassen. Danach mit einer Gabel auflockern.","Zwiebel und Karotten würfeln und mit etwas Öl 5 Minuten in einem Topf anbraten. Kürbiswürfel, Tomaten, Kreuzkümmel und Paprikapulver dazugeben.","Mit 200 ml Wasser aufgiessen und zugedeckt 12–15 Minuten köcheln lassen, bis das Gemüse weich ist. Abgespülte Kichererbsen in den letzten 5 Minuten dazugeben.","Das Gemüse mit der Sauce über dem Couscous anrichten und mit Salz und Pfeffer abschmecken."],"🥘","Marokko","couscous moroccan vegetable chickpea tagine"],
+["Polenta mit Pilzen","IT",35,"","polenta:1,pilze:1,zwiebeln:.4,kaese:.3",["800 ml Salzwasser aufkochen. Polenta unter ständigem Rühren langsam einrieseln lassen, damit keine Klümpchen entstehen.","Die Hitze reduzieren und Polenta nach Packungsangabe unter häufigem Rühren garen. Wenn sie zu fest wird, etwas heisses Wasser einrühren.","Währenddessen Pilze in Scheiben und Zwiebeln in feine Würfel schneiden. Zwiebeln in einer Pfanne glasig dünsten, Pilze dazugeben und braten, bis ihre Flüssigkeit verdampft ist.","Polenta mit geriebenem Käse abschmecken und mit den gebratenen Pilzen servieren."],"🌽","Italien","polenta funghi mushrooms italian"],
+["Teriyaki-Tofu-Bowl","AS",30,"","tofu:1,reis:1,sojasauce:.7,ingwer:.2,honig:.3,sesam:.1",["Reis nach Packungsangabe garen. Tofu trocken tupfen und in etwa 2 cm grosse Würfel schneiden.","Sojasauce, Honig, geriebenen Ingwer und 2 Esslöffel Wasser verrühren.","Tofuwürfel in wenig Öl rundherum goldbraun braten. Sauce dazugiessen und 2–3 Minuten einkochen lassen, dabei wenden, bis der Tofu glänzend überzogen ist.","Reis auf Schalen verteilen, Tofu darauf anrichten und mit Sesam bestreuen."],"🍚","Japan","teriyaki tofu rice bowl"],
+["Japchae","AS",30,"","reisnudeln:1,tofu:.7,karotten:.5,spinat:.5,sojasauce:.6,sesam:.1",["Reisnudeln nach Packungsangabe garen, abgiessen und mit kaltem Wasser abspülen.","Tofu in Streifen schneiden und in einer grossen Pfanne goldbraun braten. Herausnehmen und beiseitestellen.","Karotten in feine Streifen schneiden und 3 Minuten braten. Spinat dazugeben und zusammenfallen lassen.","Nudeln, Tofu, Sojasauce und etwas Sesamöl einrühren. Alles 2 Minuten erhitzen, abschmecken und mit Sesam bestreut servieren."],"🍜","Korea","japchae korean glass noodles"],
+["Kichererbsen-Couscous-Salat","OR",20,"","couscous:.8,kichererbsen:.7,tomaten:.6,gurken:.5,limette:.2,oel:.2",["Couscous mit der gleichen Menge kochendem Wasser übergiessen, abdecken und 5 Minuten quellen lassen. Mit einer Gabel auflockern und abkühlen lassen.","Tomaten und Gurke klein würfeln. Kichererbsen abspülen und abtropfen lassen.","Couscous, Gemüse und Kichererbsen mischen. Olivenöl, Limettensaft, Salz und Pfeffer unterrühren.","Den Salat 10 Minuten durchziehen lassen und vor dem Servieren nochmals abschmecken."],"🥗","Naher Osten","couscous chickpea salad"],
+["Arepas mit Käse und Avocado","LA",35,"","maisgriess:1,kaese:.6,avocado:.5",["Maisgriess mit einer Prise Salz und etwa 150 ml warmem Wasser mischen. 5 Minuten quellen lassen, dann zu einem weichen, nicht klebrigen Teig kneten.","Den Teig in 4 Portionen teilen und zu dicken Fladen formen. Falls der Teig Risse bekommt, mit angefeuchteten Händen glätten.","Die Fladen in einer leicht geölten Pfanne bei mittlerer Hitze pro Seite 5–6 Minuten braten, bis sie eine goldene Kruste haben.","Arepas aufschneiden, mit Käse füllen und mit Avocado servieren."],"🫓","Venezuela / Kolumbien","arepas cornmeal cheese avocado"],
+["Birchermüesli","CH",15,"","haferflocken:.6,milch:.6,quark:.6,aepfel:.8,baumnuesse:.2,rosinen:.2",["Haferflocken mit Milch und Zitronensaft mischen. Mindestens 10 Minuten quellen lassen; für ein weicheres Müesli über Nacht abgedeckt in den Kühlschrank stellen.","Apfel waschen, grob raffeln und sofort unter die Haferflocken mischen.","Quark unterrühren und die Konsistenz bei Bedarf mit etwas Milch anpassen.","Mit gehackten Nüssen und Rosinen bestreuen und kalt servieren."],"🥣","Frühstück","birchermuesli bircher müesli breakfast swiss"],
+["Rührei auf Toast","CH",15,"","eier:1.5,brot:.8,butter:.2",["Brot toasten oder in einer trockenen Pfanne rösten.","Eier in einer Schüssel mit einer Prise Salz und Pfeffer verquirlen.","Butter bei niedriger bis mittlerer Hitze in einer Pfanne schmelzen. Eier hineingiessen und mit einem Pfannenwender langsam vom Rand zur Mitte schieben.","Sobald das Ei gestockt, aber noch leicht glänzend ist, die Pfanne vom Herd nehmen. Rührei auf dem Toast anrichten."],"🍳","Frühstück","scrambled eggs toast breakfast"],
+["Avocado-Toast","LA",15,"","brot:1,avocado:.8,limette:.2",["Brotscheiben toasten oder in einer Pfanne ohne Öl rösten.","Avocado halbieren, den Stein entfernen und das Fruchtfleisch mit einer Gabel zerdrücken.","Mit Limettensaft, Salz und Pfeffer würzen und auf dem Toast verteilen.","Sofort servieren; nach Wunsch mit Chiliflocken bestreuen."],"🥑","Frühstück","avocado toast"],
+["Hummus mit Fladenbrot","OR",15,"","kichererbsen:1,tahin:.3,limette:.2,knoblauch:.2,oel:.2,brot:.8",["Kichererbsen abspülen und gut abtropfen lassen. Knoblauch schälen.","Kichererbsen mit Tahini, Limettensaft, Knoblauch, Olivenöl und 2 Esslöffeln Wasser pürieren.","Nach und nach weiteres Wasser zugeben, bis der Hummus cremig ist. Mit Salz abschmecken.","Mit etwas Olivenöl beträufeln und mit warmem Fladenbrot servieren."],"🧆","Naher Osten","hummus tahini chickpea flatbread"],
+["Bruschetta","IT",15,"","brot:.8,tomaten:1,oel:.2,knoblauch:.1",["Tomaten klein würfeln und mit Olivenöl, Salz und Pfeffer mischen. Falls sie sehr saftig sind, etwas Flüssigkeit abgiessen.","Brotscheiben in einer Grillpfanne oder im Ofen rösten, bis sie aussen knusprig sind.","Die noch warmen Brotscheiben mit der Schnittfläche einer halbierten Knoblauchzehe abreiben.","Tomaten auf dem Brot verteilen und sofort servieren."],"🍅","Italien","bruschetta tomato toast"],
+["Guacamole mit Tortilla-Chips","LA",15,"","avocado:1,limette:.3,zwiebeln:.2,wrap:.5",["Avocado halbieren, den Stein entfernen und das Fruchtfleisch in eine Schüssel geben.","Mit einer Gabel zerdrücken, bis die gewünschte Konsistenz erreicht ist.","Limettensaft, fein gewürfelte Zwiebel, Salz und Pfeffer untermischen.","Wraps in Dreiecke schneiden und in einer trockenen Pfanne knusprig rösten. Mit der Guacamole servieren. Die Oberfläche bis dahin direkt abdecken, damit sie weniger braun wird."],"🥑","Mexiko","guacamole tortilla chips snack"],
+["Mujaddara","OR",45,"","linsen:.8,reis:.6,zwiebeln:1.2",["Linsen abspülen und in einem Topf mit reichlich Wasser etwa 15 Minuten vorgaren, bis sie fast weich sind. Abgiessen.","Zwiebeln in feine Streifen schneiden. In einer Pfanne mit etwas Öl bei mittlerer Hitze 15–20 Minuten langsam goldbraun rösten und dabei oft wenden.","Reis mit den Linsen, 450 ml Wasser und einer Prise Salz in einen Topf geben. Zugedeckt bei kleiner Hitze 15 Minuten garen, bis das Wasser aufgenommen und der Reis weich ist.","Reis und Linsen mit einer Gabel auflockern. Mit den knusprigen Zwiebeln anrichten und warm servieren."],"🍚","Levante","mujaddara mujadara lentils rice onions"],
+["Enchiladas mit Bohnen","LA",45,"","wrap:1,schwarzebohnen:.8,tomaten:1,kaese:.5,zwiebeln:.3",["Ofen auf 200 °C Ober-/Unterhitze vorheizen. Zwiebel fein würfeln und in etwas Öl 4 Minuten weich braten.","Abgespülte Bohnen und die Hälfte der Tomaten dazugeben. Mit Kreuzkümmel, Paprikapulver, Salz und Pfeffer würzen und 5 Minuten köcheln lassen.","Die Bohnenfüllung auf den Wraps verteilen, diese einrollen und mit der Naht nach unten in eine Auflaufform legen.","Übrige Tomaten darübergeben, Käse daraufstreuen und 15–20 Minuten backen, bis die Füllung heiss und der Käse geschmolzen ist."],"🌯","Mexiko","enchiladas bean vegetarian"],
+["Kheer","OR",40,"","reis:.5,milch:1.5,zucker:.3,baumnuesse:.2,rosinen:.2",["Reis gründlich waschen und abtropfen lassen.","Milch in einem schweren Topf erhitzen. Reis einrühren und bei niedriger Hitze 25–30 Minuten köcheln lassen, dabei häufig umrühren, damit nichts am Boden ansetzt.","Wenn der Reis weich und die Milch cremig eingekocht ist, Zucker und Rosinen einrühren und weitere 3 Minuten köcheln lassen.","Abkühlen lassen und mit gehackten Nüssen bestreut servieren. Warm oder gut gekühlt geniessen."],"🍚","Indien","kheer indian rice pudding dessert"],
+["Polenta mit Tomatensauce","IT",35,"","polenta:1,tomaten:1.2,zwiebeln:.3,knoblauch:.1,kaese:.3",["Zwiebel fein würfeln und in etwas Olivenöl 4 Minuten glasig dünsten. Knoblauch kurz mitbraten.","Tomaten dazugeben, mit Salz und Pfeffer würzen und bei kleiner Hitze 15 Minuten köcheln lassen.","Währenddessen Salzwasser aufkochen. Polenta unter ständigem Rühren einrieseln lassen und nach Packungsangabe garen.","Polenta in Schalen füllen, Tomatensauce darübergeben und mit geriebenem Käse servieren."],"🌽","Italien","polenta tomato sauce italian"],
+["Polenta concia","IT",35,"","polenta:1,kaese:1,butter:.5",["Wasser mit Salz in einem schweren Topf aufkochen. Polenta langsam einrieseln lassen und dabei ständig mit dem Schneebesen rühren.","Die Hitze auf klein stellen und die Polenta nach Packungsangabe garen. Häufig umrühren, damit sie nicht am Topfboden ansetzt.","Butter und die Hälfte des geriebenen Käses unterrühren, bis die Polenta cremig ist.","Polenta abwechselnd mit dem restlichen Käse in eine vorgewärmte Schüssel schichten. Sofort servieren, solange der Käse schmilzt."],"🧀","Norditalien","polenta concia cheese butter alpine"],
+["Polenta mit Linsenragout","IT",45,"","polenta:1,linsen:.8,tomaten:.8,zwiebeln:.3,karotten:.3",["Zwiebel und Karotte fein würfeln. Mit etwas Öl in einem Topf 5 Minuten anschwitzen.","Linsen abspülen, mit Tomaten und 350 ml Wasser in den Topf geben. Aufkochen und zugedeckt 25–30 Minuten köcheln lassen, bis die Linsen weich sind. Bei Bedarf etwas Wasser nachgiessen.","Salzwasser in einem zweiten Topf aufkochen. Polenta langsam einrühren und nach Packungsangabe unter häufigem Rühren garen.","Das Linsenragout mit Salz und Pfeffer abschmecken und auf der heissen Polenta servieren."],"🍲","Italien","polenta lentils ragout"],
+["Polenta mit Spinat und Ei","IT",35,"","polenta:1,spinat:.8,eier:1,kaese:.3",["Polenta nach Packungsangabe in kochendem Salzwasser zubereiten und bei kleiner Hitze warm halten.","Spinat waschen. In einer Pfanne mit wenig Öl 3–4 Minuten zusammenfallen lassen und mit Salz und Pfeffer würzen.","Eier in einer beschichteten Pfanne bei mittlerer Hitze braten, bis das Eiweiss gestockt ist. Für vollständig gegartes Eigelb die Pfanne kurz abdecken.","Polenta auf Teller geben, Spinat und Spiegelei darauf anrichten und mit geriebenem Käse bestreuen."],"🍳","Italien","polenta spinach egg"],
+["Gebratene Polenta-Schnitten","IT",35,"","polenta:1,kaese:.4,oel:.2",["Polenta nach Packungsangabe kochen und den Käse unterrühren.","Die heisse Polenta etwa 2 cm dick auf ein mit Backpapier belegtes Blech streichen. Vollständig abkühlen lassen, bis sie fest ist.","In Rechtecke oder Dreiecke schneiden und die Stücke dünn mit Olivenöl bepinseln.","In einer heissen Grillpfanne pro Seite 3–4 Minuten braten, bis deutliche Grillstreifen entstehen. Als Snack oder Beilage servieren."],"🌽","Italien","grilled polenta fries snack"],
+["Polenta mit weissen Bohnen","IT",40,"","polenta:1,weissebohnen:.7,tomaten:.8,zwiebeln:.3,knoblauch:.1",["Zwiebel fein würfeln und in einem Topf mit etwas Öl 4 Minuten weich dünsten. Knoblauch kurz mitbraten.","Tomaten und abgespülte weisse Bohnen dazugeben. Mit Rosmarin, Salz und Pfeffer würzen und zugedeckt 15 Minuten köcheln lassen.","Währenddessen Salzwasser aufkochen. Polenta langsam einrühren und nach Packungsangabe unter häufigem Rühren garen.","Das Bohnenragout auf der cremigen Polenta anrichten und heiss servieren."],"🍲","Italien","polenta white beans tomato italian"],
+["Marokkanischer Couscous mit Poulet","OR",40,"","couscous:1,poulet:.8,karotten:.6,kuerbis:.6,zwiebeln:.3",["Poulet in mundgerechte Stücke schneiden. Zwiebel und Karotte würfeln, Kürbis in etwa 2 cm grosse Würfel schneiden.","Zwiebel in einem Topf mit etwas Öl 3 Minuten anbraten. Poulet dazugeben und rundherum anbraten.","Karotte, Kürbis, Kreuzkümmel, Paprikapulver und 300 ml Wasser einrühren. Zugedeckt 18–20 Minuten köcheln lassen, bis Poulet und Gemüse durchgegart und weich sind.","Couscous in eine Schüssel geben, mit der gleichen Menge kochendem Wasser übergiessen und abgedeckt 5 Minuten quellen lassen. Mit einer Gabel auflockern und mit dem Poulet-Gemüse-Topf servieren."],"🥘","Marokko","couscous chicken moroccan"],
+["Couscous mit Aubergine und Tomate","OR",35,"","couscous:.8,aubergine:.8,tomaten:1,zwiebeln:.3,kichererbsen:.5",["Aubergine und Tomaten würfeln, Zwiebel fein hacken.","Zwiebel in etwas Öl anbraten. Aubergine dazugeben und 6–8 Minuten braten, bis sie weich und leicht gebräunt ist.","Tomaten und abgespülte Kichererbsen einrühren. Mit Kreuzkümmel und Paprikapulver würzen und 12 Minuten sanft köcheln lassen.","Couscous mit der gleichen Menge kochendem Wasser übergiessen, abdecken und 5 Minuten quellen lassen. Auflockern und mit dem Gemüse servieren."],"🍆","Nordafrika","couscous eggplant tomato chickpea"],
+["Gefüllte Peperoni mit Couscous","OR",45,"","peperoni:1,couscous:.6,tomaten:.5,feta:.4",["Backofen auf 200 °C Ober-/Unterhitze vorheizen. Peperoni längs halbieren und Kerne sowie weisse Trennwände entfernen.","Couscous in eine Schüssel geben, mit der gleichen Menge kochendem Wasser übergiessen und 5 Minuten quellen lassen.","Tomaten würfeln und mit dem Couscous, zerbröseltem Feta, Salz und Pfeffer vermischen. Die Peperonihälften damit füllen und in eine Auflaufform setzen.","Etwa 150 ml Wasser in die Form giessen. 25–30 Minuten backen, bis die Peperoni weich und die Füllung heiss ist."],"🫑","Nordafrika","couscous stuffed peppers"],
+["Couscous mit geröstetem Gemüse","OR",35,"","couscous:.8,zucchetti:.5,peperoni:.5,kuerbis:.5,kichererbsen:.5",["Backofen auf 220 °C Ober-/Unterhitze vorheizen. Zucchetti, Peperoni und Kürbis in gleich grosse Würfel schneiden.","Gemüse mit etwas Öl, Salz, Pfeffer und Paprikapulver mischen. Auf einem Blech verteilen und 20–25 Minuten rösten, nach der Hälfte der Zeit wenden.","Couscous in eine Schüssel geben, mit der gleichen Menge kochendem Wasser übergiessen, abdecken und 5 Minuten quellen lassen.","Kichererbsen abspülen und mit dem heissen Gemüse unter den Couscous mischen. Mit Zitronen- oder Limettensaft abschmecken."],"🥗","Nordafrika","couscous roasted vegetables chickpeas"],
+["Couscous-Pfanne mit Garnelen","OR",25,"","couscous:.8,garnelen:.8,zucchetti:.5,tomaten:.5,knoblauch:.2",["Couscous in eine Schüssel geben, mit der gleichen Menge kochendem Wasser übergiessen und abgedeckt 5 Minuten quellen lassen. Mit einer Gabel auflockern.","Zucchetti würfeln, Knoblauch fein hacken. Zucchetti in einer grossen Pfanne mit etwas Öl 4–5 Minuten braten.","Garnelen dazugeben und 3–4 Minuten braten, bis sie rosa und vollständig gar sind. Tomatenwürfel kurz mitwärmen.","Couscous unterheben, mit Salz, Pfeffer und Limettensaft abschmecken und sofort servieren."],"🍤","Nordafrika","couscous shrimp prawns skillet"],
+["Couscous-Salat mit Feta","OR",20,"","couscous:.8,tomaten:.6,gurken:.5,feta:.5,limette:.2,oel:.2",["Couscous mit der gleichen Menge kochendem Wasser übergiessen, abdecken und 5 Minuten quellen lassen. Danach mit einer Gabel auflockern und abkühlen lassen.","Tomaten und Gurke klein würfeln. Feta zerbröseln.","Couscous mit Gemüse und Feta mischen. Olivenöl, Limettensaft, Salz und Pfeffer einrühren.","Vor dem Servieren 10 Minuten durchziehen lassen und nochmals abschmecken."],"🥗","Nordafrika","couscous feta salad"],
+["Couscous mit Rosinen und Kichererbsen","OR",25,"","couscous:.8,kichererbsen:.7,rosinen:.2,karotten:.5,zwiebeln:.3",["Zwiebel fein würfeln und Karotte raspeln. In etwas Öl 5 Minuten weich dünsten.","Kreuzkümmel und Paprikapulver einrühren. Abgespülte Kichererbsen und Rosinen dazugeben und mit 100 ml Wasser 5 Minuten sanft köcheln lassen.","Couscous in einer Schüssel mit der gleichen Menge kochendem Wasser übergiessen. Abdecken und 5 Minuten quellen lassen, dann mit einer Gabel auflockern.","Kichererbsenmischung unter den Couscous heben und mit Salz, Pfeffer und Limettensaft abschmecken."],"🥘","Nordafrika","couscous raisin chickpea"],
+["Cornetto mit Fruchtfüllung","IT",30,"O","mehl:.8,eier:.3,butter:.3,zucker:.2",["Mehl, Zucker und eine Prise Salz mischen. Kalte Butter einreiben und mit dem Ei sowie wenig kaltem Wasser rasch zu einem weichen Teig verkneten.","Teig abdecken und 15 Minuten kalt stellen. Danach dünn ausrollen und in Dreiecke schneiden.","Früchte ({O}) fein würfeln, als kleine Portion auf die breite Seite geben und die Dreiecke aufrollen.","Bei 190 °C etwa 15 Minuten backen, bis die Cornetti goldgelb sind. Vor dem Essen etwas abkühlen lassen."],"🥐","Frühstück","cornetto italian breakfast pastry","breakfast"],
+["Crostata di frutta","IT",45,"O","mehl:1,butter:.5,zucker:.3,eier:.4",["Mehl, Zucker und kalte Butter zu einer krümeligen Masse verreiben. Ei und bei Bedarf einen Teelöffel kaltes Wasser zugeben und rasch zu einem Teig kneten.","Teig 20 Minuten kalt stellen, dann in eine Tarteform drücken. Boden mit einer Gabel mehrfach einstechen.","Bei 180 °C 15 Minuten vorbacken. Früchte ({O}) darauf verteilen und weitere 15–20 Minuten backen, bis der Rand goldbraun ist.","Vor dem Anschneiden vollständig abkühlen lassen."],"🥧","Frühstück","crostata fruit tart italy","breakfast"],
+["Joghurt mit Honig und Früchten","IT",10,"O","quark:1,honig:.2,baumnuesse:.1",["Quark oder griechischen Joghurt in Schalen verteilen und mit Honig glattrühren.","Früchte ({O}) waschen, bei Bedarf entsteinen und in mundgerechte Stücke schneiden.","Früchte auf dem Joghurt verteilen und mit gehackten Nüssen bestreuen. Sofort kalt servieren."],"🥣","Frühstück","yogurt miele frutta italian","breakfast"],
+["Frittata zum Frühstück","IT",20,"P,V","eier:1.5,kaese:.3,zwiebeln:.2",["Eier in einer Schüssel verquirlen und mit Salz, Pfeffer sowie geriebenem Käse mischen.","Zwiebel fein würfeln und in einer kleinen Pfanne mit etwas Öl glasig braten. Gemüse ({V}) klein schneiden und kurz mitbraten.","Eiermischung hineingiessen und die Pfanne bei kleiner Hitze garen, bis der Rand fest wird. {PS}","Die Frittata zugedeckt weitergaren, bis die Oberfläche gestockt ist. In Stücke schneiden und warm servieren."],"🍳","Frühstück","frittata italian breakfast","breakfast"],
+["Crostini mit Bohnen","IT",20,"P,V","brot:.8,weissebohnen:.6,oel:.2,knoblauch:.1",["Brotscheiben in einer Pfanne oder im Ofen knusprig rösten.","Abgespülte Bohnen mit etwas Olivenöl und einer Gabel grob zerdrücken. Mit Salz, Pfeffer und fein gehacktem Knoblauch abschmecken.","Gemüse ({V}) klein schneiden und in einer Pfanne kurz anbraten. {PS}","Bohnen auf den Brotscheiben verteilen und das Gemüse daraufgeben. Noch warm servieren."],"🍞","Snack","crostini white beans italian appetizer","snack"],
+["Caprese-Spiesse","IT",15,"P,V","mozzarella:.7,tomaten:.7,oel:.2",["Tomaten und Mozzarella in mundgerechte Stücke schneiden.","Gemüse ({V}) waschen und ebenfalls in kleine Stücke schneiden. Abwechselnd Tomate, Mozzarella und Gemüse auf kleine Spiesse stecken.","{PS} Olivenöl, Salz, Pfeffer und Basilikum darübergeben und kalt servieren."],"🍅","Snack","caprese skewers italian appetizer","snack"],
+["Arancini","IT",50,"P,V","reis:.8,kaese:.4,eier:.4,brot:.3",["Reis in Salzwasser garen, abgiessen und vollständig abkühlen lassen. Käse fein würfeln.","Gemüse ({V}) sehr fein schneiden und kurz anbraten. Mit dem Reis und {Pn} vermischen und kleine Bällchen formen.","Bällchen erst in verquirltem Ei, dann in Paniermehl wenden. In einer Pfanne mit ausreichend Öl portionsweise rundherum goldbraun braten.","Auf Küchenpapier abtropfen lassen und warm servieren."],"🍚","Snack","arancini sicilian rice balls snack","snack"],
+["Bruschetta mit weissen Bohnen","IT",20,"P,V","brot:.8,weissebohnen:.6,knoblauch:.1,oel:.2",["Brotscheiben rösten, bis sie aussen knusprig sind. Knoblauch schälen und die warmen Brote damit abreiben.","Bohnen abspülen und mit einer Gabel grob zerdrücken. Mit Olivenöl, Salz und Pfeffer würzen.","Gemüse ({V}) klein würfeln und auf den Broten verteilen. {PS}","Sofort servieren, solange das Brot noch knusprig ist."],"🍞","Snack","bruschetta beans italian appetizer","snack"],
+["Gibanica mit Gemüse","EEB",50,"P,V","filoteig:.8,eier:.6,feta:.7,quark:.4",["Backofen auf 190 °C Ober-/Unterhitze vorheizen. Eier mit zerbröseltem Feta und Quark verrühren.","Gemüse ({V}) fein schneiden und unter die Füllung mischen. Mit Pfeffer abschmecken.","Eine Form leicht ölen. Filoteigblätter einzeln hineinlegen, dabei jede zweite Lage dünn mit Öl bestreichen. Füllung darauf verteilen und die überstehenden Ränder einschlagen.","Etwa 30 Minuten backen, bis die Oberfläche goldbraun und die Füllung fest ist. Vor dem Schneiden 10 Minuten ruhen lassen."],"🥧","Serbien","gibanica cheese pie serbian","breakfast"],
+["Burek mit Käse","EEB",55,"P,V","filoteig:.8,feta:.8,eier:.4,quark:.4",["Backofen auf 200 °C Ober-/Unterhitze vorheizen. Feta zerbröseln und mit Quark und Ei verrühren.","Gemüse ({V}) fein hacken und unter die Käsefüllung mischen.","Filoteigblätter mit etwas Öl bepinseln. Jeweils Füllung auf ein Blatt geben, aufrollen und schneckenförmig oder in einer Form anordnen.","Mit etwas Öl bestreichen und 30–35 Minuten backen, bis der Burek knusprig und goldbraun ist."],"🥟","Balkan","burek cheese breakfast pie","breakfast"],
+["Ustipci mit Joghurt und Gemüse","EEB",30,"P,V","mehl:.8,eier:.3,quark:.3",["Mehl mit einer Prise Salz, Ei und etwa 120 ml Wasser zu einem dickflüssigen Teig verrühren und 10 Minuten ruhen lassen.","Gemüse ({V}) fein würfeln und unter den Teig rühren.","Öl in einer Pfanne erhitzen. Je einen Esslöffel Teig hineingeben und die kleinen Fladen bei mittlerer Hitze pro Seite 2–3 Minuten goldbraun braten.","Auf Küchenpapier abtropfen lassen und warm mit Quark oder Joghurt servieren."],"🥞","Montenegro","ustipci fritters breakfast","breakfast"],
+["Palacinke zum Frühstück","EEB",25,"O","mehl:.8,eier:.8,milch:1,butter:.2",["Mehl, Eier und Milch mit einer Prise Salz zu einem dünnflüssigen Teig verrühren. 10 Minuten ruhen lassen.","Eine beschichtete Pfanne leicht buttern. Eine kleine Kelle Teig hineingiessen, die Pfanne schwenken und den Palatschinken beidseitig goldgelb backen.","Früchte ({O}) klein schneiden und in die Palacinke füllen. Aufrollen und warm servieren."],"🥞","Balkan","palacinke breakfast crepes","breakfast"],
+["Ajvar-Brote","EEB",15,"P,V","brot:.8,peperoni:.8,zwiebeln:.2",["Brot in Scheiben schneiden und in einer Pfanne rösten.","Peperoni und Gemüse ({V}) fein würfeln und mit etwas Öl in einer Pfanne weich braten. Mit Salz und Paprikapulver würzen.","Die weiche Gemüsemischung mit einer Gabel zerdrücken oder kurz pürieren, dann auf dem Brot verteilen. {PS}","Warm oder bei Zimmertemperatur als kleinen Imbiss servieren."],"🍞","Balkan","ajvar bread pepper spread snack","snack"],
+["Shopska-Häppchen","EEB",15,"P,V","tomaten:.6,gurken:.5,feta:.6,brot:.5",["Tomaten und Gurken in kleine Würfel schneiden und in eine Schüssel geben.","Feta zerbröseln und mit dem Gemüse vermengen. Mit etwas Olivenöl, Salz und Pfeffer abschmecken.","Brot in mundgerechte Stücke schneiden und leicht rösten. Gemüse ({V}) fein schneiden und unter den Salat heben. {PS}","Die Mischung auf den Brothäppchen verteilen und frisch servieren."],"🥗","Bulgarien","shopska bites snack appetizer","snack"],
+["Balkan-Burek-Häppchen","EEB",35,"P,V","filoteig:.6,feta:.6,eier:.3",["Backofen auf 200 °C Ober-/Unterhitze vorheizen. Feta zerbröseln und mit dem Ei verrühren.","Gemüse ({V}) sehr fein schneiden und mit {Pn} in die Füllung mischen.","Filoteig in Streifen schneiden, je einen Löffel Füllung daraufgeben und zu kleinen Dreiecken falten. Mit Öl bepinseln.","Auf einem Blech 18–20 Minuten backen, bis die Häppchen knusprig und goldbraun sind."],"🥟","Balkan","burek pastry bites snack","snack"],
+["Cevapi im Fladenbrot","EEB",35,"P,V","hack:.8,zwiebeln:.3,brot:.8",["Hackfleisch mit fein geriebener Zwiebel, Salz und Pfeffer gründlich vermengen. Daraus kleine, längliche Röllchen formen.","Röllchen abgedeckt 10 Minuten kalt stellen. Gemüse ({V}) fein schneiden und als Beilage vorbereiten.","Cevapi in einer heissen Grillpfanne rundherum 8–10 Minuten braten, bis sie vollständig durchgegart sind. {PS}","Mit warmem Fladenbrot und dem Gemüse servieren."],"🥙","Balkan","cevapi cevapcici grilled minced meat","snack"],
+["Sarma","EEB",75,"P,V","weisskohl:1,reis:.4,hack:.7,zwiebeln:.3",["Kohlblätter vorsichtig ablösen und in kochendem Wasser 2–3 Minuten blanchieren, damit sie biegsam werden.","Reis halb gar kochen. Zwiebel fein würfeln und mit Hackfleisch, Reis, Salz und Paprika vermischen.","Je einen Löffel Füllung auf ein Kohlblatt geben, Seiten einschlagen und fest aufrollen. In einen Topf dicht nebeneinanderlegen.","Mit Wasser oder Brühe knapp bedecken und zugedeckt 45–55 Minuten sanft schmoren, bis Kohl und Fleisch gar sind."],"🥬","Balkan","sarma stuffed cabbage main","main"],
+["Pasulj","EEB",70,"P,V","weissebohnen:1,zwiebeln:.3,karotten:.3,bratwurst:.4",["Getrocknete Bohnen über Nacht einweichen und abspülen; bei Bohnen aus der Dose diese erst später zugeben.","Zwiebeln und Karotten würfeln. In einem Topf mit etwas Öl 5 Minuten anbraten. {PS}","Bohnen mit Wasser und Paprikapulver zugeben und 45–60 Minuten sanft kochen, bis sie weich sind. Dosenbohnen nur die letzten 15 Minuten mitgaren.","Mit Salz und Pfeffer abschmecken und heiss servieren."],"🍲","Serbien","pasulj bean stew serbian","main"],
+["Balkan-Gefüllte Peperoni","EEB",60,"P,V","peperoni:1,reis:.5,hack:.6,tomaten:.5,zwiebeln:.3",["Reis halb gar kochen. Peperoni oben aufschneiden und Kerne entfernen.","Hackfleisch und fein gewürfelte Zwiebel anbraten. Reis und einen Teil der Tomaten einrühren, mit Paprika, Salz und Pfeffer würzen.","Peperoni mit der Mischung füllen und dicht in einen Topf oder eine Auflaufform stellen. Restliche Tomaten und etwas Wasser angiessen.","Zugedeckt bei kleiner Hitze etwa 40 Minuten schmoren oder im Ofen bei 180 °C backen, bis Peperoni und Füllung gar sind."],"🫑","Balkan","punjene paprike stuffed peppers","main"],
+["Huevos Rancheros","LA",25,"P,V","eier:1,tomaten:.7,zwiebeln:.3,wrap:.6",["Zwiebel fein würfeln und in einer Pfanne mit etwas Öl weich braten. Tomaten würfeln und dazugeben.","Mit Kreuzkümmel, Paprikapulver, Salz und Pfeffer würzen und 8–10 Minuten köcheln lassen, bis eine dicke Sauce entsteht.","Wraps in einer trockenen Pfanne erwärmen. Eier separat braten, bis das Eiweiss gestockt ist.","Sauce auf die Fladen geben und die Eier daraufsetzen. Gemüse ({V}) fein schneiden und dazu servieren."],"🍳","Mexiko","huevos rancheros breakfast mexico","breakfast"],
+["Gallo Pinto","LA",25,"P,V","reis:.7,schwarzebohnen:.7,zwiebeln:.2",["Reis nach Packungsangabe kochen. Falls gekochter Reis vom Vortag verwendet wird, in einer Schüssel auflockern.","Zwiebel fein würfeln und in etwas Öl 4 Minuten anbraten. Abgespülte schwarze Bohnen dazugeben und 3 Minuten mitbraten.","Reis unterrühren und alles bei mittlerer Hitze weitere 5 Minuten braten. Mit Salz, Pfeffer und nach Wunsch etwas Limettensaft abschmecken.","Gemüse ({V}) frisch schneiden und als Beilage dazu servieren."],"🍚","Costa Rica","gallo pinto breakfast rice beans","breakfast"],
+["Arepas mit Ei","LA",35,"P,V","maisgriess:.8,eier:.8,kaese:.3",["Maisgriess mit einer Prise Salz und warmem Wasser zu einem weichen Teig verkneten und 5 Minuten ruhen lassen.","Teig in vier Kugeln teilen und zu dicken Fladen formen. In einer heissen Pfanne pro Seite etwa 5 Minuten braten.","Fladen seitlich vorsichtig aufschneiden und mit Rührei sowie Käse füllen. Gemüse ({V}) klein schneiden und kurz anbraten. {PS}","Gefüllte Arepas warm servieren."],"🫓","Venezuela","arepa con huevo breakfast","breakfast"],
+["Pico de Gallo mit Tortilla-Chips","LA",15,"P,V","tomaten:.8,zwiebeln:.2,limette:.2,wrap:.5",["Tomaten und Zwiebeln sehr fein würfeln. Mit Limettensaft, Salz und Pfeffer mischen und 10 Minuten ziehen lassen.","Gemüse ({V}) klein würfeln und unter die Tomatenmischung heben.","Wraps in Dreiecke schneiden und in einer trockenen Pfanne rösten, bis sie knusprig sind. {PS}","Pico de Gallo mit den warmen Chips servieren."],"🍅","Mexiko","pico de gallo tortilla chips snack","snack"],
+["Elote-Becher","LA",20,"P,V","mais:.8,kaese:.3,limette:.2",["Maiskörner in einer heissen Pfanne mit wenig Öl 5–7 Minuten rösten, bis einige Körner leicht gebräunt sind.","Gemüse ({V}) klein schneiden und kurz mit dem Mais erwärmen. Mit Limettensaft, Salz und Paprikapulver würzen.","Mais in kleine Schalen füllen, Käse darüberreiben und {PS} nach Wunsch darauf verteilen.","Warm servieren."],"🌽","Mexiko","elote mexican street corn snack","snack"],
+["Quesadilla-Häppchen","LA",20,"P,V","wrap:.8,kaese:.5,tomaten:.3",["Wraps mit geriebenem Käse, gewürfelten Tomaten und Gemüse ({V}) belegen. {PS}","Wraps zusammenklappen und in einer trockenen Pfanne bei mittlerer Hitze pro Seite 2–3 Minuten braten, bis der Käse geschmolzen ist.","Kurz abkühlen lassen, in Dreiecke schneiden und warm servieren."],"🫓","Mexiko","quesadilla appetizer snack","snack"],
+["Empanaditas","LA",45,"P,V","mehl:.8,butter:.3,hack:.6,zwiebeln:.2",["Mehl, kalte Butter, Salz und etwa 80 ml kaltes Wasser zu einem glatten Teig kneten. 15 Minuten kalt stellen.","Zwiebel fein würfeln und mit Hackfleisch krümelig braten. Gemüse ({V}) fein schneiden und mitbraten; Füllung abkühlen lassen.","Teig dünn ausrollen, Kreise ausstechen und je einen Löffel Füllung auf eine Hälfte setzen. Ränder mit Wasser befeuchten, zuklappen und mit einer Gabel festdrücken.","Bei 200 °C etwa 20 Minuten backen, bis die Empanadas goldbraun sind. {PS}"],"🥟","Lateinamerika","empanadas snack pastry","snack"],
+["Arroz con leche","LA",40,"O","reis:.5,milch:1.5,zucker:.3,zimt:.1",["Reis waschen und mit 300 ml Wasser in einem Topf aufkochen. Bei kleiner Hitze 10 Minuten garen, bis das Wasser fast aufgenommen ist.","Milch, Zucker und Zimt einrühren. Unter häufigem Rühren weitere 20–25 Minuten sanft köcheln, bis der Reis weich und die Mischung cremig ist.","Früchte ({O}) klein schneiden und nach Wunsch kurz unterheben oder frisch darübergeben.","Warm servieren oder abkühlen lassen und kalt stellen."],"🍚","Lateinamerika","arroz con leche rice pudding latin dessert","dessert"],
+["Pastel de tres leches mit Früchten","LA",60,"O","mehl:.8,eier:1,zucker:.5,milch:.5,rahm:.4",["Backofen auf 180 °C Ober-/Unterhitze vorheizen. Eier und Zucker hell und schaumig schlagen, Mehl vorsichtig unterheben.","Teig in eine gefettete Form füllen und 20–25 Minuten backen. Mit einem Holzstäbchen prüfen, ob der Kuchen durch ist.","Milch und Rahm verrühren. Den noch warmen Kuchen mehrfach mit einer Gabel einstechen und die Milchmischung langsam darübergiessen.","Mindestens 2 Stunden kalt stellen. Früchte ({O}) darauf verteilen und gekühlt servieren."],"🍰","Lateinamerika","tres leches cake fruit dessert","dessert"],
+["Flan mit Fruchtkompott","LA",55,"O","eier:1,milch:1,zucker:.5",["Zucker mit 2 Esslöffeln Wasser in einem kleinen Topf erhitzen, bis ein goldener Karamell entsteht. Vorsichtig in ofenfeste Förmchen giessen.","Eier mit Milch und dem restlichen Zucker verrühren, ohne viel Schaum zu schlagen. Durch ein Sieb in die Förmchen giessen.","Förmchen in eine tiefe Form stellen und heisses Wasser angiessen, bis sie halb im Wasser stehen. Bei 160 °C etwa 35–40 Minuten stocken lassen.","Abkühlen und mindestens 2 Stunden kalt stellen. Früchte ({O}) kurz zu Kompott köcheln und zum Flan servieren."],"🍮","Lateinamerika","flan caramel custard fruit dessert","dessert"],
+["Congee zum Frühstück","AS",40,"P,V","reis:.6,eier:.5,ingwer:.1,sojasauce:.2",["Reis gründlich waschen und mit 1 Liter Wasser aufkochen. Hitze reduzieren und 30–35 Minuten sanft köcheln lassen, häufig umrühren, bis ein cremiger Brei entsteht.","Ingwer fein reiben und mit Sojasauce einrühren. Bei Bedarf heisses Wasser ergänzen, wenn der Brei zu dick ist.","Gemüse ({V}) fein schneiden und separat kurz garen. Ei in der heissen Brühe vorsichtig stocken lassen oder vollständig durchgaren.","Congee in Schalen füllen, Gemüse darauf verteilen und warm servieren."],"🍚","China","congee breakfast rice porridge","breakfast"],
+["Miso-Suppe mit Reis","AS",20,"P,V","miso:.3,reis:.5,tofu:.4,zwiebeln:.2",["Reis nach Packungsangabe garen und warm halten.","500 ml Wasser erhitzen, aber nicht sprudelnd kochen. Miso in einer kleinen Schale mit etwas heissem Wasser glatt rühren und zurück in den Topf geben.","Tofu würfeln und mit fein geschnittenem Gemüse ({V}) 3–4 Minuten in der Suppe erwärmen. Nicht mehr stark kochen, damit das Miso-Aroma erhalten bleibt.","Suppe mit dem Reis in Schalen servieren."],"🍜","Japan","miso soup rice breakfast","breakfast"],
+["Tamago-yaki-Frühstück","AS",20,"P,V","eier:1.5,sojasauce:.2,zucker:.1,reis:.5",["Reis waschen und nach Packungsangabe garen.","Eier mit Sojasauce, Zucker und einem Teelöffel Wasser verquirlen. Eine beschichtete Pfanne dünn ölen und auf mittlere Hitze erwärmen.","Eine dünne Schicht Ei in die Pfanne giessen. Sobald sie fast gestockt ist, aufrollen, an den Rand schieben und eine weitere Schicht Ei hineingiessen. Wiederholen, bis das Ei aufgebraucht ist.","Rolle in Stücke schneiden und mit Reis sowie Gemüse ({V}) servieren."],"🍳","Japan","tamagoyaki japanese breakfast","breakfast"],
+["Idli mit Gemüse","AS",35,"P,V","reis:.7,linsen:.4,spinat:.3",["Reis und Linsen getrennt abspülen und mindestens 4 Stunden einweichen. Mit wenig Wasser fein pürieren und abgedeckt über Nacht bei Raumtemperatur fermentieren lassen.","Am Morgen den Teig salzen und in leicht geölte Förmchen füllen. In einem Dämpfer über kochendem Wasser 10–12 Minuten garen.","Gemüse ({V}) klein schneiden und in einer Pfanne mit etwas Öl 5 Minuten braten.","Idli aus den Förmchen lösen und warm mit dem Gemüse servieren."],"🥟","Südindien","idli indian breakfast steamed cakes","breakfast"],
+["Onigiri","AS",35,"P,V","reis:1,sojasauce:.2,sesam:.1",["Reis waschen und mit der passenden Wassermenge garen. 10 Minuten zugedeckt ruhen lassen.","Hände mit Wasser befeuchten und leicht salzen. Eine Portion Reis flach drücken, etwas Gemüse ({V}) und {PS} in die Mitte geben und Reis darum zu einem Dreieck oder Ball formen.","Sojasauce dünn auf die Aussenseite pinseln und die Onigiri in einer leicht geölten Pfanne von beiden Seiten kurz anrösten.","Mit Sesam bestreuen und warm oder kalt servieren."],"🍙","Japan","onigiri rice balls snack","snack"],
+["Frühlingsrollen aus der Pfanne","AS",35,"P,V","weisskohl:.6,karotten:.4,sojasauce:.3,filoteig:.6",["Weisskohl und Karotten fein schneiden. Mit Sojasauce in einer Pfanne 4–5 Minuten braten, bis die Füllung weich und nicht mehr wässrig ist.","Füllung abkühlen lassen und {PS} untermischen.","Je einen Löffel Füllung auf ein Filoteigblatt geben, Seiten einschlagen und eng aufrollen. Die Naht mit etwas Wasser verschliessen.","In einer Pfanne mit wenig Öl rundherum goldbraun braten. Heiss servieren."],"🥟","Ostasien","spring rolls snack","snack"],
+["Edamame mit Sesam","AS",15,"P,V","edamame:1,sesam:.1,sojasauce:.2",["Edamame nach Packungsangabe in Salzwasser garen und gut abtropfen lassen.","Gemüse ({V}) fein schneiden und in einer heissen Pfanne kurz anrösten.","Edamame und Sojasauce dazugeben, durchschwenken und mit Sesam bestreuen. {PS}","Warm als Snack servieren."],"🫛","Japan","edamame sesame snack","snack"],
+["Gyoza aus der Pfanne","AS",40,"P,V","weisskohl:.6,mehl:.6,sojasauce:.3,ingwer:.1",["Mehl mit einer Prise Salz und etwa 100 ml heissem Wasser zu einem glatten Teig verkneten. Abdecken und 20 Minuten ruhen lassen.","Weisskohl fein hacken, salzen und 5 Minuten stehen lassen. Flüssigkeit ausdrücken und mit {Pn}, fein geriebenem Ingwer und Sojasauce vermengen.","Teig dünn ausrollen, Kreise ausstechen und je einen Teelöffel Füllung in die Mitte geben. Ränder anfeuchten und fest zusammendrücken.","Gyoza in einer geölten Pfanne anbraten, 100 ml Wasser angiessen und zugedeckt 6–8 Minuten garen, bis das Wasser verdampft ist."],"🥟","Japan","gyoza potstickers snack","snack"],
+["Foul Medames","OR",30,"P,V","favabohnen:1,limette:.2,oel:.2,knoblauch:.1",["Favabohnen abspülen und in einem Topf mit wenig Wasser erwärmen. Bei getrockneten Bohnen diese vorher einweichen und weich kochen.","Bohnen mit einer Gabel grob zerdrücken. Knoblauch fein hacken und mit Limettensaft, Olivenöl, Salz und Kreuzkümmel unterrühren.","Gemüse ({V}) fein würfeln und frisch darübergeben. {PS}","Mit warmem Fladenbrot zum Frühstück servieren."],"🫘","Ägypten","foul medames egyptian breakfast","breakfast"],
+["Manakish mit Gemüse","OR",40,"P,V","mehl:.8,oel:.2,zaatar:.1",["Mehl mit einer Prise Salz, Hefe und etwa 120 ml lauwarmem Wasser zu einem weichen Teig kneten. Abdecken und 30 Minuten gehen lassen.","Teig in kleine Fladen drücken. Gemüse ({V}) fein schneiden und mit etwas Öl sowie Za'atar auf den Fladen verteilen.","Bei 220 °C auf einem heissen Blech 8–10 Minuten backen, bis der Rand goldbraun ist. {PS}","Warm zum Frühstück servieren."],"🫓","Levante","manakish levant flatbread breakfast","breakfast"],
+["Shakshuka zum Frühstück","OR",25,"P,V","eier:1,tomaten:.8,zwiebeln:.3,peperoni:.4",["Zwiebel und Peperoni würfeln und in einer Pfanne mit Öl 5 Minuten weich dünsten.","Tomaten dazugeben und mit Kreuzkümmel, Paprikapulver, Salz und Pfeffer würzen. 10 Minuten sanft köcheln lassen, bis die Sauce eindickt.","Mit einem Löffel kleine Mulden formen und Eier hineinschlagen. Pfanne abdecken und bei kleiner Hitze garen, bis das Eiweiss gestockt ist.","Gemüse ({V}) klein schneiden und mit dem Gericht servieren. {PS}"],"🍳","Levant","shakshuka breakfast","breakfast"],
+["Labneh mit Fladenbrot","OR",15,"P,V","quark:1,oel:.2,limette:.1,brot:.8",["Quark mit einer Prise Salz und etwas Limettensaft verrühren. Für eine festere Konsistenz 30 Minuten in einem mit einem sauberen Tuch ausgelegten Sieb abtropfen lassen.","Gemüse ({V}) in kleine Stücke schneiden und mit Olivenöl sowie Pfeffer würzen.","Labneh in einer Schale anrichten, Olivenöl darübergeben und {PS} dazu servieren.","Mit warmem Fladenbrot zum Frühstück essen."],"🥣","Levant","labneh yogurt breakfast","breakfast"],
+["Falafel mit Tahini-Dip","OR",35,"P,V","kichererbsen:1,tahin:.3,knoblauch:.1,limette:.2",["Kichererbsen abspülen und sehr gut abtrocknen. Mit Knoblauch, Kreuzkümmel, Salz und Pfeffer grob pürieren.","Aus der Masse kleine Bällchen formen. Falls sie nicht zusammenhält, einen Esslöffel Mehl untermischen.","Falafel in einer Pfanne mit etwa 1 cm Öl portionsweise rundherum goldbraun braten. Innen müssen sie heiss und gar sein.","Tahini mit Limettensaft und wenig Wasser cremig rühren. Gemüse ({V}) dazu servieren. {PS}"],"🧆","Naher Osten","falafel tahini snack","snack"],
+["Baba Ganoush","OR",35,"P,V","aubergine:1,tahin:.3,limette:.2,knoblauch:.1",["Aubergine längs halbieren, die Schnittflächen einritzen und mit wenig Öl bestreichen.","Bei 220 °C im Ofen 25–30 Minuten rösten, bis das Fruchtfleisch sehr weich ist. Etwas abkühlen lassen und das Fruchtfleisch aus der Schale lösen.","Mit Tahini, Limettensaft, Knoblauch, Salz und Pfeffer zerdrücken oder pürieren. Gemüse ({V}) fein schneiden und darübergeben.","Mit Fladenbrot oder Gemüsesticks servieren. {PS}"],"🍆","Levant","baba ganoush eggplant dip snack","snack"],
+["Sambousek mit Käse","OR",45,"P,V","mehl:.8,feta:.6,eier:.3,zwiebeln:.2",["Mehl mit einer Prise Salz, etwas Öl und ungefähr 100 ml Wasser zu einem glatten Teig kneten. Abdecken und 15 Minuten ruhen lassen.","Feta zerbröseln und mit fein gehackter Zwiebel sowie Gemüse ({V}) mischen.","Teig dünn ausrollen, Kreise ausstechen, Füllung auf eine Hälfte geben und zu Halbmonden falten. Ränder mit einer Gabel festdrücken.","Bei 200 °C 18–20 Minuten backen oder in wenig Öl goldbraun braten. Warm servieren. {PS}"],"🥟","Naher Osten","sambousek cheese pastry snack","snack"],
+["Mahalabia mit Früchten","OR",20,"O","milch:1,kokosmilch:.3,staerke:.2,zucker:.3",["Maisstärke mit 3 Esslöffeln kalter Milch glatt rühren.","Übrige Milch, Kokosmilch und Zucker in einem Topf erhitzen. Stärke einrühren und unter ständigem Rühren 3–4 Minuten köcheln, bis die Creme eindickt.","In kleine Schalen füllen und auf Zimmertemperatur abkühlen lassen. Mindestens 2 Stunden kalt stellen.","Früchte ({O}) klein schneiden und vor dem Servieren auf der Creme verteilen."],"🍮","Levant","mahalabia milk pudding fruit dessert","dessert"],
+["Umm Ali mit Früchten","OR",45,"O","filoteig:.8,milch:1,baumnuesse:.3,rosinen:.2,zucker:.3",["Backofen auf 180 °C Ober-/Unterhitze vorheizen. Filoteigblätter auf einem Blech 8–10 Minuten knusprig backen und danach grob zerbrechen.","Teigstücke in eine Auflaufform geben und mit Rosinen sowie gehackten Nüssen bestreuen.","Milch mit Zucker erwärmen und über den Teig giessen. Bei 180 °C 20–25 Minuten backen, bis die Oberfläche goldbraun ist.","Früchte ({O}) klein schneiden und warm dazu servieren."],"🥧","Ägypten","umm ali egyptian bread pudding dessert","dessert"],
+["Basbousa mit Fruchtsirup","OR",50,"O","hartweizengriess:.8,zucker:.4,milch:.5,rahm:.3",["Hartweizengriess mit Zucker, Milch und Rahm zu einem dicken Teig verrühren. 10 Minuten quellen lassen.","In eine gefettete Form streichen und mit einem Messer in Rauten schneiden.","Bei 180 °C 30–35 Minuten backen, bis die Oberfläche goldbraun ist. Währenddessen Früchte ({O}) mit 2 Esslöffeln Wasser kurz zu einem Sirup einkochen.","Den warmen Kuchen mit dem Fruchtsirup beträufeln und vor dem Servieren abkühlen lassen."],"🍰","Ägypten","basbousa semolina cake dessert","dessert"],
+["Spaghetti al tonno","IT",25,"P,V","pasta:1,thon:.8,tomaten:.8,zwiebeln:.2,knoblauch:.1",["Pasta in reichlich Salzwasser bissfest kochen. Vor dem Abgiessen eine Tasse Kochwasser auffangen.","Zwiebel fein würfeln und in Olivenöl glasig dünsten. Knoblauch kurz mitbraten, dann Tomaten zugeben und 8–10 Minuten köcheln lassen.","Thon abtropfen lassen, grob zerpflücken und vorsichtig in die Sauce heben. 2 Minuten erwärmen.","Pasta mit der Sauce mischen und bei Bedarf mit etwas Kochwasser lockern. Mit Pfeffer und Petersilie servieren."],"🍝","Italien","spaghetti al tonno italian tuna pasta","main"],
+["Pad Thai mit Garnelen","AS",30,"P,V","reisnudeln:.8,garnelen:.8,eier:.4,sojasauce:.3,limette:.2,zwiebeln:.2",["Reisnudeln nach Packungsangabe einweichen und abgiessen. Saucenzutaten aus Sojasauce und Limettensaft verrühren.","Garnelen in einer heissen Pfanne mit wenig Öl 2–3 Minuten braten, bis sie rosa und gar sind. Herausnehmen.","Ei in derselben Pfanne stocken lassen. Nudeln und Sauce zugeben und unter Wenden 2–3 Minuten braten.","Garnelen und fein geschnittene Frühlingszwiebeln untermischen. Mit Limettenschnitzen servieren."],"🍜","Thailand","pad thai shrimp prawns noodles thai","main"],
+["Lachs-Teriyaki mit Reis","AS",30,"P,V","lachs:.8,reis:.8,sojasauce:.3,ingwer:.1,broccoli:.5",["Reis nach Packungsangabe garen. Broccoli in Röschen teilen und 5 Minuten dämpfen oder in wenig Wasser bissfest garen.","Lachs trocken tupfen und in mundgerechte Stücke schneiden. In einer heissen Pfanne rundherum 4–5 Minuten braten.","Sojasauce mit etwas Honig und fein geriebenem Ingwer verrühren, zum Lachs geben und kurz einkochen lassen.","Lachs mit Reis und Broccoli anrichten und die Sauce darübergeben."],"🐟","Japan","salmon teriyaki rice bowl japan","main"],
+["Fisch-Tacos","LA",30,"P,V","kabeljau:.8,wrap:.8,limette:.2,weisskohl:.4,quark:.3",["Kabeljau trocken tupfen, in Streifen schneiden und mit Salz, Pfeffer und Paprikapulver würzen.","Fisch in einer heissen Pfanne mit wenig Öl pro Seite 3–4 Minuten braten, bis er innen undurchsichtig ist und leicht zerfällt.","Kohl fein schneiden. Quark mit Limettensaft, Salz und etwas Wasser zu einer cremigen Sauce rühren.","Wraps erwärmen, mit Fisch, Kohl und Sauce füllen und sofort servieren."],"🌮","Mexiko","fish tacos baja california cod","main"],
+["Kabeljau-Curry mit Kokosmilch","OR",35,"P,V","kabeljau:.8,reis:.7,kokosmilch:.6,currypaste:.2,tomaten:.5",["Reis nach Packungsangabe garen. Tomaten würfeln.","Currypaste in einem Topf mit wenig Öl 1 Minute anrösten. Kokosmilch und Tomaten einrühren und 10 Minuten sanft köcheln lassen.","Kabeljau in grosse Stücke schneiden, in die Sauce legen und zugedeckt 7–9 Minuten gar ziehen lassen. Nicht stark rühren, damit der Fisch nicht zerfällt.","Mit Salz und Limettensaft abschmecken und mit Reis servieren."],"🍛","Indien","fish curry goan coconut cod","main"],
+["Miesmuscheln in Tomaten-Weisswein-Sauce","IT",35,"P,V","muscheln:1,tomaten:.6,zwiebeln:.2,knoblauch:.1,brot:.5",["Miesmuscheln unter kaltem Wasser abbürsten und Bärte entfernen. Beschädigte oder bereits offene Muscheln wegwerfen.","Zwiebel und Knoblauch fein hacken und in einem grossen Topf mit Olivenöl anschwitzen. Tomaten und einen Schuss Weisswein zugeben.","Muscheln einlegen, den Topf sofort schliessen und 5–7 Minuten kräftig kochen, bis sich die Schalen geöffnet haben. Geschlossene Muscheln entsorgen.","Mit gehackter Petersilie abschmecken und mit Brot sowie der Sauce servieren."],"🦪","Italien","mussels marinara tomato wine italian","main"],
+["Kabeljau mit Kartoffeln und Spinat","CH",40,"P,V","kabeljau:.8,kartoffeln:1,spinat:.6,rahm:.2",["Kartoffeln schälen, würfeln und in Salzwasser 15–20 Minuten weich kochen.","Kabeljau trocken tupfen, mit Salz und Pfeffer würzen und in einer Pfanne mit wenig Öl pro Seite 3–4 Minuten braten.","Spinat waschen und in einem Topf zusammenfallen lassen. Nach Wunsch einen kleinen Schuss Rahm einrühren und abschmecken.","Fisch mit Kartoffeln und Spinat anrichten. Prüfen, dass der Fisch innen vollständig undurchsichtig ist."],"🐟","Schweiz","cod potatoes spinach fish dinner","main"],
+["Thon-Bohnen-Salat","IT",20,"P,V","thon:.8,weissebohnen:.7,tomaten:.5,zwiebeln:.2,limette:.2",["Thon abtropfen lassen und mit einer Gabel in Stücke teilen. Bohnen abspülen und abtropfen lassen.","Tomaten würfeln und Zwiebel in feine Streifen schneiden.","Alles vorsichtig mischen und mit Olivenöl, Limettensaft, Salz und Pfeffer abschmecken.","Den Salat 5 Minuten ziehen lassen und mit Brot servieren."],"🥗","Italien","tuna white bean salad tonno fagioli","main"],
+["Räucherlachs-Toast zum Frühstück","CH",15,"P,V","lachs:.6,brot:.8,quark:.4,limette:.1",["Brot toasten oder in einer trockenen Pfanne knusprig rösten.","Quark mit etwas Limettensaft, Pfeffer und einer Prise Salz verrühren und auf dem Toast verstreichen.","Räucherlachs auflegen und mit fein geschnittenem Gemüse oder Kräutern garnieren.","Direkt servieren und den Lachs gekühlt halten, bis das Brot fertig ist."],"🍞","Schweiz","smoked salmon toast breakfast","breakfast"],
+["Thon-Onigiri","AS",30,"P,V","reis:.8,thon:.5,sojasauce:.2,sesam:.1",["Reis gründlich waschen und nach Packungsangabe garen. 10 Minuten zugedeckt ruhen lassen.","Thon abtropfen lassen und mit etwas Sojasauce vermengen.","Hände mit Wasser befeuchten. Reisportion flach drücken, etwas Thon in die Mitte geben und zu Dreiecken oder Bällchen formen.","Mit Sesam bestreuen und warm oder kalt als Snack servieren."],"🍙","Japan","tuna onigiri snack","snack"],
+["Garnelen-Crostini","IT",20,"P,V","garnelen:.7,brot:.8,knoblauch:.1,tomaten:.4",["Brotscheiben in einer Pfanne rösten, bis sie knusprig sind.","Garnelen mit wenig Öl und fein gehacktem Knoblauch 3–4 Minuten braten, bis sie rosa und vollständig gar sind.","Tomaten fein würfeln und mit Salz, Pfeffer und Olivenöl mischen.","Tomaten auf das Brot geben, Garnelen daraufsetzen und warm servieren."],"🍤","Italien","shrimp crostini appetizer","snack"],
+["Mini-Fisch-Tacos","LA",25,"P,V","kabeljau:.5,wrap:.5,weisskohl:.3,limette:.2",["Kabeljau in kleine Stücke schneiden, würzen und in einer Pfanne mit wenig Öl 3–4 Minuten braten, bis er innen undurchsichtig ist.","Kohl fein schneiden und mit Limettensaft sowie einer Prise Salz mischen.","Wraps in kleine Stücke schneiden und in einer trockenen Pfanne erwärmen.","Fisch und Kohl auf den Mini-Wraps verteilen und als Häppchen servieren."],"🌮","Mexiko","mini fish tacos snack","snack"],
+["Garnelen-Sommerrollen","AS",25,"P,V","garnelen:.7,salat:.4,karotten:.3",["Garnelen in einer heissen Pfanne 3–4 Minuten braten, bis sie rosa und gar sind. Abkühlen lassen und längs halbieren.","Karotten in feine Streifen schneiden und Salat waschen. Falls vorhanden, Reisblätter einzeln kurz in lauwarmem Wasser einweichen.","Gemüse und Garnelen auf das untere Drittel der Reisblätter legen. Seiten einschlagen und eng aufrollen.","Mit Limetten-Sojasauce oder einem anderen Dip servieren."],"🍤","Vietnam","shrimp summer rolls vietnamese snack","snack"],
+["Kleine Lachs-Gurken-Häppchen","CH",15,"P,V","lachs:.6,gurken:.5,quark:.3,limette:.1",["Gurke waschen und in dicke Scheiben schneiden. Die Scheiben mit Küchenpapier trocken tupfen.","Quark mit Limettensaft, Pfeffer und wenig Salz verrühren und auf die Gurkenscheiben geben.","Räucherlachs in kleine Stücke teilen und auf dem Quark anrichten.","Kalt als Snack servieren."],"🥒","Schweiz","salmon cucumber bites appetizer","snack"],
+["Kedgeree mit Kabeljau","OR",35,"P,V","kabeljau:.7,reis:.7,eier:.5,zwiebeln:.2",["Reis nach Packungsangabe garen. Eier 9 Minuten hart kochen, kalt abschrecken und vierteln.","Kabeljau in leicht siedendem Wasser 7–9 Minuten gar ziehen lassen, bis er innen undurchsichtig ist. Herausnehmen und in grobe Stücke teilen.","Zwiebel fein würfeln und in einer Pfanne mit wenig Öl glasig dünsten. Reis, Currypulver und einen Schuss Wasser zugeben und erwärmen.","Fischstücke vorsichtig unterheben und mit den Eiern anrichten. Mit Pfeffer abschmecken."],"🍚","Indien","kedgeree smoked fish rice breakfast","breakfast"],
+["Lachs-Rösti mit Ei","CH",35,"P,V","lachs:.6,kartoffeln:.8,eier:.5",["Kartoffeln grob raffeln und mit Salz sowie Pfeffer mischen. Flüssigkeit ausdrücken.","Kartoffeln in einer Pfanne mit wenig Öl zu einem flachen Rösti formen und bei mittlerer Hitze pro Seite 8–10 Minuten goldbraun braten.","Ei in einer zweiten Pfanne braten, bis das Eiweiss gestockt ist. Räucherlachs gekühlt bereithalten.","Rösti mit Lachs und Spiegelei belegen und warm servieren."],"🥔","Schweiz","salmon rosti egg breakfast","breakfast"],
+["Thon-Avocado-Toast","LA",15,"P,V","thon:.6,brot:.8,avocado:.5,limette:.1",["Brot toasten. Thon abtropfen lassen und mit einer Gabel zerpflücken.","Avocado zerdrücken und mit Limettensaft, Salz und Pfeffer abschmecken.","Avocado auf dem Toast verstreichen und Thon darauf verteilen.","Zum Frühstück frisch servieren."],"🥑","Lateinamerika","tuna avocado toast breakfast","breakfast"],
+["Garnelen-Omelett","AS",20,"P,V","garnelen:.5,eier:1,zwiebeln:.2,sojasauce:.1",["Garnelen trocken tupfen und in einer heissen Pfanne 2–3 Minuten braten, bis sie rosa und vollständig gar sind.","Eier mit Sojasauce verquirlen. Zwiebel fein schneiden und kurz mit den Garnelen anbraten.","Eier in die Pfanne geben und bei mittlerer Hitze stocken lassen. Die Ränder vorsichtig zur Mitte schieben.","Omelett zusammenklappen und warm zum Frühstück servieren."],"🍳","Thailand","shrimp omelette breakfast","breakfast"],
+["Thon-Reis-Schale zum Frühstück","AS",20,"P,V","thon:.5,reis:.7,eier:.5,sojasauce:.2",["Reis nach Packungsangabe garen. Thon abtropfen lassen und mit einer Gabel zerpflücken.","Ei in einer beschichteten Pfanne braten, bis das Eiweiss vollständig gestockt ist.","Reis in eine Schale geben, Thon und Ei darauf anrichten.","Mit wenig Sojasauce abschmecken und warm servieren."],"🍚","Japan","tuna rice bowl breakfast","breakfast"],
+["Kabeljau-Frühstücks-Wrap","LA",25,"P,V","kabeljau:.6,wrap:.8,eier:.5,tomaten:.3",["Kabeljau würzen und in einer Pfanne mit wenig Öl pro Seite 3–4 Minuten braten, bis er innen undurchsichtig ist. Mit einer Gabel in Stücke teilen.","Eier verquirlen und in einer zweiten Pfanne zu weichem Rührei braten.","Tomaten würfeln und Wraps kurz erwärmen.","Fisch, Rührei und Tomaten auf den Wraps verteilen, einrollen und warm servieren."],"🌯","Mexiko","fish breakfast wrap cod eggs","breakfast"],
+["Thon-Gurken-Wrap-Röllchen","LA",20,"P,V","thon:.6,wrap:.8,gurken:.4,quark:.3",["Thon abtropfen lassen und mit Quark, Pfeffer und etwas Limettensaft verrühren.","Gurke in feine Stifte schneiden. Wraps kurz erwärmen, damit sie sich gut rollen lassen.","Thoncreme und Gurke auf den Wraps verstreichen und fest einrollen.","In mundgerechte Röllchen schneiden und kalt oder zimmerwarm servieren."],"🌯","Lateinamerika","tuna cucumber pinwheels snack","snack"],
+["Kabeljau-Kartoffel-Küchlein","CH",35,"P,V","kabeljau:.7,kartoffeln:.8,eier:.3,zwiebeln:.2",["Kartoffeln weich kochen und grob zerdrücken. Kabeljau in leicht siedendem Wasser 7–9 Minuten garen und in kleine Stücke teilen.","Fisch mit Kartoffeln, Ei und fein gewürfelter Zwiebel mischen. Mit Salz und Pfeffer würzen und kleine Küchlein formen.","Küchlein in einer heissen Pfanne mit wenig Öl pro Seite 3–4 Minuten goldbraun braten, bis sie durchgehend heiss sind.","Mit Zitronenschnitzen oder einem einfachen Dip als Snack servieren."],"🐟","Schweiz","cod fish cakes potato snack","snack"],
+["Miesmuschel-Bruschetta","IT",25,"P,V","muscheln:.7,brot:.8,tomaten:.3,knoblauch:.1",["Miesmuscheln abbürsten und Bärte entfernen. Beschädigte oder offene Muscheln entsorgen.","Muscheln mit einem Schuss Wasser in einem zugedeckten Topf 5–7 Minuten kochen. Geöffnete Muscheln auslösen; geschlossene wegwerfen.","Brot rösten. Knoblauch fein hacken und mit gewürfelten Tomaten und Olivenöl vermischen.","Muschelfleisch und Tomaten auf den Broten anrichten und warm servieren."],"🦪","Italien","mussels bruschetta seafood appetizer","snack"],
 ];
-const D=DR.map(a=>({n:a[0],c:a[1],t:a[2],s:a[3],fx:a[4].split(",").map(p=>{const q=p.split(":");return[q[0],+q[1]]}),st:a[5],em:a[6],l:a[7],al:norm(a[8]).split(" ").filter(Boolean)}));
+const D=DR.map(a=>({n:a[0],c:a[1],t:a[2],s:a[3],fx:a[4].split(",").map(p=>{const q=p.split(":");return[q[0],+q[1]]}),st:a[5],em:a[6],l:a[7],al:norm(a[8]).split(" ").filter(Boolean),meal:a[9]}));
+const builtInDishCount=D.length;
+const customCuisineValues=["CH","IT","EEB","LA","AS","OR","INT"];
+const mealLabel={breakfast:"Frühstück",main:"Hauptgericht",snack:"Snack",dessert:"Dessert"};
+const quantityInGrams=(amount,unit,key)=>{
+  const scales={g:1,kg:1000,ml:1,l:1000,stk:50,stück:50,stueck:50,el:15,tl:5,dose:240,dosen:240};
+  return amount*(scales[unit]||I[key]?.g||50);
+};
+function customIngredientKey(name){
+  const clean=norm(name.trim());
+  const known=ALL.find(x=>x.al.some(alias=>alias===clean||mw(clean,alias)));
+  if(known)return known.k;
+  const key="custom_"+clean.replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,36);
+  if(!I[key]){
+    const type=/fleisch|poulet|huhn|rind|schwein|fisch|lachs|thon|garnel|shrimp|tofu|ei|eier|bohne|linsen|kichererbse|kaese|käse|quark|milch|joghurt|feta|tempeh/.test(clean)?"P":/apfel|birne|mango|banane|beere|erdbeer|pfirsich|obst/.test(clean)?"O":/gemuese|gemüse|tomate|karotte|zwiebel|spinat|paprika|broccoli|kohl|salat|pilz|zucchetti/.test(clean)?"V":"F";
+    const meat=/fleisch|poulet|huhn|rind|schwein|fisch|lachs|thon|garnel|shrimp/.test(clean);
+    I[key]={k:key,n:name.trim(),e:"",kc:0,p:0,c:0,f:0,g:50,t:type,fl:meat?["m"]:[],u:"",ug:0,how:"",al:[clean],custom:true};
+    ALL.push(I[key]);
+    customIngredientKeys.add(key);
+  }
+  return key;
+}
+function syncCustomDishes(){
+  ALL.length=builtInIngredientCount;
+  customIngredientKeys.forEach(key=>delete I[key]);
+  customIngredientKeys.clear();
+  D.length=builtInDishCount;
+  S.customRecipes.forEach(recipe=>{
+    const servings=Math.max(1,+recipe.servings||2);
+    const fx=(recipe.ingredients||[]).map(item=>{
+      const key=customIngredientKey(item.name);
+      const it=I[key],grams=(+item.grams||it.g*servings)/servings;
+      return[key,grams/it.g];
+    });
+    D.push({n:recipe.title,c:recipe.cuisine,t:+recipe.time||30,s:fx.map(([key])=>I[key].t).join(","),fx,st:recipe.steps?.length?recipe.steps:["Zutaten bereitstellen. Die Zutaten nach deinem gespeicherten Rezeptablauf zubereiten."],em:"🍽️",l:mealLabel[recipe.meal]||"Hauptgericht",al:norm(recipe.title).split(/\s+/),custom:true,customId:recipe.id,customDiet:recipe.diet,customMeal:recipe.meal});
+  });
+}
+syncCustomDishes();
 
 function build(o){
   const{veg,meal,mode,maxTime,cu}=o;
@@ -426,11 +642,13 @@ function build(o){
   const inC=shuffle(T("C")),inP=shuffle(T("P")),inV=T("V"),inO=T("O");
   const allowed=x=>!isExcluded(x)&&(veg!=="vegan"||veganOK(x))&&(veg!=="veg"||!x.fl.includes("m"))&&(veg!=="fish"||!x.fl.includes("m")||fishOK(x));
   const poolP=ALL.filter(x=>x.t==="P"&&allowed(x));
+  const fishPool=poolP.filter(fishOK);
   const poolC=ALL.filter(x=>x.t==="C"&&allowed(x)),poolV=ALL.filter(x=>x.t==="V"&&!RAW.has(x.k)&&allowed(x)),poolO=ALL.filter(x=>x.t==="O"&&allowed(x));
   const urgency=x=>x.fl.includes("p")?3:["V","O"].includes(x.t)?2:x.t==="P"?1:0;
   const rankedInputs=inp.map((x,i)=>({x,i})).sort((a,b)=>urgency(b.x)-urgency(a.x)||a.i-b.i).map(entry=>entry.x);
   const freshInputs=rankedInputs.filter(x=>urgency(x)>1),stableInputs=rankedInputs.filter(x=>urgency(x)<=1);
   const requiredFor=i=>{
+    if(MD.length)return null;
     if(!rankedInputs.length)return null;
     if(freshInputs.length){
       const slot=i%8;
@@ -442,17 +660,38 @@ function build(o){
   const cuC=mode==="lowcarb"?[]:(CUC[cu]||[]).map(k=>I[k]);
   const pf=mode==="protein"?1.2:mode==="light"?.85:1,vf=mode==="light"?1.3:mode==="lowcarb"?1.4:1,cf=mode==="light"?.55:1;
   const seen=new Set();
+  const recipeDefaults={
+    AS:{P:["tofu","poulet","lachs","garnelen","kichererbsen","eier"],V:["karotten","broccoli","spinat","peperoni","zwiebeln","aubergine"]},
+    OR:{P:["kichererbsen","linsen","poulet","lachs","eier"],V:["tomaten","karotten","spinat","kuerbis","zwiebeln","peperoni"]},
+    LA:{P:["schwarzebohnen","hack","poulet","tofu","kaese"],V:["tomaten","mais","peperoni","zwiebeln","avocado"]},
+    IT:{P:["mozzarella","tofu","poulet","garnelen","kaese","eier"],V:["tomaten","zucchetti","pilze","spinat","aubergine"]},
+    CH:{P:["eier","kaese","tofu","poulet","lachs"],V:["kartoffeln","karotten","zwiebeln","pilze","spinat","wirz"]},
+    EEB:{P:["kaese","eier","poulet","linsen","schwein"],V:["kartoffeln","weisskohl","peperoni","tomaten","zwiebeln","karotten"]},
+    all:{P:["poulet","tofu","kichererbsen","linsen","eier","lachs","hack","garnelen"],V:["tomaten","karotten","broccoli","zucchetti","spinat","zwiebeln","peperoni","pilze"]}
+  };
+  const defaultPool=(d,type)=>{
+    const cuisines=d.c.split(",");
+    const keys=[...new Set(cuisines.flatMap(c=>recipeDefaults[c]?.[type]||recipeDefaults.all[type]))];
+    const pool=type==="P"?poolP:poolV;
+    const preferred=keys.map(k=>I[k]).filter(x=>x&&pool.includes(x));
+    return preferred.length?preferred:pool;
+  };
   // Priorität: 1. verderbliche Zutaten, 2. Eiweiss, 3. Beilage (alle Kohlenhydrate gleichwertig)
-  const getP=(i,required)=>{const must=inP.filter(x=>x.fl.includes("p"));
+  const getP=(i,required,source=poolP)=>{const must=inP.filter(x=>x.fl.includes("p"));
     const Ps=[];
+    if(veg==="fish"){
+      const requestedFish=inP.filter(fishOK),available=requestedFish.length?requestedFish:fishPool;
+      if(available.length)Ps.push(available[i%available.length]);
+      return Ps;
+    }
     if(required?.t==="P")Ps.push(required);
     for(const x of must.length?must:inP)if(!Ps.includes(x)&&Ps.length<2)Ps.push(x);
-    if(!Ps.length)Ps.push(inP.length?inP[i%inP.length]:rnd(poolP));
+    if(!Ps.length)Ps.push(inP.length?inP[i%inP.length]:rnd(source));
     const rest=inP.filter(x=>!Ps.includes(x));if(rest.length&&Ps.length<2&&Math.random()<.6)Ps.push(rnd(rest));
-    if(veg==="fish"&&!Ps.some(fishOK)){const fish=poolP.filter(fishOK);if(fish.length)Ps.unshift(rnd(fish))}return Ps};
-  const getV=(min,i,required)=>{const Vs=rankedInputs.filter(x=>x.t==="V").slice(0,3);
+    if(veg==="fish"&&!Ps.some(fishOK)&&fishPool.length)Ps.unshift(rnd(fishPool));return Ps};
+  const getV=(min,i,required,source=poolV)=>{const Vs=rankedInputs.filter(x=>x.t==="V").slice(0,3);
     if(required?.t==="V"&&!Vs.includes(required)){Vs.unshift(required);Vs.length=3}
-    const free=poolV.filter(x=>!Vs.includes(x)),seas=free.filter(isS);
+    const free=source.filter(x=>!Vs.includes(x)),seas=free.filter(isS);
     const want=Vs.length?(Vs.length<min&&Math.random()<.6?1:0):min;
     for(let j=0;j<want;j++){const c=rnd(seas.length>2?seas:free);if(c&&!Vs.includes(c))Vs.push(c)}return Vs};
   const getO=(i,required)=>{const Os=rankedInputs.filter(x=>x.t==="O").slice(0,3);
@@ -465,32 +704,34 @@ function build(o){
     if(C)add(C,cf);Ps.forEach(p=>add(p,pf));Vs.forEach(v=>add(v,vf));Os.forEach(x=>add(x));
     fx.forEach(([k,f])=>add(I[k],f*(mode==="light"&&B2(I[k])?.6:1)));
     if(F)F[1].forEach(k=>add(I[k],k==="tomaten"?.6:1));
-    if(!sweet){T("F").forEach(x=>add(x));add(I.oel,mode==="light"?.5:1)}
-    if(required&&!m.has(required.k))add(required);
+    if(!sweet){if(F)F[1].forEach(k=>add(I[k]));add(I.oel,mode==="light"?.5:1)}
     let ma=mac(m);
-    if(top)for(let k=0;ma.p<(mode==="protein"?35:25)&&k<2;k++){
+    if(top&&mode!=="none")for(let k=0;ma.p<(mode==="protein"?35:25)&&k<2;k++){
       const cand=poolP.filter(x=>!m.has(x.k)&&(mode!=="light"||x.f<12));
       if(!cand.length)break;const x=rnd(cand);Ps.push(x);add(x,.8);ma=mac(m)}
     const ps=Ps.map(p=>p.how.replace("%",p.n)+".").join(" ");
-    const st=["Zutaten bereitstellen. Gemüse und Früchte waschen und in mundgerechte Stücke schneiden."].concat(steps.map(s=>s.replace("{CS}",C?CS[C.k]||"":"").replace("{V}",join(Vs.map(v=>v.n))).replace("{PS}",ps).replace("{Pn}",join(Ps.map(p=>p.n))).replace("{O}",join(Os.map(x=>x.n))).replace("{F}",F?F[2]:"")).filter(Boolean));
+    const prep=Vs.length||Os.length?"Zutaten bereitstellen. Gemüse und Früchte waschen und in mundgerechte Stücke schneiden.":"Alle Zutaten bereitstellen.";
+    const st=[prep].concat(steps.map(s=>s.replace("{CS}",C?CS[C.k]||"":"").replace("{V}",join(Vs.map(v=>v.n))).replace(" und Gemüse ()","").replace("Gemüse ()","").replace("{PS}",ps).replace("{Pn}",join(Ps.map(p=>p.n))).replace("{O}",join(Os.map(x=>x.n))).replace("{F}",F?F[2]:"")).filter(Boolean));
     if(required&&!norm(st.join(" ")).includes(norm(required.n))){
       const use=required.t==="V"?"klein schneiden und mit dem Gemüse mitgaren.":required.t==="C"?"nach Packungsangabe zubereiten und als Beilage servieren.":required.t==="P"?"in Stücke schneiden, anbraten und zum Gericht geben.":required.t==="O"?"klein schneiden und zum Gericht servieren.":"zum Abschmecken oder Servieren verwenden.";
       st.push(`${required.n} ${use}`);
     }
-    if(EXTRA.length)st.push(EXTRA.map(e=>e[0].toUpperCase()+e.slice(1)).join(", ")+" nach Belieben dazugeben oder zum Servieren verwenden.");
-    const ord={C:0,B:0,P:1,V:2,O:2,F:3};
+    const ord={C:0,B:0,P:1,V:2,O:2,F:3,S:4};
     return{id:Math.random().toString(36).slice(2,9),title,em,t,lab,rare,
-      veg:!Ps.some(x=>x.fl.includes("m"))&&!fx.some(([k])=>I[k].fl.includes("m")),vegan:veg==="vegan",fish:Ps.some(fishOK)||fx.some(([k])=>fishOK(I[k])),extra:EXTRA.slice(),steps:st,
+      veg:!Ps.some(x=>x.fl.includes("m"))&&!fx.some(([k])=>I[k].fl.includes("m")),vegan:veg==="vegan",fish:Ps.some(fishOK)||fx.some(([k])=>fishOK(I[k])),nutritionKnown:![...m.keys()].some(k=>I[k].custom),extra:[],steps:st,
       ings:[...m].map(([k,g])=>({k,g})).sort((a,b)=>ord[I[a.k].t]-ord[I[b.k].t]),
       kcal:Math.round(ma.kc),p:Math.round(ma.p),c:Math.round(ma.c),f:Math.round(ma.f)}};
   const mkComp=(g,required)=>{ // Alltagsgerichte
     if(meal==="breakfast"||meal==="dessert"||meal==="snack")return null;
+    if(required&&!["C","P","V"].includes(required.t)&&required.t!=="F")return null;
     const C=mode==="lowcarb"?null:required?.t==="C"?required:inC.length?inC[g%inC.length]:rnd(cuC.length?cuC:poolC);
-    const Ps=getP(g,required),Vs=getV(2,g,required);
-    let fl=FL.filter(f=>cuOK(f[3])&&f[1].every(k=>!isExcluded(I[k]))&&(veg!=="vegan"||f[1].every(k=>veganOK(I[k])))&&(mode!=="light"||!f[1].some(k=>["rahm","pesto","butter","kokosmilch"].includes(k))));
+    const Ps=getP(g,required,defaultPool({c:cu},"P")),Vs=getV(2,g,required,defaultPool({c:cu},"V"));
+    const grp=C?(GRP[C.k]||"bowl"):"none";
+    const flavorFits=grp==="pasta"?["CH","IT"]:grp==="kart"?["CH","IT","EEB"]:grp==="wrap"?["LA","OR","AS"]:null;
+    let fl=FL.filter(f=>cuOK(f[3])&&(!flavorFits||f[3].some(c=>flavorFits.includes(c)))&&f[1].every(k=>!isExcluded(I[k]))&&(veg!=="vegan"||f[1].every(k=>veganOK(I[k])))&&(mode!=="light"||!f[1].some(k=>["rahm","pesto","butter","kokosmilch"].includes(k)))&&(required?.t!=="F"||f[1].includes(required.k)||required.k==="oel"));
     if(!fl.length)return null;
-    const F=rnd(fl),grp=C?(GRP[C.k]||"bowl"):"none";
-    const templates=FM.filter(f=>f[0]===grp&&f[2]<=maxTime);
+    const F=rnd(fl);
+    const templates=FM.filter(f=>f[0]===grp&&f[2]<=maxTime&&!(cu==="AS"&&grp==="reis"&&f[1].includes("Risotto")));
     if(!templates.length)return null;
     const fo=rnd(templates);
     let title=fo[1].replace("{F}",F[0]).replace("{C}",C?C.n:"").replace("{V}",Vs[0]?.n||"").replace("{P}",Ps[0]?.n||"");
@@ -498,63 +739,100 @@ function build(o){
     if(seen.has(title))return null;seen.add(title);
     return rec({title,em:GE[grp],t:fo[2],lab:cu==="all"?CULAB[F[3][0]]:CULAB[cu],rare:0,steps:fo[4],C,Ps,Vs,Os:[],fx:[],F,top:1,required})};
   const mkDish=(d,g,required)=>{ // Weltküche & Spezialitäten
-    const sweet=d.s.includes("O"),hasP=d.s.includes("P");
-    const Ps=hasP?getP(g,required):[],Vs=d.s.includes("V")?getV(1,g,required):[],Os=sweet?getO(g,required):[];
-    const names=(sweet?Os.slice(0,2):[Ps[0],Vs[0]]).filter(Boolean).map(x=>x.n);
+    const usesProtein=!d.custom&&d.st.some(s=>s.includes("{PS}")||s.includes("{Pn}")),usesVegetable=!d.custom&&d.st.some(s=>s.includes("{V}")),usesFruit=!d.custom&&d.s.includes("O");
+    const slotMatch=required&&(d.fx.some(([k])=>k===required.k)||(required.t==="P"&&usesProtein)||(required.t==="V"&&usesVegetable)||(required.t==="O"&&usesFruit)||(required.t==="C"&&d.s.split(",").includes("C")));
+    if(required&&!slotMatch)return null;
+    const sweet=usesFruit||mealOf(d)==="dessert";
+    const Ps=usesProtein?getP(g,required,defaultPool(d,"P")):[],Vs=usesVegetable?getV(MD.length?0:1,g,required,defaultPool(d,"V")):[],Os=usesFruit?getO(g,required):[];
+    const names=(usesFruit?Os.slice(0,2):sweet?[]:[Ps[0],Vs[0]]).filter(Boolean).map(x=>x.n);
     let title=d.n+(names.length?": "+names.join(" & "):"");
-    const slotMatch=required&&(d.s.split(",").includes(required.t)||d.fx.some(([k])=>k===required.k));
-    if(required&&!slotMatch&&!norm(title).includes(norm(required.n)))title+=` mit ${required.n}`;
     if(seen.has(title))return null;seen.add(title);
-    return rec({title,em:d.em,t:d.t,lab:d.l,rare:!everydayDishes.has(d.n),steps:d.st,C:null,Ps,Vs,Os,fx:d.fx,F:null,top:hasP&&!sweet,sweet,required})};
-  const dAll=D.filter(d=>cuOK(d.c)&&d.t<=maxTime&&mealFits(d,meal)&&(veg!=="fish"||!d.fx.some(([k])=>I[k].fl.includes("m")&&!fishOK(I[k])))&&(veg!=="vegan"||!d.fx.some(([k])=>!veganOK(I[k])))&&(veg!=="veg"||!d.fx.some(([k])=>I[k].fl.includes("m")))&&(mode!=="lowcarb"||!d.fx.some(([k])=>B2(I[k])))&&!d.fx.some(([k])=>isExcluded(I[k])));
+    const result=rec({title,em:d.em,t:d.t,lab:d.custom?"Eigenes Rezept":d.l,rare:!everydayDishes.has(d.n),steps:d.st,C:null,Ps,Vs,Os,fx:d.fx,F:null,top:0,sweet,required});
+    if(d.custom){const hasMeat=d.fx.some(([key])=>I[key].fl.includes("m")&&!fishOK(I[key]));result.customId=d.customId;result.custom=true;result.vegan=d.customDiet==="vegan"||(d.customDiet==="all"&&d.fx.every(([key])=>veganOK(I[key])));result.veg=["veg","vegan"].includes(d.customDiet)||!hasMeat;result.fish=d.fx.some(([key])=>fishOK(I[key]));result.nutritionKnown=!d.fx.some(([key])=>I[key].custom);}
+    return result};
+  const customDietFits=d=>!d.custom||veg==="all"||(veg==="vegan"?d.customDiet==="vegan":veg==="veg"?["veg","vegan"].includes(d.customDiet):true);
+  const dAll=D.filter(d=>cuOK(d.c)&&d.t<=maxTime&&mealFits(d,meal)&&customDietFits(d)&&(veg!=="fish"||d.fx.some(([k])=>fishOK(I[k])))&&(veg!=="vegan"||!d.fx.some(([k])=>!veganOK(I[k])))&&(veg!=="veg"||!d.fx.some(([k])=>I[k].fl.includes("m")))&&(mode!=="lowcarb"||!d.fx.some(([k])=>B2(I[k])))&&!d.fx.some(([k])=>isExcluded(I[k])));
   const everydayDishes=new Set(["Pasta Carbonara","Pasta al Pomodoro","Rösti","Käsespätzli","Kaiserschmarrn","Porridge","Quark-Bowl","Crumble","Pfannkuchen","Ratatouille","Tortilla Española"]);
   const md=dAll.filter(d=>MD.includes(d)),sweetMeal=meal==="breakfast"||meal==="dessert"||meal==="snack";
-  let dp=dAll.filter(d=>!md.includes(d)&&(sweetMeal?d.s.includes("O"):true));
+  let dp=dAll.filter(d=>!md.includes(d)&&(meal==="snack"?snackDishes.has(d.n)||d.meal==="snack"||d.customMeal==="snack":meal==="breakfast"?mealOf(d)==="breakfast":meal==="dessert"?(d.s.includes("O")||mealOf(d)==="dessert"):true));
   if(inP.length){const f=dp.filter(d=>d.s.includes("P"));if(f.length)dp=f}
-  const matchScore=d=>rankedInputs.reduce((score,x)=>score+(d.fx.some(([k])=>k===x.k)||d.s.split(",").includes(x.t)?1:0),0)+(everydayDishes.has(d.n)?1:0);
+  const matchScore=d=>rankedInputs.reduce((score,x)=>score+(d.fx.some(([k])=>k===x.k)||d.s.split(",").includes(x.t)?10:0),0)+(everydayDishes.has(d.n)?1:0);
   dp=shuffle(dp).sort((a,b)=>matchScore(b)-matchScore(a));
   const q=[];
-  for(let r=0;r<12;r++){md.forEach(d=>q.push(d));dp.forEach(d=>q.push(d))}
-  const nA=sweetMeal?0:4,A=[],Bq=[];
+  for(let r=0;r<12;r++){md.forEach(d=>q.push(d));if(!MD.length)dp.forEach(d=>q.push(d))}
+  const hasMatchingDish=dp.some(d=>rankedInputs.some(x=>d.fx.some(([k])=>k===x.k)));
+  const nA=veg==="fish"&&meal==="main"?6:sweetMeal||md.length||cu!=="all"||hasMatchingDish?0:4,A=[],Bq=[];
   for(let g=0;A.length<nA&&g<40;g++){const r=mkComp(g,requiredFor(g));if(r)A.push(r)}
+  if(!MD.length){
+    const featuredCustom=shuffle(dp.filter(d=>d.custom)).slice(0,Math.min(2,8-nA));
+    featuredCustom.forEach((d,g)=>{const r=mkDish(d,g,requiredFor(nA+g));if(r)Bq.push(r)});
+  }
   for(let g=0;Bq.length<8-nA&&g<q.length;g++){const r=mkDish(q[g],g,requiredFor(nA+g));if(r)Bq.push(r)}
-  for(let g=40;A.length+Bq.length<8&&g<100;g++){const r=mkComp(g,requiredFor(A.length+Bq.length));if(r)A.push(r)}
+  for(let g=40;!md.length&&!hasMatchingDish&&cu==="all"&&A.length+Bq.length<8&&g<100;g++){const r=mkComp(g,requiredFor(A.length+Bq.length));if(r)A.push(r)}
   const res=[],f1=md.length?Bq:A,f2=md.length?A:Bq;
   for(let k=0;k<Math.max(A.length,Bq.length);k++){if(f1[k])res.push(f1[k]);if(f2[k])res.push(f2[k])}
-  return res.slice(0,8);
+  let customCount=0;
+  return res.filter(recipe=>{
+    if(!recipe.customId)return true;
+    if(customCount>=2)return false;
+    customCount++;return true;
+  }).slice(0,8);
 }
 
 function gen(){
   const txt=$("#rq").value;S.rq=txt;
   INP=[];EXTRA=[];MD=[];
-  const tokens=txt.toLowerCase().split(/[,;\n]+|\s+/).map(s=>s.trim()).filter(s=>s.length>1&&!STOP.has(s));
-  const dishMatches=tokens.map(t=>fnd(norm(t),D)).filter(Boolean);
+  const tokens=txt.toLowerCase().split(/[,;\n]+|\s+/).map(s=>norm(s.trim())).filter(s=>s.length>1&&!STOP.has(s));
+  const parsed=tokens.map(t=>({token:t,ingredient:fnd(norm(t),ALL),dish:fnd(norm(t),D)}));
+  const dishMatches=[...new Set(parsed.filter(x=>x.dish&&!x.ingredient).flatMap(x=>{
+    const exact=D.filter(d=>d.al.some(w=>mw(norm(x.token),w)));
+    return exact.length?exact:[x.dish];
+  }))];
   dishMatches.forEach(dd=>{if(!MD.includes(dd))MD.push(dd)});
   const dishWords=new Set(dishMatches.flatMap(d=>norm(d.n).split(/\s+/)));
-  tokens.forEach(t=>{
+  parsed.forEach(({token:t,ingredient:it,dish:dd})=>{
     const n=norm(t);if(dishWords.has(n))return;
-    const it=fnd(n,ALL),dd=fnd(n,D);
     if(it&&!INP.includes(it))INP.push(it);
-    if(dd&&!MD.includes(dd))MD.push(dd);
+    if(dd&&!it){
+      const exact=D.filter(d=>d.al.some(w=>mw(n,w)));
+      (exact.length?exact:[dd]).forEach(d=>{if(!MD.includes(d))MD.push(d)});
+    }
     if(!it&&!dd&&!EXTRA.includes(t))EXTRA.push(t)});
-  const o={veg:S.veg,meal:S.meal,mode:S.mode,maxTime:+S.maxTime||60,cu:S.cu},notes=[];
+  const intent=norm(txt),askedDessert=/\b(dessert|desserts|desert|deserts|kuchen|suess|suessspeise)\b/.test(intent);
+  const queryCuisine=/\b(asien|asia|asian|asiatisch\w*)\b/.test(intent)?"AS":/\b(italien\w*)\b/.test(intent)?"IT":/\b(schweiz\w*|schweizer\w*)\b/.test(intent)?"CH":/\b(balkan|osteuropa|tuerkei|tuerkisch\w*)\b/.test(intent)?"EEB":/\b(lateinamerika|mexikan\w*)\b/.test(intent)?"LA":/\b(orient|indien|indisch\w*)\b/.test(intent)?"OR":null;
+  const o={veg:S.veg,meal:S.meal==="all"&&askedDessert?"dessert":S.meal,mode:S.mode,maxTime:+S.maxTime||60,cu:queryCuisine||S.cu},notes=[];
   if(o.veg!=="all"&&INP.some(x=>x.fl.includes("m")))notes.push("Nicht passende Fleisch- oder Fischzutaten aus deiner Eingabe wurden weggelassen.");
   if(o.mode==="lowcarb"&&INP.some(x=>x.t==="C"))notes.push("Low Carb: Pasta, Reis & Co. wurden weggelassen.");
-  let out=build(o);
-  if(!out.length)notes.push("Keine passende Idee gefunden. Passe Mahlzeit, Zeit oder Filter an.");
+  const unknownOnly=EXTRA.length&&!INP.length&&!MD.length;
+  let out=unknownOnly?[]:MD.length?build({...o,mode:"none",maxTime:90}):build(o);
+  let relaxed=[];
+  if(MD.length&&out.length&&(o.mode!=="none"||o.maxTime<90))notes.push("Für den eingegebenen Rezeptwunsch wurden Ziel und Zeit gelockert; Mahlzeit, Küche und Ernährung bleiben berücksichtigt.");
+  if(!unknownOnly&&!MD.length&&out.length<8){
+    const broader=build({...o,mode:"none",maxTime:90});
+    if(broader.length>out.length){
+      out=broader;
+      if(o.mode!=="none")relaxed.push("Ziel");
+      if(o.maxTime<90)relaxed.push("Zeit");
+    }
+  }
+  if(relaxed.length)notes.push(`Für mehr passende Vorschläge wurden ${join(relaxed)} gelockert; Ernährung und ausgeschlossene Zutaten bleiben berücksichtigt.`);
+  if(EXTRA.length)notes.push(`${EXTRA.join(", ")} ist nicht in der lokalen Zutaten- und Rezeptsammlung hinterlegt und wird nicht automatisch kombiniert. Weitere Ideen findest du über die Websuche.`);
+  if(out.length>0&&out.length<8)notes.push(`Es gibt nur ${out.length} passende lokale Rezepte für diese Filter. Ich zeige lieber weniger passende Gerichte, statt unpassende Kombinationen zu erfinden; nutze die Websuche für weitere echte Rezepte.`);
+  if(!out.length&&!EXTRA.length)notes.push("Keine passende Idee in der lokalen Sammlung gefunden. Mahlzeit und Küche wurden nicht verändert; suche im Web nach weiteren passenden Rezepten.");
   S.recs=out;S.notes=notes.join(" ");save();renderR();
 }
 
 const isFav=r=>S.favs.some(f=>f.id===r.id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dishIcons=[
-  [/\brisotto\b/,"🍚"],[/tortilla|menemen|shakshuka/,"🍳"],[/carbonara|pasta|spaghetti|pomodoro/,"🍝"],
+  [/baklava|tulumba/,"🥮"],[/tiramisu/,"🍰"],[/panna cotta/,"🍮"],[/palacinke/,"🥞"],[/tufahije/,"🍎"],[/sorbetto/,"🍧"],[/\brisotto\b/,"🍚"],[/tortilla|menemen|shakshuka/,"🍳"],[/carbonara|pasta|spaghetti|pomodoro/,"🍝"],
   [/ratatouille|shopska|salat/,"🥗"],[/curry|dal/,"🍛"],[/chili|gulasch|goulash/,"🍲"],
   [/momos|empanada|pierogi|halusky/,"🥟"],[/falafel/,"🧆"],[/tacos?/,"🌮"],[/quesadilla/,"🫓"],
   [/burrito/,"🌯"],[/gnocchi/,"🥘"],[/roesti|kartoffel/,"🥔"],[/polenta/,"🌽"],
-  [/porridge|quark-bowl/,"🥣"],[/pfannkuchen|kaiserschmarrn/,"🥞"],[/crumble/,"🥧"],[/capuns/,"🥬"]
+  [/porridge|quark-bowl/,"🥣"],[/pfannkuchen|kaiserschmarrn/,"🥞"],[/crumble|waehe|kuchen/,"🥧"],[/kompott|honigfruechte/,"🍎"],[/smoothie|quark-creme/,"🍓"],[/capuns/,"🥬"]
 ];
-const ingredientIcons={pasta:"🍝",reis:"🍚",kartoffeln:"🥔",couscous:"🫓",quinoa:"🌾",bulgur:"🌾",wrap:"🌯",eier:"🥚",feta:"🧀",halloumi:"🧀",mozzarella:"🧀",kaese:"🧀",tofu:"🧈",kichererbsen:"🫘",linsen:"🫘",quark:"🥣",poulet:"🍗",hack:"🥩",lachs:"🐟",thon:"🐟",schinken:"🥓",broccoli:"🥦",spinat:"🥬",tomaten:"🍅",zucchetti:"🥒",peperoni:"🫑",pilze:"🍄",karotten:"🥕",lauch:"🥬",zwiebeln:"🧅",kuerbis:"🎃",blumenkohl:"🥦",aubergine:"🍆",bohnen:"🫛",erbsen:"🫛",fenchel:"🌿",randen:"🟣",oel:"🫒",rahm:"🥛",butter:"🧈",knoblauch:"🧄",sojasauce:"🥣",pesto:"🌿",polenta:"🌽",reisnudeln:"🍜",gnocchi:"🥔",suesskartoffel:"🍠",mehl:"🌾",haferflocken:"🥣",brot:"🍞",garnelen:"🍤",schwein:"🥩",bratwurst:"🌭",schwarzebohnen:"🫘",avocado:"🥑",mais:"🌽",kohlrabi:"🥬",radieschen:"🔴",wirz:"🥬",weisskohl:"🥬",gurken:"🥒",salat:"🥬",sellerie:"🌿",spargel:"🌱",federkohl:"🥬",rosenkohl:"🥬",pastinaken:"🥕",chicoree:"🥬",rhabarber:"🌱",aepfel:"🍎",birnen:"🍐",erdbeeren:"🍓",himbeeren:"🍓",heidelbeeren:"🫐",brombeeren:"🫐",zwetschgen:"🟣",trauben:"🍇",kirschen:"🍒",aprikosen:"🍑",pfirsiche:"🍑",johannisbeeren:"🍒",quitten:"🍋",mango:"🥭",banane:"🍌",ananas:"🍍",kokosmilch:"🥥",limette:"🍋",ingwer:"🫚",koriander:"🌿",currypaste:"🌶️",honig:"🍯",milch:"🥛",baumnuesse:"🌰"};
+const ingredientIcons={pasta:"🍝",reis:"🍚",kartoffeln:"🥔",couscous:"🫓",quinoa:"🌾",bulgur:"🌾",wrap:"🌯",eier:"🥚",feta:"🧀",halloumi:"🧀",mozzarella:"🧀",kaese:"🧀",tofu:"🧈",kichererbsen:"🫘",linsen:"🫘",quark:"🥣",poulet:"🍗",hack:"🥩",lachs:"🐟",thon:"🐟",schinken:"🥓",broccoli:"🥦",spinat:"🥬",tomaten:"🍅",zucchetti:"🥒",peperoni:"🫑",pilze:"🍄",karotten:"🥕",lauch:"🥬",zwiebeln:"🧅",kuerbis:"🎃",blumenkohl:"🥦",aubergine:"🍆",bohnen:"🫛",erbsen:"🫛",fenchel:"🌿",randen:"🟣",oel:"🫒",rahm:"🥛",butter:"🧈",knoblauch:"🧄",sojasauce:"🥣",pesto:"🌿",polenta:"🌽",reisnudeln:"🍜",gnocchi:"🥔",suesskartoffel:"🍠",mehl:"🌾",haferflocken:"🥣",brot:"🍞",filoteig:"🥐",zucker:"🍬",zimt:"🟤",garnelen:"🍤",schwein:"🥩",bratwurst:"🌭",schwarzebohnen:"🫘",avocado:"🥑",mais:"🌽",kohlrabi:"🥬",radieschen:"🔴",wirz:"🥬",weisskohl:"🥬",gurken:"🥒",salat:"🥬",sellerie:"🌿",spargel:"🌱",federkohl:"🥬",rosenkohl:"🥬",pastinaken:"🥕",chicoree:"🥬",rhabarber:"🌱",aepfel:"🍎",birnen:"🍐",erdbeeren:"🍓",himbeeren:"🍓",heidelbeeren:"🫐",brombeeren:"🫐",zwetschgen:"🟣",trauben:"🍇",kirschen:"🍒",aprikosen:"🍑",pfirsiche:"🍑",johannisbeeren:"🍒",quitten:"🍋",mango:"🥭",banane:"🍌",ananas:"🍍",kokosmilch:"🥥",limette:"🍋",ingwer:"🫚",koriander:"🌿",currypaste:"🌶️",honig:"🍯",milch:"🥛",baumnuesse:"🌰"};
+Object.assign(ingredientIcons,{mascarpone:"🧀",savoiardi:"🍪",kaffee:"☕",kakao:"🍫",agar:"🌿"});
 const recipeIcon=r=>dishIcons.find(([pattern])=>pattern.test(norm(r.title)))?.[1]||r.em||"🍽️";
 const recipeKind=r=>{
   const title=norm(r.title);
@@ -565,7 +843,7 @@ const recipeKind=r=>{
   if(/curry|dal|chili|gulasch|goulash/.test(title))return"soup";
   if(/momos|empanada|pierogi|halusky|rösti|roesti/.test(title))return"dumpling";
   if(/taco|burrito|quesadilla|wrap|capuns/.test(title))return"bread";
-  if(/porridge|pfannkuchen|kaiserschmarrn|crumble/.test(title))return"sweet";
+  if(/baklava|tulumba|tiramisu|panna cotta|palacinke|tufahije|sorbetto|porridge|pfannkuchen|kaiserschmarrn|crumble|waehe|kompott|honigfruechte|smoothie|frucht|quark-creme/.test(title))return"sweet";
   return"bowl";
 };
 const ingredientIcon=x=>ingredientIcons[x.k]||({P:"🍽️",V:"🥬",O:"🍎",C:"🍚",F:"🧂",B:"🌾"}[I[x.k]?.t]||"🥄");
@@ -575,11 +853,15 @@ const pic=(r,dialog=false)=>{
 };
 const card=r=>{
   const ingredients=r.ings.filter(x=>["C","P","V","O"].includes(I[x.k].t)).slice(0,3);
-  return `<div class="rec" data-id="${esc(r.id)}"><div class="pic" data-kind="${recipeKind(r)}">${pic(r)}</div><button class="heart${isFav(r)?" on":""}" data-h="${esc(r.id)}" aria-label="Favorit">♥</button><div class="tx"><h3>${esc(r.title)}</h3><div class="ingredient-rail" aria-label="Hauptzutaten">${ingredients.map(x=>`<span class="ingredient-label" title="${esc(I[x.k].n)}"><span aria-hidden="true">${ingredientIcon(x)}</span><b>${esc(I[x.k].n)}</b></span>`).join("")}</div><span class="meta">⏱ ${r.t} Min. · ${r.kcal} kcal · ${r.p} g Eiweiss</span><br><span class="hit">${r.vegan?"🌿 Vegan":r.fish?"🐟 Fisch":r.veg?"🌱 Vegi":"🍗 mit Fleisch/Fisch"}</span> ${r.lab?`<span class="hit">${r.rare?"✨ ":""}${esc(r.lab)}</span>`:""}</div></div>`;
+  return `<div class="rec" data-id="${esc(r.id)}"><div class="pic" data-kind="${recipeKind(r)}">${pic(r)}</div><button class="heart${isFav(r)?" on":""}" data-h="${esc(r.id)}" aria-label="Favorit">♥</button><div class="tx"><h3>${esc(r.title)}</h3><div class="ingredient-rail" aria-label="Hauptzutaten">${ingredients.map(x=>`<span class="ingredient-label" title="${esc(I[x.k].n)}"><span aria-hidden="true">${ingredientIcon(x)}</span><b>${esc(I[x.k].n)}</b></span>`).join("")}</div><span class="meta">⏱ ${r.t} Min. · ${r.nutritionKnown===false?"Nährwerte unbekannt":`${r.kcal} kcal · ${r.p} g Eiweiss`}</span><br><span class="hit">${r.vegan?"🌿 Vegan":r.fish?"🐟 Fisch":r.veg?"🌱 Vegi":"🍗 mit Fleisch/Fisch"}</span> ${r.lab?`<span class="hit">${r.rare?"✨ ":""}${esc(r.lab)}</span>`:""}</div></div>`;
 };
 function renderR(){
-  $("#rcount").textContent=S.recs.length?`${S.recs.length} Ideen · tippe auf eine Karte für Zutaten und Anleitung`:"Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.";
+  $("#rcount").textContent=S.recs.length?`${S.recs.length} Ideen · tippe auf eine Karte für Zutaten und Anleitung`:S.notes?"Keine passende lokale Idee gefunden. Nutze die Websuche für weitere Rezepte.":"Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.";
   $("#rnote").textContent=S.notes||"";
+  const diet=S.veg==="vegan"?"vegan":S.veg==="veg"?"vegetarisch":S.veg==="fish"?"Fisch":"";
+  const meal={breakfast:"Frühstück",main:"Hauptgericht",snack:"Snack",dessert:"Dessert"}[S.meal]||"";
+  const cuisine={CH:"Schweizer",IT:"italienische",EEB:"osteuropäische Balkan türkische",LA:"lateinamerikanische",AS:"asiatische",OR:"orientalische indische"}[S.cu]||"";
+  $("#onlineSearch a").href=`https://www.google.com/search?q=${encodeURIComponent([$("#rq").value.trim()||"leckere Rezeptideen",diet,cuisine,meal,"Rezepte"].filter(Boolean).join(" "))}`;
   $("#rgrid").innerHTML=S.recs.map(card).join("");
 }
 function renderF(){
@@ -588,13 +870,14 @@ function renderF(){
 }
 let cur=null;
 const find=id=>S.recs.concat(S.favs).find(r=>r.id===id);
+const recipeSearch=r=>`https://www.google.com/search?q=${encodeURIComponent(`${r.title} ${r.lab||""} Rezept`)}`;
 const amt=(x,n)=>{const it=I[x.k],t=x.g*n;
   if(it.u){const q=it.u==="Stk"?Math.max(1,Math.round(t/it.ug)):Math.max(.5,Math.round(t/it.ug*2)/2);return String(q).replace(".",",")+" "+it.u}
   return Math.max(5,Math.round(t/5)*5)+" g"};
 function showDlg(){
   const r=cur,n=S.n,d=$("#dlg");
-  d.innerHTML=`<div class="pic" data-kind="${recipeKind(r)}">${pic(r,true)}</div><div class="in"><button class="close" data-a="x">Schliessen</button><h2>${esc(r.title)}</h2><p class="meta">⏱ ${r.t} Min. · ${r.vegan?"vegan":r.fish?"mit Fisch":r.veg?"vegetarisch":"mit Fleisch/Fisch"}${r.lab?" · "+esc(r.lab):""}</p>
-<div class="mac"><div><b>${r.kcal}</b>kcal</div><div><b>${r.p} g</b>Eiweiss</div><div><b>${r.c} g</b>Kohlenhydrate</div><div><b>${r.f} g</b>Fett</div></div><p class="meta">Nährwerte pro Portion (Schätzung)</p>
+  d.innerHTML=`<div class="pic" data-kind="${recipeKind(r)}">${pic(r,true)}</div><div class="in"><button class="close" data-a="x">Schliessen</button>${r.customId?`<button class="recipe-edit" data-a="e" aria-label="Eigenes Rezept bearbeiten" title="Eigenes Rezept bearbeiten">✎</button>`:""}<h2>${esc(r.title)}</h2><p class="recipe-source"><a href="${recipeSearch(r)}" target="_blank" rel="noopener noreferrer">Dieses Rezept im Web suchen ↗</a></p><p class="meta">⏱ ${r.t} Min. · ${r.vegan?"vegan":r.fish?"mit Fisch":r.veg?"vegetarisch":"mit Fleisch/Fisch"}${r.lab?" · "+esc(r.lab):""}</p>
+${r.nutritionKnown===false?`<p class="meta">Für eigene, neu eingegebene Zutaten liegen keine Nährwerte vor.</p>`:`<div class="mac"><div><b>${r.kcal}</b>kcal</div><div><b>${r.p} g</b>Eiweiss</div><div><b>${r.c} g</b>Kohlenhydrate</div><div><b>${r.f} g</b>Fett</div></div><p class="meta">Nährwerte pro Portion (Schätzung)</p>`}
 <div class="stp"><span>Portionen</span><button data-a="m" aria-label="Weniger">−</button><b>${n}</b><button data-a="p" aria-label="Mehr">+</button><button class="fav${isFav(r)?" on":""}" data-a="f">♥ Favorit</button></div>
 <b>Zutaten</b><ul>${r.ings.map(x=>`<li><b>${amt(x,n)}</b> ${esc(I[x.k].n)}</li>`).join("")}${r.extra.map(e=>`<li>${esc(e[0].toUpperCase()+e.slice(1))} (nach Belieben)</li>`).join("")}<li>Salz, Pfeffer</li></ul>
 <b>Zubereitung</b><ol>${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>`;
@@ -610,6 +893,11 @@ $("#dlg").onclick=e=>{
   const a=e.target.closest("[data-a]");if(!a)return;
   const k=a.dataset.a;
   if(k==="x")return $("#dlg").close();
+  if(k==="e"&&cur?.customId){
+    const recipe=S.customRecipes.find(item=>item.id===cur.customId);
+    if(!recipe)return;
+    $("#dlg").close();editCustomRecipe(recipe);settingsDlg.showModal();return;
+  }
   if(k==="m")S.n=Math.max(1,S.n-1);
   if(k==="p")S.n=Math.min(12,S.n+1);
   if(k==="f")toggleFav(cur);
@@ -637,11 +925,193 @@ $("#cat").addEventListener("click",()=>{S.cat=cat;S.showAll=showAll;save()});
 $("#go").onclick=gen;
 $("#rq").onkeydown=e=>{if(e.key==="Enter")gen()};
 $("#rq").oninput=()=>{S.rq=$("#rq").value;save()};
+const customForm=$("#customRecipeForm");
+let editingCustomId=null;
+function resetCustomForm(){
+  editingCustomId=null;customForm.reset();$("#customTime").value=30;
+  $("#customEditState").hidden=true;$("#customRecipeCancel").hidden=true;$("#customRecipeAdd").textContent="Rezept speichern";
+}
+function editCustomRecipe(recipe){
+  editingCustomId=recipe.id;
+  $("#customTitle").value=recipe.title;$("#customCuisine").value=recipe.cuisine;
+  $("#customMeal").value=recipe.meal;$("#customDiet").value=recipe.diet;
+  $("#customTime").value=recipe.time;
+  $("#customIngredients").value=recipe.ingredients.map(item=>item.grams?`${item.grams} g ${item.name}`:item.name).join("\n");
+  $("#customSteps").value=(recipe.steps||[]).join("\n");
+  $("#customEditState").textContent=`Du bearbeitest „${recipe.title}“.`;
+  $("#customEditState").hidden=false;$("#customRecipeCancel").hidden=false;$("#customRecipeAdd").textContent="Änderungen speichern";
+  $("#customTitle").focus();
+}
+function renderCustomRecipes(){
+  $("#customRecipeList").innerHTML=S.customRecipes.length?S.customRecipes.map(r=>`<div class="custom-recipe-row"><span>${esc(r.title)}</span>${r.ownerId===sharedSession?.user?.id?`<button type="button" data-custom-delete="${esc(r.id)}" aria-label="${esc(r.title)} löschen">Löschen</button>`:""}</div>`).join(""):`<span class="meta">Noch keine eigenen Rezepte gespeichert.</span>`;
+}
+function parseCustomIngredients(text){
+  const lines=text.split(/[\n,;]+/).map(line=>line.trim()).filter(Boolean);
+  return lines.map(line=>{
+    const match=line.match(/^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|l|stk|stück|stueck|el|tl|dose|dosen)?\s+(.+)$/i);
+    const amount=match?Number(match[1].replace(",",".")):0,unit=norm(match?.[2]||""),name=(match?match[3]:line).trim();
+    const key=customIngredientKey(name),grams=amount?quantityInGrams(amount,unit,key):0;
+    return{name,grams};
+  });
+}
+const sharedRecipesEnabled=SUPABASE_URL.startsWith("https://")&&SUPABASE_ANON_KEY.length>20;
+let sharedRecipeSyncBusy=false;
+function setSharedRecipeStatus(message,error=false){
+  ["#sharedRecipeStatus","#customSyncStatus"].forEach(selector=>{
+    const el=$(selector);el.textContent=message;el.style.color=error?"#b42318":"";
+  });
+}
+function persistSharedSession(session){
+  if(typeof session.access_token!=="string"||typeof session.refresh_token!=="string"||typeof session.user?.id!=="string")throw new Error("Supabase hat eine ungültige Anmeldesitzung zurückgegeben.");
+  sharedSession={access_token:session.access_token,refresh_token:session.refresh_token,user:session.user,expires_at:session.expires_at||Math.floor(Date.now()/1000)+(+session.expires_in||3600)};
+  localStorage.setItem(SUPABASE_SESSION_KEY,JSON.stringify(sharedSession));
+}
+async function supabaseAuthRequest(path,body){
+  const response=await fetch(`${SUPABASE_URL.replace(/\/$/,"")}/auth/v1/${path}`,{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!response.ok)throw new Error(`Supabase-Anmeldung fehlgeschlagen (HTTP ${response.status}): ${(await response.text()).slice(0,240)}`);
+  return response.json();
+}
+async function initializeSharedAuth(){
+  if(!sharedRecipesEnabled)return;
+  try{
+    if(sharedSession?.refresh_token){
+      if(+sharedSession.expires_at>Date.now()/1000+60)return;
+      const refreshed=await supabaseAuthRequest("token?grant_type=refresh_token",{refresh_token:sharedSession.refresh_token});
+      persistSharedSession(refreshed);return;
+    }
+    const signedIn=await supabaseAuthRequest("signup",{data:{}});
+    persistSharedSession(signedIn);
+  }catch(error){
+    setSharedRecipeStatus(`Anmeldung für gemeinsame Rezepte fehlgeschlagen: ${error.message}. Prüfe, ob anonyme Anmeldungen in Supabase aktiviert sind.`,true);
+    throw error;
+  }
+}
+async function refreshSharedAuth(){
+  if(!sharedSession?.refresh_token)throw new Error("Keine Supabase-Anmeldesitzung vorhanden.");
+  const refreshed=await supabaseAuthRequest("token?grant_type=refresh_token",{refresh_token:sharedSession.refresh_token});
+  persistSharedSession(refreshed);
+}
+function sharedRecipePayload(recipe,includeOwner=false){
+  return{id:recipe.id,title:recipe.title,cuisine:recipe.cuisine,meal:recipe.meal,diet:recipe.diet,time:recipe.time,servings:recipe.servings,ingredients:recipe.ingredients.map(item=>({name:item.name,grams:item.grams})),steps:recipe.steps,...(includeOwner?{owner_id:recipe.ownerId}:{} )};
+}
+function validateSharedRecipe(recipe){
+  const cuisines=["CH","IT","EEB","LA","AS","OR","INT"],meals=["main","breakfast","snack","dessert"],diets=["all","veg","vegan","fish"];
+  if(!recipe||typeof recipe.id!=="string"||recipe.id.length>80||typeof recipe.owner_id!=="string"||typeof recipe.title!=="string"||!recipe.title.trim()||recipe.title.length>100||
+    !cuisines.includes(recipe.cuisine)||!meals.includes(recipe.meal)||!diets.includes(recipe.diet)||!Number.isInteger(recipe.time)||recipe.time<5||recipe.time>240||
+    !Number.isInteger(recipe.servings)||recipe.servings<1||recipe.servings>12||!Array.isArray(recipe.ingredients)||!Array.isArray(recipe.steps)||
+    recipe.ingredients.some(item=>!item||typeof item.name!=="string"||item.name.length>100||!Number.isFinite(item.grams)||item.grams<0)||
+    recipe.steps.some(step=>typeof step!=="string"||step.length>1000))throw new Error("Die gemeinsame Rezeptdatenbank enthält einen ungültigen Eintrag.");
+  return{id:recipe.id,ownerId:recipe.owner_id,title:recipe.title,cuisine:recipe.cuisine,meal:recipe.meal,diet:recipe.diet,time:recipe.time,servings:recipe.servings,ingredients:recipe.ingredients,steps:recipe.steps};
+}
+async function sharedRecipeRequest(path,{method="GET",body}={}){
+  await sharedAuthReady;
+  if(!sharedSession?.access_token||+sharedSession.expires_at<=Date.now()/1000+30)await refreshSharedAuth();
+  const response=await fetch(`${SUPABASE_URL.replace(/\/$/,"")}/rest/v1/shared_recipes${path}`,{
+    method,headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${sharedSession.access_token}`,"Content-Type":"application/json",Prefer:"return=representation"},
+    body:body?JSON.stringify(body):undefined
+  });
+  if(!response.ok)throw new Error(`Supabase antwortet mit HTTP ${response.status}: ${(await response.text()).slice(0,240)}`);
+  return response.status===204?null:response.json();
+}
+async function writeSharedRecipe(recipe,method){
+  if(!sharedRecipesEnabled)return;
+  const path=method==="PATCH"?`?id=eq.${encodeURIComponent(recipe.id)}`:"";
+  const rows=await sharedRecipeRequest(path,{method,body:await sharedRecipePayload(recipe,method==="POST")});
+  if(method==="PATCH"&&(!Array.isArray(rows)||!rows.length))throw new Error("Das Rezept wurde in der gemeinsamen Liste nicht gefunden.");
+}
+async function deleteSharedRecipe(id){
+  if(!sharedRecipesEnabled)return;
+  const rows=await sharedRecipeRequest(`?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});
+  if(!Array.isArray(rows)||!rows.length)throw new Error("Löschen ist nur dem Ersteller dieses Rezepts erlaubt.");
+}
+async function refreshSharedRecipes(migrateLocal=false){
+  if(!sharedRecipesEnabled||sharedRecipeSyncBusy||!sharedSession?.access_token)return;
+  sharedRecipeSyncBusy=true;
+  try{
+    const select="?select=id,owner_id,title,cuisine,meal,diet,time,servings,ingredients,steps&order=created_at.asc";
+    let remote=await sharedRecipeRequest(select);
+    if(!Array.isArray(remote))throw new Error("Die gemeinsame Rezeptliste hat ein unerwartetes Format.");
+    remote=remote.map(validateSharedRecipe);
+    if(migrateLocal){
+      const remoteIds=new Set(remote.map(recipe=>recipe.id));
+      for(const recipe of S.customRecipes){
+        if(remoteIds.has(recipe.id))continue;
+        recipe.ownerId=sharedSession.user.id;
+        await writeSharedRecipe(recipe,"POST");remoteIds.add(recipe.id);
+      }
+      if(S.customRecipes.length)remote=await sharedRecipeRequest(select);
+      if(!Array.isArray(remote))throw new Error("Die gemeinsame Rezeptliste hat ein unerwartetes Format.");
+      remote=remote.map(validateSharedRecipe);
+    }
+    const hasChanges=JSON.stringify(S.customRecipes.map(recipe=>sharedRecipePayload(recipe,true)))!==JSON.stringify(remote.map(recipe=>sharedRecipePayload(recipe,true)));
+    if(hasChanges){S.customRecipes=remote;syncCustomDishes();save();renderCustomRecipes();gen()}
+    setSharedRecipeStatus(`${remote.length} gemeinsame Rezepte geladen. Änderungen sind für alle Besucher sichtbar.`);
+  }finally{sharedRecipeSyncBusy=false}
+}
+function reportSharedRecipeError(error){
+  console.error("Gemeinsame Rezepte konnten nicht synchronisiert werden.",error);
+  setSharedRecipeStatus(`Fehler beim Synchronisieren: ${error.message}`,true);
+}
+customForm.onsubmit=async e=>{
+  e.preventDefault();
+  if(!customForm.reportValidity())return;
+  if(sharedRecipesEnabled){
+    try{await sharedAuthReady}catch(error){reportSharedRecipeError(error);return}
+  }
+  const title=$("#customTitle").value.trim(),ingredients=parseCustomIngredients($("#customIngredients").value);
+  if(!title||!ingredients.length)return;
+  if(S.customRecipes.some(r=>r.id!==editingCustomId&&norm(r.title)===norm(title))){
+    $("#customTitle").setCustomValidity("Ein Rezept mit diesem Titel ist bereits gespeichert.");
+    $("#customTitle").reportValidity();$("#customTitle").setCustomValidity("");return;
+  }
+  const recipe={
+    id:editingCustomId||Math.random().toString(36).slice(2,10),title,cuisine:$("#customCuisine").value,
+    meal:$("#customMeal").value,diet:$("#customDiet").value,time:Math.max(5,Math.min(240,+$("#customTime").value||30)),
+    servings:Math.max(1,+S.n||2),ingredients,
+    steps:$("#customSteps").value.split(/\n+/).map(step=>step.trim()).filter(Boolean),
+    ownerId:editingCustomId?S.customRecipes.find(item=>item.id===editingCustomId)?.ownerId:sharedSession?.user?.id
+  };
+  if(sharedRecipesEnabled&&!recipe.ownerId){setSharedRecipeStatus("Deine Supabase-Nutzerkennung fehlt; bitte Seite neu laden und erneut versuchen.",true);return}
+  if(sharedRecipesEnabled){
+    try{await writeSharedRecipe(recipe,editingCustomId?"PATCH":"POST")}
+    catch(error){syncCustomDishes();reportSharedRecipeError(error);return}
+  }
+  if(editingCustomId){
+    const index=S.customRecipes.findIndex(item=>item.id===editingCustomId);
+    if(index<0)return;
+    S.customRecipes[index]=recipe;
+  }else S.customRecipes.push(recipe);
+  syncCustomDishes();save();renderCustomRecipes();gen();customForm.reset();$("#customTime").value=30;
+  resetCustomForm();
+  if(!sharedRecipesEnabled)setSharedRecipeStatus("Nur in diesem Browser gespeichert. Für die gemeinsame Liste Supabase einrichten.");
+};
+$("#customRecipeCancel").onclick=resetCustomForm;
+$("#customRecipeList").onclick=async e=>{
+  const b=e.target.closest("[data-custom-delete]");if(!b)return;
+  const ownedRecipe=S.customRecipes.find(r=>r.id===b.dataset.customDelete);
+  if(!ownedRecipe||ownedRecipe.ownerId!==sharedSession?.user?.id){
+    setSharedRecipeStatus("Nur der Ersteller darf dieses Rezept löschen.",true);return;
+  }
+  if(sharedRecipesEnabled){
+    try{await deleteSharedRecipe(b.dataset.customDelete)}
+    catch(error){reportSharedRecipeError(error);return}
+  }
+  if(editingCustomId===b.dataset.customDelete)resetCustomForm();
+  S.customRecipes=S.customRecipes.filter(r=>r.id!==b.dataset.customDelete);
+  syncCustomDishes();save();renderCustomRecipes();gen();
+};
+function updateFloatingGenerateButton(){
+  const button=$("#go"),floating=!$("#p2").hidden&&scrollY>240;
+  button.classList.toggle("is-floating",floating);
+  button.textContent=floating?"↻ Neue Ideen":"Ideen generieren";
+}
+addEventListener("scroll",updateFloatingGenerateButton,{passive:true});
 
 function tab(n, initialQuery){
   const previous=S.tab||1;
   [1,2,3].forEach(i=>{$("#p"+i).hidden=i!==n;$("#t"+i).setAttribute("aria-selected",i===n)});
   S.tab=n;save();scrollTo({top:0});
+  updateFloatingGenerateButton();
   if(n===2&&initialQuery!==undefined){$("#rq").value=initialQuery;S.rq=initialQuery;save();gen()}
   else if(n===2&&previous!==2){$("#rq").value="";S.rq="";save();gen()}
   else if(n===2&&!S.recs.length)gen();
@@ -651,12 +1121,22 @@ function tab(n, initialQuery){
 $("#rq").value="";S.rq="";
 const applyTheme=()=>{document.documentElement.dataset.theme=S.theme==="auto"?"":S.theme;document.documentElement.style.colorScheme=S.theme==="dark"?"dark":S.theme==="light"||S.theme==="mint"||S.theme==="lavender"||S.theme==="ocean"||S.theme==="sunset"||S.theme==="rose"?"light":""};
 const settingsDlg=$("#settingsDlg");
-$("#settingsOpen").onclick=()=>{$("#dislikes").value=S.dislikes;$("#theme").value=S.theme;$("#defaultServings").value=S.n;$("#motion").value=S.motion;settingsDlg.showModal()};
+$("#settingsOpen").onclick=()=>{$("#dislikes").value=S.dislikes;$("#theme").value=S.theme;$("#defaultServings").value=S.n;$("#motion").value=S.motion;renderCustomRecipes();settingsDlg.showModal()};
 settingsDlg.onclick=e=>{if(e.target===settingsDlg||e.target.closest("[data-settings-close]"))settingsDlg.close()};
 $("#settingsSave").onclick=()=>{S.dislikes=$("#dislikes").value;S.theme=$("#theme").value;S.n=Math.max(1,Math.min(12,+$("#defaultServings").value||2));S.motion=$("#motion").value;applyTheme();document.documentElement.style.scrollBehavior=S.motion==="reduce"?"auto":"";save();settingsDlg.close();gen()};
 const mobileFilters=matchMedia("(max-width: 640px)"),setFilterDisclosure=()=>{$("#recipeFilters").open=!mobileFilters.matches};
 setFilterDisclosure();mobileFilters.addEventListener("change",setFilterDisclosure);applyTheme();
-sync();renderP();renderR();renderF();tab(S.tab||1);
+sync();renderP();renderR();renderF();renderCustomRecipes();tab(S.tab||1);
+if(sharedRecipesEnabled){
+  setSharedRecipeStatus("Anmeldung und gemeinsame Rezeptliste werden geladen …");
+  sharedAuthReady=initializeSharedAuth();
+  sharedAuthReady.then(()=>{
+    renderCustomRecipes();
+    return refreshSharedRecipes(true);
+  }).catch(reportSharedRecipeError);
+  setInterval(()=>{if(!settingsDlg.open&&!document.hidden)refreshSharedRecipes().catch(reportSharedRecipeError)},30000);
+  addEventListener("focus",()=>{if(!settingsDlg.open)refreshSharedRecipes().catch(reportSharedRecipeError)});
+}else setSharedRecipeStatus("Gemeinsames Teilen ist noch nicht eingerichtet; eigene Rezepte bleiben auf diesem Browser.");
 </script>
 </body>
 </html>
