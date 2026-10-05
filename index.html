@@ -12,13 +12,18 @@
 [data-theme="light"]{--bg:#f7f8f4;--card:#fff;--ink:#202721;--mute:#66716a;--leaf:#287248;--leaf2:#e2f0e6;--line:#dce3dc}
 [data-theme="dark"]{--bg:#151a17;--card:#222a25;--ink:#edf3ee;--mute:#a3b0a7;--leaf:#79c58f;--leaf2:#293d30;--line:#36423a}
 [data-theme="mint"]{--bg:#eaf6f2;--card:#fff;--ink:#19352e;--mute:#55736a;--leaf:#14765e;--leaf2:#d5eee5;--line:#c9e1d8}
-@media(prefers-color-scheme:dark){:root{--bg:#121a14;--card:#1b261e;--ink:#eaf3ea;--mute:#9bb0a0;--leaf:#6cc487;--leaf2:#22362a;--line:#2b3b30}}
+[data-theme="lavender"]{--bg:#f2effa;--card:#fff;--ink:#302744;--mute:#716681;--leaf:#7956a8;--leaf2:#ece4f5;--line:#ddd3eb}
+[data-theme="ocean"]{--bg:#eaf4f8;--card:#fff;--ink:#173442;--mute:#56717c;--leaf:#167e9b;--leaf2:#d9edf2;--line:#c9e0e8}
+[data-theme="sunset"]{--bg:#fff3e8;--card:#fffdfa;--ink:#422b23;--mute:#80685b;--leaf:#c45b35;--leaf2:#f9e3d5;--line:#ecd4c4}
+[data-theme="rose"]{--bg:#faeef1;--card:#fff;--ink:#422932;--mute:#80636d;--leaf:#b64f70;--leaf2:#f4dfe6;--line:#e9cfd8}
+@media(prefers-color-scheme:dark){:root:not([data-theme]),:root[data-theme=""]{--bg:#121a14;--card:#1b261e;--ink:#eaf3ea;--mute:#9bb0a0;--leaf:#6cc487;--leaf2:#22362a;--line:#2b3b30}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
 header{padding:28px 64px 8px 16px;max-width:1100px;margin:auto;position:relative}
 h1{font-size:clamp(1.8rem,5vw,3rem);margin:0;font-weight:800;letter-spacing:-.02em}
 header p{margin:6px 0 0;color:var(--mute)}
-.settings-open{position:absolute;right:16px;top:28px;width:42px;height:42px;border:1.5px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);font-size:1.2rem;cursor:pointer}
+.settings-open{position:absolute;right:16px;top:28px;width:42px;height:42px;display:grid;place-items:center;border:1.5px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);cursor:pointer}
+.settings-open svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
 nav{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 16px;max-width:1100px;margin:auto;display:flex;gap:8px}
 nav button{flex:1;padding:12px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
 nav button[aria-selected=true]{background:var(--leaf);border-color:var(--leaf);color:#fff}
@@ -45,7 +50,7 @@ input[type=search]{flex:1 1 220px}
 .use:hover{background:var(--leaf2)}
 .rgrid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
 .rec{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;text-align:left;padding:0;font:inherit;color:inherit}
-.rec .pic{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.6rem;letter-spacing:.1em}
+.rec .pic{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.6rem}
 .rec .tx{padding:12px 14px 14px}
 .rec h3{margin:0 0 4px;font-size:1.1rem}
 .meta{font-size:.82rem;color:var(--mute)}
@@ -69,8 +74,31 @@ nav button[aria-selected=true]{color:var(--bg)}
 .rec .pic,dialog .pic{position:relative;overflow:hidden}
 .rec .pic{height:150px}
 dialog .pic{height:210px}
-.pic span{font-size:3.4rem}
-.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pic{isolation:isolate;background:var(--leaf2);letter-spacing:normal}
+.pic[data-kind="pasta"]{background:#f4e5bd}
+.pic[data-kind="rice"]{background:#e8edce}
+.pic[data-kind="egg"]{background:#f5e7b8}
+.pic[data-kind="salad"]{background:#dcebd7}
+.pic[data-kind="soup"]{background:#f1ded0}
+.pic[data-kind="dumpling"]{background:#eadcf0}
+.pic[data-kind="bread"]{background:#f0dfc6}
+.pic[data-kind="sweet"]{background:#f2dce2}
+.pic::before{content:"";position:absolute;z-index:-1;width:116px;height:116px;left:50%;top:48%;transform:translate(-50%,-50%);border:8px solid #ffffffb8;border-radius:50%;background:#ffffff70;box-shadow:0 4px 14px #17231a12,inset 0 0 0 2px #ffffffa8}
+.pic::after{content:"";position:absolute;z-index:-1;width:132px;height:132px;left:50%;top:48%;transform:translate(-50%,-50%);border:1px solid #ffffff80;border-radius:50%}
+.pic .dish-mark{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);font-size:4.1rem;line-height:1;filter:drop-shadow(0 3px 2px #17231a20)}
+.pic .ingredient-rail{position:absolute;left:0;right:0;bottom:1px;display:flex;justify-content:center;gap:16px}
+.pic .ingredient-icon{display:grid;place-items:center;width:34px;height:34px;border:1px solid #ffffffd9;border-radius:50%;background:#ffffffd9;box-shadow:0 2px 5px #17231a12;font-size:1.3rem}
+.pic .ingredient-icon--one{left:calc(50% - 66px)}
+.pic .ingredient-icon--two{left:calc(50% + 32px)}
+.pic .ingredient-icon--three{left:calc(50% - 17px)}
+.rec .ingredient-rail{display:flex;gap:4px;margin:0 0 9px}
+.rec .ingredient-label{display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;border-radius:9px;background:var(--bg);color:var(--mute);font-size:.66rem;line-height:1.2;text-align:center;overflow-wrap:anywhere}
+.rec .ingredient-label span{font-size:.95rem;line-height:1}
+.rec .ingredient-label b{font-weight:600}
+.rec .tx{padding:10px 12px 13px}
+.rec h3{font-size:1.04rem}
+.dialog-ingredients{position:absolute;top:8px;left:50%;right:auto;bottom:auto;width:max-content;transform:translateX(-50%)}
+.dialog-ingredients .ingredient-icon{width:38px;height:38px;font-size:1.4rem}
 .heart{position:absolute;top:8px;right:8px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:#fffc;color:#8a8f8a;font-size:1.2rem;cursor:pointer}
 .heart.on{color:#e5484d}
 dialog{max-height:92vh}
@@ -101,7 +129,7 @@ dialog ul{padding-left:20px}
 <header>
 <h1><svg width="34" height="34" viewBox="0 0 32 32" style="vertical-align:-5px;margin-right:8px" aria-hidden="true"><rect width="32" height="32" rx="6" fill="#d52b1e"/><path fill="#fff" d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z"/></svg>Swiss food</h1>
 <p>Weisch nid was essa? I au nid, luagemer mol was es so git!</p>
-<button class="settings-open" id="settingsOpen" aria-label="Einstellungen" title="Einstellungen">⚙</button>
+<button class="settings-open" id="settingsOpen" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button>
 </header>
 <nav role="tablist">
 <button role="tab" id="t1" aria-selected="true">Saisonkalender</button>
@@ -127,10 +155,10 @@ dialog ul{padding-left:20px}
 <div class="bar"><input type="search" id="rq" placeholder="Zutaten oder Lust, z. B. Avocado, Poulet, Taco, Momos …" aria-label="Zutaten oder Lust"><button class="go" id="go">Ideen generieren</button></div>
 <details class="recipe-filters" id="recipeFilters">
 <summary>Filter und Essensart</summary>
-<div class="chips filter-group" id="fv"><span class="lbl">Auswahl</span><button class="chip" data-v="all">Alles</button><button class="chip" data-v="veg">🌱 Vegi</button><button class="chip" data-v="vegan">🌿 Vegan</button><button class="chip" data-v="fish">🐟 Fisch</button></div>
-<div class="chips filter-group" id="fmeal"><span class="lbl">Mahlzeit</span><button class="chip" data-v="all">Alle</button><button class="chip" data-v="breakfast">Z'morga</button><button class="chip" data-v="main">Z'mittag/Z'nacht</button><button class="chip" data-v="snack">Snacks</button><button class="chip" data-v="dessert">Dessert</button></div>
-<div class="chips filter-group" id="fm"><span class="lbl">Ziel</span><button class="chip" data-v="protein">💪 Proteinreich</button><button class="chip" data-v="light">🥗 Kalorienarm</button><button class="chip" data-v="lowcarb">Low Carb</button><button class="chip" data-v="balanced">Ausgewogen</button></div>
-<div class="chips filter-group" id="fc"><span class="lbl">Küche</span><button class="chip" data-v="all">Alle</button><button class="chip" data-v="CH">Schweiz / DACH</button><button class="chip" data-v="IT">Italien</button><button class="chip" data-v="MED">Mittelmeer</button><button class="chip" data-v="LA">Lateinamerika</button><button class="chip" data-v="AS">Asien</button><button class="chip" data-v="OR">Orient &amp; Indien</button><button class="chip" data-v="US">USA</button></div>
+<div class="chips filter-group" id="fv"><span class="lbl">Auswahl</span><button class="chip" data-v="all">🍽️ Alles</button><button class="chip" data-v="veg">🌱 Vegi</button><button class="chip" data-v="vegan">🌿 Vegan</button><button class="chip" data-v="fish">🐟 Fisch</button></div>
+<div class="chips filter-group" id="fmeal"><span class="lbl">Mahlzeit</span><button class="chip" data-v="all">🍽️ Alle</button><button class="chip" data-v="breakfast">🌅 Z'morga</button><button class="chip" data-v="main">🍲 Z'mittag/Z'nacht</button><button class="chip" data-v="snack">🥨 Snacks</button><button class="chip" data-v="dessert">🍰 Dessert</button></div>
+<div class="chips filter-group" id="fm"><span class="lbl">Ziel</span><button class="chip" data-v="protein">💪 Proteinreich</button><button class="chip" data-v="light">🥗 Kalorienarm</button><button class="chip" data-v="lowcarb">🥑 Low Carb</button><button class="chip" data-v="balanced">⚖️ Ausgewogen</button></div>
+<div class="chips filter-group" id="fc"><span class="lbl">Küche</span><button class="chip" data-v="all">🌍 Alle</button><button class="chip" data-v="CH">🇨🇭 Schweiz / DACH</button><button class="chip" data-v="IT">🇮🇹 Italien</button><button class="chip" data-v="EEB">🥟 Osteuropa, Balkan &amp; Türkei</button><button class="chip" data-v="LA">🌮 Lateinamerika</button><button class="chip" data-v="AS">🥢 Asien</button><button class="chip" data-v="OR">🧆 Orient &amp; Indien</button></div>
 <label class="time-filter"><span>⏱ Zeitaufwand</span><input id="timeLimit" type="range" min="10" max="90" step="5" value="60" aria-label="Maximaler Zeitaufwand"><output id="timeValue" for="timeLimit">bis 60 Min.</output></label>
 </details>
 <p class="count" id="rcount">Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.</p><p id="rnote"></p>
@@ -140,7 +168,7 @@ dialog ul{padding-left:20px}
 <p class="note">Rezepte werden per Zufallsgenerator zusammengestellt, Nährwerte sind Schätzwerte. Saisonangaben für Freiland- und Lagerware aus der Schweiz, grob und ohne Gewähr. Der schwarze Rahmen im Balken zeigt den gewählten Monat.</p>
 </main>
 <dialog id="dlg"></dialog>
-<dialog id="settingsDlg"><div class="in"><button class="close" data-settings-close aria-label="Einstellungen schliessen">Schliessen</button><h2>Einstellungen</h2><form class="settings-form" id="settingsForm"><label for="dislikes">Zutaten, die du nicht magst<input id="dislikes" type="text" placeholder="z. B. Pilze, Oliven, Koriander"><span class="meta">Mit Komma trennen. Diese Zutaten werden möglichst ausgeschlossen.</span></label><label for="theme">Hintergrundfarbe<select id="theme"><option value="auto">Systemeinstellung</option><option value="light">Hell</option><option value="dark">Dunkel</option><option value="mint">Minze</option></select></label><label for="defaultServings">Standard-Portionen<input id="defaultServings" type="number" min="1" max="12" value="2"></label><label for="motion">Bewegung<select id="motion"><option value="system">Systemeinstellung</option><option value="reduce">Animationen reduzieren</option></select></label></form><div class="settings-actions"><button type="button" data-settings-close>Abbrechen</button><button class="go" id="settingsSave" type="button">Speichern</button></div></div></dialog>
+<dialog id="settingsDlg"><div class="in"><button class="close" data-settings-close aria-label="Einstellungen schliessen">Schliessen</button><h2>Einstellungen</h2><form class="settings-form" id="settingsForm"><label for="dislikes">Zutaten, die du nicht magst<input id="dislikes" type="text" placeholder="z. B. Pilze, Oliven, Koriander"><span class="meta">Mit Komma trennen. Diese Zutaten werden möglichst ausgeschlossen.</span></label><label for="theme">Hintergrundfarbe<select id="theme"><option value="auto">Systemeinstellung</option><option value="light">Hell</option><option value="dark">Dunkel</option><option value="mint">Minze</option><option value="lavender">Lavendel</option><option value="ocean">Ozean</option><option value="sunset">Sonnenuntergang</option><option value="rose">Rosé</option></select></label><label for="defaultServings">Standard-Portionen<input id="defaultServings" type="number" min="1" max="12" value="2"></label><label for="motion">Bewegung<select id="motion"><option value="system">Systemeinstellung</option><option value="reduce">Animationen reduzieren</option></select></label></form><div class="settings-actions"><button type="button" data-settings-close>Abbrechen</button><button class="go" id="settingsSave" type="button">Speichern</button></div></div></dialog>
 <script>
 // [Name, Emoji, G=Gemüse/O=Obst, Beliebtheit 1=sehr häufig … 3, Saison-Monate]
 const P=[
@@ -193,12 +221,11 @@ $("#cat").onclick=e=>{
 };
 $("#grid").onclick=e=>{
   const b=e.target.closest(".use");if(!b)return;
-  $("#rq").value=b.dataset.n;
-  tab(2);gen();
+  tab(2,b.dataset.n);
 };
 
 /* ===== Rezept-Generator (läuft komplett im Browser) ===== */
-S.favs=S.favs||[];S.recs=S.recs||[];S.n=S.n||2;S.veg=S.veg==="meat"||!S.veg?"all":S.veg;S.meal=["lunch","dinner"].includes(S.meal)?"main":S.meal||"all";S.mode=S.mode||"protein";S.cu=S.cu||"all";S.maxTime=S.maxTime||60;S.dislikes=S.dislikes||"";S.theme=S.theme||"auto";S.motion=S.motion||"system";
+S.favs=S.favs||[];S.recs=(S.recs||[]).slice(0,8);S.n=S.n||2;S.veg=S.veg==="meat"||!S.veg?"all":S.veg;S.meal=["lunch","dinner"].includes(S.meal)?"main":S.meal||"all";S.mode=S.mode||"protein";S.cu=["all","CH","IT","EEB","LA","AS","OR"].includes(S.cu)?S.cu:"all";S.maxTime=S.maxTime||60;S.dislikes=S.dislikes||"";S.theme=["auto","light","dark","mint","lavender","ocean","sunset","rose"].includes(S.theme)?S.theme:"auto";S.motion=S.motion||"system";
 // key, Name, Englisch (für Bild), kcal/P/C/F pro 100 g, g pro Portion, Typ, Flags (m=Fleisch/Fisch, p=verderblich), Einheit, g je Einheit, Zubereitung, Suchwörter
 const DB=[
 ["pasta","Pasta","pasta",360,12,72,1.5,110,"C","","",0,"","nudeln spaghetti penne fusilli tagliatelle"],
@@ -298,16 +325,16 @@ const DB=[
 const I={};DB.forEach(a=>I[a[0]]={k:a[0],n:a[1],e:a[2],kc:a[3],p:a[4],c:a[5],f:a[6],g:a[7],t:a[8],fl:a[9],u:a[10],ug:a[11],how:a[12],al:norm(a[1]+" "+a[13]).split(" ").filter(Boolean)});
 const ALL=DB.map(a=>I[a[0]]);
 const FL=[ // Geschmacksrichtung, zusätzliche Zutaten, Schlusschritt, Küchen
-["Zitronen-Knoblauch",["knoblauch"],"Mit Zitronensaft, Salz und Pfeffer abschmecken.",["IT","MED","CH"]],
+["Zitronen-Knoblauch",["knoblauch"],"Mit Zitronensaft, Salz und Pfeffer abschmecken.",["IT","CH"]],
 ["Rahm",["rahm","knoblauch"],"Mit einem Schuss Rahm binden und mit Pfeffer abschmecken.",["CH"]],
 ["Pesto",["pesto"],"Pesto unterrühren und mit Pfeffer abschmecken.",["IT"]],
 ["Soja-Knoblauch",["sojasauce","knoblauch","ingwer"],"Mit Sojasauce, Pfeffer und nach Wunsch Chili würzen.",["AS"]],
-["Tomaten-Kräuter",["tomaten","knoblauch"],"Mit Oregano, Basilikum, Salz und Pfeffer würzen.",["IT","MED"]],
-["Butter-Kräuter",["butter"],"Mit Butter, frischen Kräutern, Salz und Pfeffer abrunden.",["CH","US"]],
+["Tomaten-Kräuter",["tomaten","knoblauch"],"Mit Oregano, Basilikum, Salz und Pfeffer würzen.",["IT"]],
+["Butter-Kräuter",["butter"],"Mit Butter, frischen Kräutern, Salz und Pfeffer abrunden.",["CH"]],
 ["Curry",["kokosmilch","currypaste"],"Mit Currypaste und Kokosmilch würzen und kurz köcheln lassen.",["AS","OR"]],
 ["Limetten-Avocado",["limette","avocado"],"Mit Limettensaft, Salz und Pfeffer abschmecken, Avocado in Würfeln darübergeben.",["LA"]],
-["Joghurt-Minze",["quark","knoblauch"],"Mit Quark, Knoblauch, Zitrone, Kreuzkümmel und frischer Minze abschmecken.",["OR","MED"]],
-["Honig-Senf",["honig"],"Mit Honig, Senf, Salz und Pfeffer glasieren.",["US"]]
+["Joghurt-Minze",["quark","knoblauch"],"Mit Quark, Knoblauch, Zitrone, Kreuzkümmel und frischer Minze abschmecken.",["OR","EEB"]],
+["Honig-Senf",["honig"],"Mit Honig, Senf, Salz und Pfeffer glasieren.",["CH"]]
 ];
 const CS={polenta:"Polenta nach Packung in Salzwasser unter Rühren zu einem festen Brei kochen.",reisnudeln:"Reisnudeln nach Packung einweichen oder kochen.",gnocchi:"Gnocchi in Salzwasser garen, bis sie oben schwimmen.",suesskartoffel:"Süsskartoffeln würfeln und in Salzwasser 10 Min. vorkochen.",pasta:"Pasta in reichlich Salzwasser bissfest kochen (ca. 10 Min.), eine Tasse Kochwasser aufheben.",reis:"Reis nach Packungsangabe kochen (ca. 12–15 Min.).",kartoffeln:"Kartoffeln würfeln und in Salzwasser 12 Min. vorkochen.",couscous:"Couscous mit gleich viel heissem Wasser übergiessen und 5 Min. quellen lassen.",quinoa:"Quinoa abspülen und in doppelter Menge Wasser 12 Min. kochen.",bulgur:"Bulgur in doppelter Menge Wasser 10 Min. köcheln, dann quellen lassen.",wrap:"Wraps kurz in der trockenen Pfanne erwärmen."};
 const FM=[ // Gruppe, Titel, Minuten, schnell?, Schritte
@@ -344,8 +371,8 @@ const lev=(a,b)=>{const d=[];for(let i=0;i<=a.length;i++)d[i]=[i];for(let j=1;j<
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]};
 // erst exakte/Anfangs-Treffer, dann Tippfehler-Toleranz
 const fnd=(n,L)=>L.find(x=>x.al.some(w=>mw(n,w)))||L.find(x=>x.al.some(w=>n.length>=5&&w.length>=4&&lev(n,w)<=(n.length>=8?2:1)));
-const CULAB={CH:"Schweiz / DACH",IT:"Italien",MED:"Mittelmeer",LA:"Lateinamerika",AS:"Asien",OR:"Orient & Indien",US:"USA"};
-const CUC={CH:["kartoffeln","pasta"],IT:["pasta","reis","polenta","gnocchi"],MED:["couscous","bulgur","kartoffeln"],LA:["reis","wrap"],AS:["reis","reisnudeln"],OR:["couscous","bulgur","reis"],US:["wrap","kartoffeln","suesskartoffel"]};
+const CULAB={CH:"Schweiz / DACH",IT:"Italien",EEB:"Osteuropa, Balkan & Türkei",LA:"Lateinamerika",AS:"Asien",OR:"Orient & Indien"};
+const CUC={CH:["kartoffeln","pasta"],IT:["pasta","reis","polenta","gnocchi"],EEB:["kartoffeln","reis"],LA:["reis","wrap"],AS:["reis","reisnudeln"],OR:["couscous","bulgur","reis"]};
 const GRP={pasta:"pasta",reisnudeln:"pasta",gnocchi:"pasta",reis:"reis",kartoffeln:"kart",suesskartoffel:"kart",wrap:"wrap"};
 const RAW=new Set(["salat","gurken","avocado","radieschen","rhabarber"]);
 // Weltküche & Spezialitäten: Name, Küchen, Min., Slots (P=Eiweiss V=Gemüse O=Obst), feste Zutaten, Schritte, Emoji, Herkunft, Suchwörter
@@ -355,28 +382,34 @@ const DR=[
 ["Momos","AS",50,"P,V","mehl:1.3,ingwer:1,knoblauch:1,sojasauce:.6",["Mehl mit lauwarmem Wasser zu einem festen Teig kneten und 15 Min. ruhen lassen.","Gemüse ({V}) und {Pn} fein hacken, mit Ingwer und Knoblauch 8 Min. anbraten.","Teig dünn ausrollen, Kreise ausstechen, Füllung hineingeben und zu Täschchen formen.","Momos 10–12 Min. im Dampf garen und mit Sojasauce servieren."],"🥟","Nepal","momo momos dumpling dumplings gyoza jiaozi"],
 ["Rösti","CH",35,"P,V","kartoffeln:1,zwiebeln:.6,butter:1.3",["Kartoffeln (am besten vom Vortag) raffeln und salzen.","Butter erhitzen, Kartoffeln flach andrücken und pro Seite ca. 10 Min. goldbraun braten.","Gemüse ({V}) separat anbraten.","{PS}","Rösti mit Gemüse und Eiweiss anrichten."],"🥔","Schweiz","roesti roeschti"],
 ["Capuns","CH",45,"P,V","mehl:1.2,eier:1,milch:1,kaese:1,wirz:1",["Wirzblätter (oder Mangold) 2 Min. blanchieren.","Mehl, Eier, Milch und Salz zu einem zähen Teig rühren, Gemüse ({V}) und {Pn} fein hacken und untermischen.","Je einen Löffel Teig auf ein Blatt geben und zu Päckli rollen.","In Salzwasser 15 Min. sanft köcheln, dann mit Käse überbacken."],"🥬","Graubünden","capuns kapuns"],
-["Caesar Salad","US",18,"P","salat:2,kaese:.8,brot:.6,quark:.5,knoblauch:1",["Brot würfeln und in Olivenöl knusprig rösten (Croutons).","{PS}","Quark mit Zitronensaft, Knoblauch, Salz und Pfeffer zum Dressing rühren.","Salat zerzupfen, mit Dressing mischen und mit {Pn}, Croutons und Käse anrichten."],"🥗","USA","caesar ceasar cesar caesarsalat salad"],
+["Caesar Salad","INT",18,"P","salat:2,kaese:.8,brot:.6,quark:.5,knoblauch:1",["Brot würfeln und in Olivenöl knusprig rösten (Croutons).","{PS}","Quark mit Zitronensaft, Knoblauch, Salz und Pfeffer zum Dressing rühren.","Salat zerzupfen, mit Dressing mischen und mit {Pn}, Croutons und Käse anrichten."],"🥗","USA","caesar ceasar cesar caesarsalat salad"],
 ["Polenta-Gratin","IT",35,"P,V","polenta:1,kaese:1,butter:.5,zwiebeln:.5",["Polenta nach Packung in Salzwasser unter Rühren zu einem festen Brei kochen.","Gemüse ({V}) 6 Min. anbraten, dann {PS}","Polenta in eine Form streichen, Gemüse und Eiweiss verteilen, Käse darüberstreuen.","Bei 200 °C 10–15 Min. überbacken."],"🌽","Italien","polenta gratin"],
 ["Gnocchi-Pfanne","IT",19,"P,V","gnocchi:1,butter:.6,kaese:.8",["Gnocchi in Butter 6–8 Min. goldbraun braten.","Gemüse ({V}) dazugeben und 5 Min. mitbraten.","{PS}","Mit Käse, Salz und Pfeffer abschmecken."],"🥘","Italien","gnocchi"],
+["Pasta Carbonara","IT",25,"","pasta:1,eier:1.2,kaese:.6,schinken:.6",["Pasta in Salzwasser bissfest kochen und etwas Kochwasser aufheben.","Schinken in einer Pfanne knusprig braten.","Eier mit geriebenem Käse und Pfeffer verquirlen.","Pasta abgiessen, mit dem Schinken mischen und die Pfanne vom Herd nehmen. Eiermischung mit etwas Kochwasser unterrühren, bis eine cremige Sauce entsteht."],"🍝","Italien","pasta carbonara spaghetti"],
+["Pasta al Pomodoro","IT",25,"V","pasta:1,tomaten:1.4,knoblauch:.5,oel:.5",["Pasta in Salzwasser bissfest kochen und etwas Kochwasser aufheben.","Knoblauch in Olivenöl kurz anbraten, Tomaten dazugeben und 10 Min. köcheln lassen.","Pasta mit der Sauce mischen und mit Salz, Pfeffer und Kräutern abschmecken."],"🍝","Italien","pasta pomodoro tomato"],
 ["Shakshuka","OR",25,"V","tomaten:1.4,eier:1.1,zwiebeln:.6,peperoni:.7,knoblauch:1,feta:.5",["Zwiebel, Knoblauch und Gemüse ({V}) in Olivenöl 6 Min. anbraten.","Tomaten würfeln, dazugeben, mit Kreuzkümmel und Paprikapulver 10 Min. einkochen.","Mulden formen, Eier hineingleiten lassen und zugedeckt 6 Min. stocken lassen.","Feta darüberbröseln und mit Brot servieren."],"🍳","Nordafrika / Nahost","shakshuka schakschuka"],
 ["Falafel-Wrap","OR",40,"V","kichererbsen:1.2,wrap:1,quark:.6,knoblauch:1,mehl:.3",["Kichererbsen abspülen, mit Knoblauch, Salz, Kreuzkümmel und Mehl zerstampfen und zu Bällchen formen.","Falafel in Olivenöl pro Seite 3 Min. braten.","Quark mit Knoblauch und Zitronensaft zur Sauce rühren.","Gemüse ({V}) schneiden, Wraps mit Falafel, Gemüse und Sauce füllen."],"🌯","Naher Osten","falafel hummus"],
 ["Dal","OR",35,"V","linsen:1.3,zwiebeln:.6,tomaten:.7,ingwer:1,knoblauch:1,currypaste:.7,reis:.8",["Reis nach Packung kochen.","Zwiebel, Ingwer, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten, Currypaste einrühren.","Tomaten und Linsen mit 200 ml Wasser dazugeben und 15 Min. köcheln.","Dal mit Reis servieren."],"🍛","Indien","dal dhal linsencurry"],
 ["Curry","AS,OR",30,"P,V","kokosmilch:1,currypaste:1,reis:1,ingwer:1",["Reis nach Packung kochen.","Ingwer und Currypaste in Öl 1 Min. anrösten, Gemüse ({V}) dazugeben und 5 Min. braten.","{PS}","Mit Kokosmilch ablöschen, 10 Min. köcheln und mit Reis servieren."],"🍛","Thailand / Indien","curry thai"],
 ["Pad Thai","AS",25,"P,V","reisnudeln:1,eier:1,sojasauce:1,limette:1,knoblauch:1",["Reisnudeln nach Packung einweichen oder kochen.","Gemüse ({V}) und Knoblauch scharf anbraten.","{PS}","Nudeln und Sojasauce dazugeben, Eier unterrühren und mit Limettensaft abschmecken."],"🍜","Thailand","padthai pad"],
 ["Bibimbap","AS",35,"P,V","reis:1,eier:1,sojasauce:.8,karotten:.5,spinat:.6",["Reis kochen.","Karotten, Spinat und Gemüse ({V}) einzeln kurz anbraten.","{PS}","Alles auf dem Reis anrichten, mit Spiegelei und Sojasauce servieren."],"🍚","Korea","bibimbap korea"],
-["Poke Bowl","AS,US",19,"P,V","reis:.9,avocado:.8,sojasauce:.6,gurken:.7",["Reis kochen und abkühlen lassen.","{PS}","Gemüse ({V}), Gurke und Avocado würfeln.","Alles auf dem Reis anrichten und mit Sojasauce beträufeln."],"🥣","Hawaii","poke pokebowl sushi"],
+["Poke Bowl","AS,INT",19,"P,V","reis:.9,avocado:.8,sojasauce:.6,gurken:.7",["Reis kochen und abkühlen lassen.","{PS}","Gemüse ({V}), Gurke und Avocado würfeln.","Alles auf dem Reis anrichten und mit Sojasauce beträufeln."],"🥣","Hawaii","poke pokebowl sushi"],
 ["Burrito Bowl","LA",25,"P,V","reis:1,schwarzebohnen:.7,mais:.7,avocado:.8,limette:1",["Reis kochen.","Gemüse ({V}) 6 Min. anbraten, Bohnen und Mais dazugeben.","{PS}","Reis, Gemüse und Avocado in eine Schale schichten und mit Limettensaft beträufeln."],"🥣","Mexiko","burrito burritobowl"],
 ["Quesadilla","LA",15,"P,V","wrap:1,kaese:1.3",["Gemüse ({V}) klein schneiden und 4 Min. anbraten.","{PS}","Wrap mit Käse, Gemüse und Eiweiss belegen und zusammenklappen.","Pro Seite 2–3 Min. knusprig braten."],"🫓","Mexiko","quesadilla"],
-["Chili","LA,US",40,"P,V","schwarzebohnen:1,tomaten:1.2,mais:.6,zwiebeln:.6,knoblauch:1",["Zwiebel, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten.","{PS}","Tomaten, Bohnen, Mais und Chili dazugeben und 25 Min. köcheln.","Mit Salz, Kreuzkümmel und Paprikapulver abschmecken."],"🌶️","Texas / Mexiko","chili chilli carne"],
+["Chili","LA",40,"P,V","schwarzebohnen:1,tomaten:1.2,mais:.6,zwiebeln:.6,knoblauch:1",["Zwiebel, Knoblauch und Gemüse ({V}) in Öl 6 Min. anbraten.","{PS}","Tomaten, Bohnen, Mais und Chili dazugeben und 25 Min. köcheln.","Mit Salz, Kreuzkümmel und Paprikapulver abschmecken."],"🌶️","Texas / Mexiko","chili chilli carne"],
 ["Käsespätzli","CH",35,"V","mehl:1.4,eier:1.2,milch:.6,kaese:1.6,zwiebeln:.8,butter:.8",["Mehl, Eier, Milch und Salz zu einem zähen Teig rühren und portionsweise ins kochende Salzwasser hobeln.","Zwiebeln und Gemüse ({V}) in Butter goldbraun braten.","Spätzli mit Käse schichten und in der Pfanne schmelzen lassen."],"🧀","Schweiz","spaetzli spaetzle kaesespaetzli kaesespaetzle"],
-["Ratatouille","MED",35,"P,V","zucchetti:1,aubergine:1,tomaten:1,peperoni:.8,zwiebeln:.5,knoblauch:1",["Gemüse ({V}) und das übrige Gemüse in Würfel schneiden.","In Olivenöl nacheinander anbraten, dann 20 Min. schmoren.","{PS}","Mit Thymian, Salz und Pfeffer abschmecken."],"🍆","Frankreich","ratatouille"],
-["Griechischer Salat","MED",15,"V","gurken:1,tomaten:1,zwiebeln:.4,feta:1.3,kichererbsen:.8,oel:1.2",["Gemüse ({V}), Gurken, Tomaten und Zwiebel in grobe Stücke schneiden.","Kichererbsen abspülen und dazugeben.","Mit Olivenöl, Oregano und Salz mischen und Feta darüberbröseln."],"🥗","Griechenland","griechischer horiatiki bauernsalat"],
-["Tortilla Española","MED",35,"V","kartoffeln:.8,eier:1.6,zwiebeln:.7,oel:2",["Kartoffeln und Zwiebeln in dünne Scheiben schneiden und in reichlich Olivenöl 12 Min. weich braten.","Gemüse ({V}) kurz mitbraten.","Alles mit verquirlten Eiern mischen, zurück in die Pfanne geben und pro Seite 5 Min. stocken lassen."],"🍳","Spanien","espanola spanische"],
+["Ratatouille","IT",35,"P,V","zucchetti:1,aubergine:1,tomaten:1,peperoni:.8,zwiebeln:.5,knoblauch:1",["Gemüse ({V}) und das übrige Gemüse in Würfel schneiden.","In Olivenöl nacheinander anbraten, dann 20 Min. schmoren.","{PS}","Mit Thymian, Salz und Pfeffer abschmecken."],"🍆","Frankreich","ratatouille"],
+["Griechischer Salat","EEB",15,"V","gurken:1,tomaten:1,zwiebeln:.4,feta:1.3,kichererbsen:.8,oel:1.2",["Gemüse ({V}), Gurken, Tomaten und Zwiebel in grobe Stücke schneiden.","Kichererbsen abspülen und dazugeben.","Mit Olivenöl, Oregano und Salz mischen und Feta darüberbröseln."],"🥗","Griechenland","griechischer horiatiki bauernsalat"],
+["Bulgarischer Shopska-Salat","EEB",15,"V","tomaten:1,gurken:1,peperoni:.7,zwiebeln:.3,feta:1,oel:.5",["Tomaten, Gurken und Peperoni würfeln, Zwiebel fein schneiden.","Gemüse mit Olivenöl, Salz und Pfeffer mischen.","Feta darüberreiben und frisch servieren."],"🥗","Bulgarien","shopska shopska salat"],
+["Slowakische Bryndzové Halušky","EEB",40,"","kartoffeln:1.5,mehl:.8,kaese:1.2,schwein:.5",["Kartoffeln fein reiben und mit Mehl und Salz zu einem weichen Teig verrühren.","Teig portionsweise durch ein grobes Sieb in siedendes Salzwasser drücken und garen, bis die Nocken an die Oberfläche steigen.","Abgiessen, mit Käse vermischen und mit knusprig gebratenem Schweinefleisch servieren."],"🥔","Slowakei","halusky bryndzove bryndzové"],
+["Türkisches Menemen","EEB",20,"V","eier:1.5,tomaten:1.2,peperoni:.8,zwiebeln:.4,oel:.5",["Zwiebel und Peperoni klein schneiden und in Olivenöl weich braten.","Tomaten würfeln, dazugeben und köcheln lassen, bis sie weich sind.","Eier verquirlen, unterrühren und bei kleiner Hitze stocken lassen. Mit Brot servieren."],"🍳","Türkei","menemen"],
+["Ungarisches Gulasch","EEB",70,"P,V","schwein:1.2,kartoffeln:1,zwiebeln:.6,peperoni:.7,tomaten:.5",["Fleisch und Zwiebeln in einem Topf anbraten.","Peperoni und Tomaten zugeben, grosszügig mit Paprikapulver würzen und mit Wasser bedecken.","Zugedeckt etwa 45 Min. schmoren, Kartoffeln zugeben und weich kochen."],"🍲","Ungarn","gulasch gulash"],
+["Tortilla Española","ES",35,"V","kartoffeln:.8,eier:1.6,zwiebeln:.7,oel:2",["Kartoffeln und Zwiebeln in dünne Scheiben schneiden und in reichlich Olivenöl 12 Min. weich braten.","Gemüse ({V}) kurz mitbraten.","Alles mit verquirlten Eiern mischen, zurück in die Pfanne geben und pro Seite 5 Min. stocken lassen."],"🍳","Spanien","espanola spanische"],
 ["Kaiserschmarrn","CH",25,"O","mehl:.9,eier:1.1,milch:1.2,butter:.7,honig:.6",["Mehl, Eier, Milch und eine Prise Salz zu einem Teig rühren.","Butter erhitzen, Teig eingiessen, Früchte ({O}) darauf verteilen und goldgelb backen.","Wenden, mit zwei Gabeln zerreissen und mit Honig beträufeln."],"🥞","Österreich","kaiserschmarrn schmarrn"],
-["Porridge","US",10,"O","haferflocken:1,milch:1.5,quark:.8,baumnuesse:.8",["Haferflocken mit Milch 5 Min. unter Rühren köcheln.","Früchte ({O}) waschen und klein schneiden.","In eine Schale geben, Quark, Früchte und Nüsse darüber."],"🥣","Frühstück","porridge haferbrei oatmeal haferflocken"],
+["Porridge","INT",10,"O","haferflocken:1,milch:1.5,quark:.8,baumnuesse:.8",["Haferflocken mit Milch 5 Min. unter Rühren köcheln.","Früchte ({O}) waschen und klein schneiden.","In eine Schale geben, Quark, Früchte und Nüsse darüber."],"🥣","Frühstück","porridge haferbrei oatmeal haferflocken"],
 ["Quark-Bowl","CH",10,"O","quark:1.5,haferflocken:.5,honig:.6",["Quark in eine Schale geben.","Früchte ({O}) schneiden und darauf verteilen.","Mit Haferflocken und Honig toppen."],"🍓","Frühstück","quarkbowl"],
-["Crumble","CH,MED",45,"O","haferflocken:.7,mehl:.5,butter:1.2,honig:.8,quark:.8",["Ofen auf 180 °C vorheizen, Früchte ({O}) in eine Form geben.","Haferflocken, Mehl, Butter und Honig zu Streuseln verreiben und darüber verteilen.","30 Min. backen und mit Quark servieren."],"🍰","Dessert","crumble"],
-["Pfannkuchen","CH,US",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.6",["Mehl, Eier, Milch und Salz zu einem glatten Teig rühren, 10 Min. ruhen lassen.","Pfannkuchen in Butter pro Seite 2 Min. goldbraun backen.","Mit Quark und Früchten ({O}) füllen oder belegen."],"🥞","Frühstück","pfannkuchen crepes pancakes palatschinken"]
+["Crumble","CH,FR",45,"O","haferflocken:.7,mehl:.5,butter:1.2,honig:.8,quark:.8",["Ofen auf 180 °C vorheizen, Früchte ({O}) in eine Form geben.","Haferflocken, Mehl, Butter und Honig zu Streuseln verreiben und darüber verteilen.","30 Min. backen und mit Quark servieren."],"🍰","Dessert","crumble"],
+["Pfannkuchen","CH,INT",25,"O","mehl:1,eier:1,milch:1.2,butter:.5,quark:.6",["Mehl, Eier, Milch und Salz zu einem glatten Teig rühren, 10 Min. ruhen lassen.","Pfannkuchen in Butter pro Seite 2 Min. goldbraun backen.","Mit Quark und Früchten ({O}) füllen oder belegen."],"🥞","Frühstück","pfannkuchen crepes pancakes palatschinken"]
 ];
 const D=DR.map(a=>({n:a[0],c:a[1],t:a[2],s:a[3],fx:a[4].split(",").map(p=>{const q=p.split(":");return[q[0],+q[1]]}),st:a[5],em:a[6],l:a[7],al:norm(a[8]).split(" ").filter(Boolean)}));
 
@@ -394,80 +427,113 @@ function build(o){
   const allowed=x=>!isExcluded(x)&&(veg!=="vegan"||veganOK(x))&&(veg!=="veg"||!x.fl.includes("m"))&&(veg!=="fish"||!x.fl.includes("m")||fishOK(x));
   const poolP=ALL.filter(x=>x.t==="P"&&allowed(x));
   const poolC=ALL.filter(x=>x.t==="C"&&allowed(x)),poolV=ALL.filter(x=>x.t==="V"&&!RAW.has(x.k)&&allowed(x)),poolO=ALL.filter(x=>x.t==="O"&&allowed(x));
+  const urgency=x=>x.fl.includes("p")?3:["V","O"].includes(x.t)?2:x.t==="P"?1:0;
+  const rankedInputs=inp.map((x,i)=>({x,i})).sort((a,b)=>urgency(b.x)-urgency(a.x)||a.i-b.i).map(entry=>entry.x);
+  const freshInputs=rankedInputs.filter(x=>urgency(x)>1),stableInputs=rankedInputs.filter(x=>urgency(x)<=1);
+  const requiredFor=i=>{
+    if(!rankedInputs.length)return null;
+    if(freshInputs.length){
+      const slot=i%8;
+      if(slot===7&&stableInputs.length)return stableInputs[Math.floor(i/8)%stableInputs.length];
+      return freshInputs[[0,0,1,0,0,1,0,2][slot]%freshInputs.length];
+    }
+    return rankedInputs[i%rankedInputs.length];
+  };
   const cuC=mode==="lowcarb"?[]:(CUC[cu]||[]).map(k=>I[k]);
   const pf=mode==="protein"?1.2:mode==="light"?.85:1,vf=mode==="light"?1.3:mode==="lowcarb"?1.4:1,cf=mode==="light"?.55:1;
   const seen=new Set();
   // Priorität: 1. verderbliche Zutaten, 2. Eiweiss, 3. Beilage (alle Kohlenhydrate gleichwertig)
-  const getP=i=>{const must=inP.filter(x=>x.fl.includes("p"));
-    const Ps=must.length?must.slice(0,2):inP.length?[inP[i%inP.length]]:[rnd(poolP)];
+  const getP=(i,required)=>{const must=inP.filter(x=>x.fl.includes("p"));
+    const Ps=[];
+    if(required?.t==="P")Ps.push(required);
+    for(const x of must.length?must:inP)if(!Ps.includes(x)&&Ps.length<2)Ps.push(x);
+    if(!Ps.length)Ps.push(inP.length?inP[i%inP.length]:rnd(poolP));
     const rest=inP.filter(x=>!Ps.includes(x));if(rest.length&&Ps.length<2&&Math.random()<.6)Ps.push(rnd(rest));
     if(veg==="fish"&&!Ps.some(fishOK)){const fish=poolP.filter(fishOK);if(fish.length)Ps.unshift(rnd(fish))}return Ps};
-  const getV=min=>{const Vs=shuffle(inV).sort((a,b)=>b.fl.includes("p")-a.fl.includes("p")).slice(0,3);
+  const getV=(min,i,required)=>{const Vs=rankedInputs.filter(x=>x.t==="V").slice(0,3);
+    if(required?.t==="V"&&!Vs.includes(required)){Vs.unshift(required);Vs.length=3}
     const free=poolV.filter(x=>!Vs.includes(x)),seas=free.filter(isS);
     const want=Vs.length?(Vs.length<min&&Math.random()<.6?1:0):min;
-    for(let j=0;j<want;j++){const c=rnd(seas.length>2?seas:free);if(!Vs.includes(c))Vs.push(c)}return Vs};
-  const getO=()=>{const Os=shuffle(inO).slice(0,3);const free=poolO.filter(x=>!Os.includes(x)),seas=free.filter(isS);
+    for(let j=0;j<want;j++){const c=rnd(seas.length>2?seas:free);if(c&&!Vs.includes(c))Vs.push(c)}return Vs};
+  const getO=(i,required)=>{const Os=rankedInputs.filter(x=>x.t==="O").slice(0,3);
+    if(required?.t==="O"&&!Os.includes(required)){Os.unshift(required);Os.length=3}
+    const free=poolO.filter(x=>!Os.includes(x)),seas=free.filter(isS);
     const want=Os.length?(Os.length<2&&Math.random()<.5?1:0):2;
-    for(let j=0;j<want;j++){const c=rnd(seas.length>1?seas:free);if(!Os.includes(c))Os.push(c)}return Os};
-  const rec=({title,em,t,lab,rare,steps,C,Ps,Vs,Os,fx,F,top,sweet})=>{
+    for(let j=0;j<want;j++){const c=rnd(seas.length>1?seas:free);if(c&&!Os.includes(c))Os.push(c)}return Os};
+  const rec=({title,em,t,lab,rare,steps,C,Ps,Vs,Os,fx,F,top,sweet,required})=>{
     const m=new Map(),add=(x,f=1)=>{if(x&&!m.has(x.k))m.set(x.k,x.g*f)};
     if(C)add(C,cf);Ps.forEach(p=>add(p,pf));Vs.forEach(v=>add(v,vf));Os.forEach(x=>add(x));
     fx.forEach(([k,f])=>add(I[k],f*(mode==="light"&&B2(I[k])?.6:1)));
     if(F)F[1].forEach(k=>add(I[k],k==="tomaten"?.6:1));
     if(!sweet){T("F").forEach(x=>add(x));add(I.oel,mode==="light"?.5:1)}
+    if(required&&!m.has(required.k))add(required);
     let ma=mac(m);
     if(top)for(let k=0;ma.p<(mode==="protein"?35:25)&&k<2;k++){
       const cand=poolP.filter(x=>!m.has(x.k)&&(mode!=="light"||x.f<12));
       if(!cand.length)break;const x=rnd(cand);Ps.push(x);add(x,.8);ma=mac(m)}
     const ps=Ps.map(p=>p.how.replace("%",p.n)+".").join(" ");
     const st=["Zutaten bereitstellen. Gemüse und Früchte waschen und in mundgerechte Stücke schneiden."].concat(steps.map(s=>s.replace("{CS}",C?CS[C.k]||"":"").replace("{V}",join(Vs.map(v=>v.n))).replace("{PS}",ps).replace("{Pn}",join(Ps.map(p=>p.n))).replace("{O}",join(Os.map(x=>x.n))).replace("{F}",F?F[2]:"")).filter(Boolean));
+    if(required&&!norm(st.join(" ")).includes(norm(required.n))){
+      const use=required.t==="V"?"klein schneiden und mit dem Gemüse mitgaren.":required.t==="C"?"nach Packungsangabe zubereiten und als Beilage servieren.":required.t==="P"?"in Stücke schneiden, anbraten und zum Gericht geben.":required.t==="O"?"klein schneiden und zum Gericht servieren.":"zum Abschmecken oder Servieren verwenden.";
+      st.push(`${required.n} ${use}`);
+    }
     if(EXTRA.length)st.push(EXTRA.map(e=>e[0].toUpperCase()+e.slice(1)).join(", ")+" nach Belieben dazugeben oder zum Servieren verwenden.");
     const ord={C:0,B:0,P:1,V:2,O:2,F:3};
-    return{id:Math.random().toString(36).slice(2,9),title,em,col:`hsl(${Math.floor(Math.random()*360)},65%,85%)`,t,lab,rare,
-      veg:!Ps.some(x=>x.fl.includes("m")),vegan:veg==="vegan",fish:Ps.some(fishOK),extra:EXTRA.slice(),steps:st,
+    return{id:Math.random().toString(36).slice(2,9),title,em,t,lab,rare,
+      veg:!Ps.some(x=>x.fl.includes("m"))&&!fx.some(([k])=>I[k].fl.includes("m")),vegan:veg==="vegan",fish:Ps.some(fishOK)||fx.some(([k])=>fishOK(I[k])),extra:EXTRA.slice(),steps:st,
       ings:[...m].map(([k,g])=>({k,g})).sort((a,b)=>ord[I[a.k].t]-ord[I[b.k].t]),
       kcal:Math.round(ma.kc),p:Math.round(ma.p),c:Math.round(ma.c),f:Math.round(ma.f)}};
-  const mkComp=g=>{ // Alltagsgerichte
+  const mkComp=(g,required)=>{ // Alltagsgerichte
     if(meal==="breakfast"||meal==="dessert"||meal==="snack")return null;
-    const C=mode==="lowcarb"?null:inC.length?inC[g%inC.length]:rnd(cuC.length?cuC:poolC);
-    const Ps=getP(g),Vs=getV(2);
+    const C=mode==="lowcarb"?null:required?.t==="C"?required:inC.length?inC[g%inC.length]:rnd(cuC.length?cuC:poolC);
+    const Ps=getP(g,required),Vs=getV(2,g,required);
     let fl=FL.filter(f=>cuOK(f[3])&&f[1].every(k=>!isExcluded(I[k]))&&(veg!=="vegan"||f[1].every(k=>veganOK(I[k])))&&(mode!=="light"||!f[1].some(k=>["rahm","pesto","butter","kokosmilch"].includes(k))));
     if(!fl.length)return null;
     const F=rnd(fl),grp=C?(GRP[C.k]||"bowl"):"none";
     const templates=FM.filter(f=>f[0]===grp&&f[2]<=maxTime);
     if(!templates.length)return null;
     const fo=rnd(templates);
-    const title=fo[1].replace("{F}",F[0]).replace("{C}",C?C.n:"").replace("{V}",Vs[0].n).replace("{P}",Ps[0].n);
+    let title=fo[1].replace("{F}",F[0]).replace("{C}",C?C.n:"").replace("{V}",Vs[0]?.n||"").replace("{P}",Ps[0]?.n||"");
+    if(required&&!norm(title).includes(norm(required.n)))title+=` mit ${required.n}`;
     if(seen.has(title))return null;seen.add(title);
-    return rec({title,em:GE[grp],t:fo[2],lab:cu==="all"?CULAB[F[3][0]]:CULAB[cu],rare:0,steps:fo[4],C,Ps,Vs,Os:[],fx:[],F,top:1})};
-  const mkDish=(d,g)=>{ // Weltküche & Spezialitäten
+    return rec({title,em:GE[grp],t:fo[2],lab:cu==="all"?CULAB[F[3][0]]:CULAB[cu],rare:0,steps:fo[4],C,Ps,Vs,Os:[],fx:[],F,top:1,required})};
+  const mkDish=(d,g,required)=>{ // Weltküche & Spezialitäten
     const sweet=d.s.includes("O"),hasP=d.s.includes("P");
-    const Ps=hasP?getP(g):[],Vs=d.s.includes("V")?getV(1):[],Os=sweet?getO():[];
+    const Ps=hasP?getP(g,required):[],Vs=d.s.includes("V")?getV(1,g,required):[],Os=sweet?getO(g,required):[];
     const names=(sweet?Os.slice(0,2):[Ps[0],Vs[0]]).filter(Boolean).map(x=>x.n);
-    const title=d.n+(names.length?": "+names.join(" & "):"");
+    let title=d.n+(names.length?": "+names.join(" & "):"");
+    const slotMatch=required&&(d.s.split(",").includes(required.t)||d.fx.some(([k])=>k===required.k));
+    if(required&&!slotMatch&&!norm(title).includes(norm(required.n)))title+=` mit ${required.n}`;
     if(seen.has(title))return null;seen.add(title);
-    return rec({title,em:d.em,t:d.t,lab:d.l,rare:1,steps:d.st,C:null,Ps,Vs,Os,fx:d.fx,F:null,top:hasP&&!sweet,sweet})};
+    return rec({title,em:d.em,t:d.t,lab:d.l,rare:!everydayDishes.has(d.n),steps:d.st,C:null,Ps,Vs,Os,fx:d.fx,F:null,top:hasP&&!sweet,sweet,required})};
   const dAll=D.filter(d=>cuOK(d.c)&&d.t<=maxTime&&mealFits(d,meal)&&(veg!=="fish"||!d.fx.some(([k])=>I[k].fl.includes("m")&&!fishOK(I[k])))&&(veg!=="vegan"||!d.fx.some(([k])=>!veganOK(I[k])))&&(veg!=="veg"||!d.fx.some(([k])=>I[k].fl.includes("m")))&&(mode!=="lowcarb"||!d.fx.some(([k])=>B2(I[k])))&&!d.fx.some(([k])=>isExcluded(I[k])));
-  const fruit=inO.length>0,md=dAll.filter(d=>MD.includes(d)),sweetMeal=meal==="breakfast"||meal==="dessert"||meal==="snack";
-  let dp=dAll.filter(d=>!md.includes(d)&&(sweetMeal?d.s.includes("O"):fruit?d.s.includes("O"):!d.s.includes("O")));
-  if(inP.length&&!fruit){const f=dp.filter(d=>d.s.includes("P"));if(f.length)dp=f}
+  const everydayDishes=new Set(["Pasta Carbonara","Pasta al Pomodoro","Rösti","Käsespätzli","Kaiserschmarrn","Porridge","Quark-Bowl","Crumble","Pfannkuchen","Ratatouille","Tortilla Española"]);
+  const md=dAll.filter(d=>MD.includes(d)),sweetMeal=meal==="breakfast"||meal==="dessert"||meal==="snack";
+  let dp=dAll.filter(d=>!md.includes(d)&&(sweetMeal?d.s.includes("O"):true));
+  if(inP.length){const f=dp.filter(d=>d.s.includes("P"));if(f.length)dp=f}
+  const matchScore=d=>rankedInputs.reduce((score,x)=>score+(d.fx.some(([k])=>k===x.k)||d.s.split(",").includes(x.t)?1:0),0)+(everydayDishes.has(d.n)?1:0);
+  dp=shuffle(dp).sort((a,b)=>matchScore(b)-matchScore(a));
   const q=[];
-  if(sweetMeal){for(let r=0;r<12;r++){md.forEach(d=>q.push(d));shuffle(dp).forEach(d=>q.push(d))}}
-  else{for(let r=0;r<12;r++)md.forEach(d=>q.push(d));shuffle(dp).forEach(d=>q.push(d))}
-  const nA=fruit||sweetMeal?0:4,A=[],Bq=[];
-  for(let g=0;A.length<nA&&g<40;g++){const r=mkComp(g);if(r)A.push(r)}
-  for(let g=0;Bq.length<10-nA&&g<q.length;g++){const r=mkDish(q[g],g);if(r)Bq.push(r)}
-  for(let g=40;A.length+Bq.length<10&&g<100;g++){const r=mkComp(g);if(r)A.push(r)}
+  for(let r=0;r<12;r++){md.forEach(d=>q.push(d));dp.forEach(d=>q.push(d))}
+  const nA=sweetMeal?0:4,A=[],Bq=[];
+  for(let g=0;A.length<nA&&g<40;g++){const r=mkComp(g,requiredFor(g));if(r)A.push(r)}
+  for(let g=0;Bq.length<8-nA&&g<q.length;g++){const r=mkDish(q[g],g,requiredFor(nA+g));if(r)Bq.push(r)}
+  for(let g=40;A.length+Bq.length<8&&g<100;g++){const r=mkComp(g,requiredFor(A.length+Bq.length));if(r)A.push(r)}
   const res=[],f1=md.length?Bq:A,f2=md.length?A:Bq;
   for(let k=0;k<Math.max(A.length,Bq.length);k++){if(f1[k])res.push(f1[k]);if(f2[k])res.push(f2[k])}
-  return res.slice(0,10);
+  return res.slice(0,8);
 }
 
 function gen(){
   const txt=$("#rq").value;S.rq=txt;
   INP=[];EXTRA=[];MD=[];
-  txt.toLowerCase().split(/[,;\n]+|\s+/).map(s=>s.trim()).filter(s=>s.length>1&&!STOP.has(s)).forEach(t=>{
-    const n=norm(t),it=fnd(n,ALL),dd=fnd(n,D);
+  const tokens=txt.toLowerCase().split(/[,;\n]+|\s+/).map(s=>s.trim()).filter(s=>s.length>1&&!STOP.has(s));
+  const dishMatches=tokens.map(t=>fnd(norm(t),D)).filter(Boolean);
+  dishMatches.forEach(dd=>{if(!MD.includes(dd))MD.push(dd)});
+  const dishWords=new Set(dishMatches.flatMap(d=>norm(d.n).split(/\s+/)));
+  tokens.forEach(t=>{
+    const n=norm(t);if(dishWords.has(n))return;
+    const it=fnd(n,ALL),dd=fnd(n,D);
     if(it&&!INP.includes(it))INP.push(it);
     if(dd&&!MD.includes(dd))MD.push(dd);
     if(!it&&!dd&&!EXTRA.includes(t))EXTRA.push(t)});
@@ -480,7 +546,37 @@ function gen(){
 }
 
 const isFav=r=>S.favs.some(f=>f.id===r.id);
-const card=r=>`<div class="rec" data-id="${r.id}"><div class="pic" style="background:${r.col}"><span>${r.em}</span></div><button class="heart${isFav(r)?" on":""}" data-h="${r.id}" aria-label="Favorit">♥</button><div class="tx"><h3>${r.title}</h3><span class="meta">⏱ ${r.t} Min. · ${r.kcal} kcal · ${r.p} g Eiweiss</span><br><span class="hit">${r.vegan?"🌿 Vegan":r.fish?"🐟 Fisch":r.veg?"🌱 Vegi":"🍗 mit Fleisch/Fisch"}</span> ${r.lab?`<span class="hit">${r.rare?"✨ ":""}${r.lab}</span>`:""}</div></div>`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dishIcons=[
+  [/\brisotto\b/,"🍚"],[/tortilla|menemen|shakshuka/,"🍳"],[/carbonara|pasta|spaghetti|pomodoro/,"🍝"],
+  [/ratatouille|shopska|salat/,"🥗"],[/curry|dal/,"🍛"],[/chili|gulasch|goulash/,"🍲"],
+  [/momos|empanada|pierogi|halusky/,"🥟"],[/falafel/,"🧆"],[/tacos?/,"🌮"],[/quesadilla/,"🫓"],
+  [/burrito/,"🌯"],[/gnocchi/,"🥘"],[/roesti|kartoffel/,"🥔"],[/polenta/,"🌽"],
+  [/porridge|quark-bowl/,"🥣"],[/pfannkuchen|kaiserschmarrn/,"🥞"],[/crumble/,"🥧"],[/capuns/,"🥬"]
+];
+const ingredientIcons={pasta:"🍝",reis:"🍚",kartoffeln:"🥔",couscous:"🫓",quinoa:"🌾",bulgur:"🌾",wrap:"🌯",eier:"🥚",feta:"🧀",halloumi:"🧀",mozzarella:"🧀",kaese:"🧀",tofu:"🧈",kichererbsen:"🫘",linsen:"🫘",quark:"🥣",poulet:"🍗",hack:"🥩",lachs:"🐟",thon:"🐟",schinken:"🥓",broccoli:"🥦",spinat:"🥬",tomaten:"🍅",zucchetti:"🥒",peperoni:"🫑",pilze:"🍄",karotten:"🥕",lauch:"🥬",zwiebeln:"🧅",kuerbis:"🎃",blumenkohl:"🥦",aubergine:"🍆",bohnen:"🫛",erbsen:"🫛",fenchel:"🌿",randen:"🟣",oel:"🫒",rahm:"🥛",butter:"🧈",knoblauch:"🧄",sojasauce:"🥣",pesto:"🌿",polenta:"🌽",reisnudeln:"🍜",gnocchi:"🥔",suesskartoffel:"🍠",mehl:"🌾",haferflocken:"🥣",brot:"🍞",garnelen:"🍤",schwein:"🥩",bratwurst:"🌭",schwarzebohnen:"🫘",avocado:"🥑",mais:"🌽",kohlrabi:"🥬",radieschen:"🔴",wirz:"🥬",weisskohl:"🥬",gurken:"🥒",salat:"🥬",sellerie:"🌿",spargel:"🌱",federkohl:"🥬",rosenkohl:"🥬",pastinaken:"🥕",chicoree:"🥬",rhabarber:"🌱",aepfel:"🍎",birnen:"🍐",erdbeeren:"🍓",himbeeren:"🍓",heidelbeeren:"🫐",brombeeren:"🫐",zwetschgen:"🟣",trauben:"🍇",kirschen:"🍒",aprikosen:"🍑",pfirsiche:"🍑",johannisbeeren:"🍒",quitten:"🍋",mango:"🥭",banane:"🍌",ananas:"🍍",kokosmilch:"🥥",limette:"🍋",ingwer:"🫚",koriander:"🌿",currypaste:"🌶️",honig:"🍯",milch:"🥛",baumnuesse:"🌰"};
+const recipeIcon=r=>dishIcons.find(([pattern])=>pattern.test(norm(r.title)))?.[1]||r.em||"🍽️";
+const recipeKind=r=>{
+  const title=norm(r.title);
+  if(/carbonara|pasta|spaghetti|pomodoro|gnocchi/.test(title))return"pasta";
+  if(/\brisotto\b|reispfanne|reispfanne/.test(title))return"rice";
+  if(/tortilla|menemen|shakshuka/.test(title))return"egg";
+  if(/salat|ratatouille|shopska/.test(title))return"salad";
+  if(/curry|dal|chili|gulasch|goulash/.test(title))return"soup";
+  if(/momos|empanada|pierogi|halusky|rösti|roesti/.test(title))return"dumpling";
+  if(/taco|burrito|quesadilla|wrap|capuns/.test(title))return"bread";
+  if(/porridge|pfannkuchen|kaiserschmarrn|crumble/.test(title))return"sweet";
+  return"bowl";
+};
+const ingredientIcon=x=>ingredientIcons[x.k]||({P:"🍽️",V:"🥬",O:"🍎",C:"🍚",F:"🧂",B:"🌾"}[I[x.k]?.t]||"🥄");
+const pic=(r,dialog=false)=>{
+  const ingredients=r.ings.filter(x=>["C","P","V","O"].includes(I[x.k].t)).slice(0,3);
+  return `<span class="dish-mark" role="img" aria-label="${esc(r.title)}">${recipeIcon(r)}</span><span class="ingredient-rail${dialog?" dialog-ingredients":""}" aria-label="Hauptzutaten">${ingredients.map(x=>`<span class="ingredient-icon" title="${esc(I[x.k].n)}" aria-label="${esc(I[x.k].n)}">${ingredientIcon(x)}</span>`).join("")}</span>`;
+};
+const card=r=>{
+  const ingredients=r.ings.filter(x=>["C","P","V","O"].includes(I[x.k].t)).slice(0,3);
+  return `<div class="rec" data-id="${esc(r.id)}"><div class="pic" data-kind="${recipeKind(r)}">${pic(r)}</div><button class="heart${isFav(r)?" on":""}" data-h="${esc(r.id)}" aria-label="Favorit">♥</button><div class="tx"><h3>${esc(r.title)}</h3><div class="ingredient-rail" aria-label="Hauptzutaten">${ingredients.map(x=>`<span class="ingredient-label" title="${esc(I[x.k].n)}"><span aria-hidden="true">${ingredientIcon(x)}</span><b>${esc(I[x.k].n)}</b></span>`).join("")}</div><span class="meta">⏱ ${r.t} Min. · ${r.kcal} kcal · ${r.p} g Eiweiss</span><br><span class="hit">${r.vegan?"🌿 Vegan":r.fish?"🐟 Fisch":r.veg?"🌱 Vegi":"🍗 mit Fleisch/Fisch"}</span> ${r.lab?`<span class="hit">${r.rare?"✨ ":""}${esc(r.lab)}</span>`:""}</div></div>`;
+};
 function renderR(){
   $("#rcount").textContent=S.recs.length?`${S.recs.length} Ideen · tippe auf eine Karte für Zutaten und Anleitung`:"Leer lassen für Überraschungsideen. Was schnell verdirbt, kommt garantiert ins Rezept.";
   $("#rnote").textContent=S.notes||"";
@@ -497,11 +593,11 @@ const amt=(x,n)=>{const it=I[x.k],t=x.g*n;
   return Math.max(5,Math.round(t/5)*5)+" g"};
 function showDlg(){
   const r=cur,n=S.n,d=$("#dlg");
-  d.innerHTML=`<div class="pic" style="background:${r.col}"><span>${r.em}</span></div><div class="in"><button class="close" data-a="x">Schliessen</button><h2>${r.title}</h2><p class="meta">⏱ ${r.t} Min. · ${r.vegan?"vegan":r.fish?"mit Fisch":r.veg?"vegetarisch":"mit Fleisch/Fisch"}${r.lab?" · "+r.lab:""}</p>
+  d.innerHTML=`<div class="pic" data-kind="${recipeKind(r)}">${pic(r,true)}</div><div class="in"><button class="close" data-a="x">Schliessen</button><h2>${esc(r.title)}</h2><p class="meta">⏱ ${r.t} Min. · ${r.vegan?"vegan":r.fish?"mit Fisch":r.veg?"vegetarisch":"mit Fleisch/Fisch"}${r.lab?" · "+esc(r.lab):""}</p>
 <div class="mac"><div><b>${r.kcal}</b>kcal</div><div><b>${r.p} g</b>Eiweiss</div><div><b>${r.c} g</b>Kohlenhydrate</div><div><b>${r.f} g</b>Fett</div></div><p class="meta">Nährwerte pro Portion (Schätzung)</p>
 <div class="stp"><span>Portionen</span><button data-a="m" aria-label="Weniger">−</button><b>${n}</b><button data-a="p" aria-label="Mehr">+</button><button class="fav${isFav(r)?" on":""}" data-a="f">♥ Favorit</button></div>
-<b>Zutaten</b><ul>${r.ings.map(x=>`<li><b>${amt(x,n)}</b> ${I[x.k].n}</li>`).join("")}${r.extra.map(e=>`<li>${e[0].toUpperCase()+e.slice(1)} (nach Belieben)</li>`).join("")}<li>Salz, Pfeffer</li></ul>
-<b>Zubereitung</b><ol>${r.steps.map(s=>`<li>${s}</li>`).join("")}</ol></div>`;
+<b>Zutaten</b><ul>${r.ings.map(x=>`<li><b>${amt(x,n)}</b> ${esc(I[x.k].n)}</li>`).join("")}${r.extra.map(e=>`<li>${esc(e[0].toUpperCase()+e.slice(1))} (nach Belieben)</li>`).join("")}<li>Salz, Pfeffer</li></ul>
+<b>Zubereitung</b><ol>${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>`;
   if(!d.open)d.showModal();
 }
 function toggleFav(r){
@@ -542,17 +638,18 @@ $("#go").onclick=gen;
 $("#rq").onkeydown=e=>{if(e.key==="Enter")gen()};
 $("#rq").oninput=()=>{S.rq=$("#rq").value;save()};
 
-function tab(n){
+function tab(n, initialQuery){
   const previous=S.tab||1;
   [1,2,3].forEach(i=>{$("#p"+i).hidden=i!==n;$("#t"+i).setAttribute("aria-selected",i===n)});
   S.tab=n;save();scrollTo({top:0});
-  if(n===2&&previous!==2){$("#rq").value="";S.rq="";save();gen()}
+  if(n===2&&initialQuery!==undefined){$("#rq").value=initialQuery;S.rq=initialQuery;save();gen()}
+  else if(n===2&&previous!==2){$("#rq").value="";S.rq="";save();gen()}
   else if(n===2&&!S.recs.length)gen();
   if(n===3)renderF();
 }
 [1,2,3].forEach(i=>$("#t"+i).onclick=()=>tab(i));
 $("#rq").value="";S.rq="";
-const applyTheme=()=>{document.documentElement.dataset.theme=S.theme==="auto"?"":S.theme;document.documentElement.style.colorScheme=S.theme==="dark"?"dark":S.theme==="light"||S.theme==="mint"?"light":""};
+const applyTheme=()=>{document.documentElement.dataset.theme=S.theme==="auto"?"":S.theme;document.documentElement.style.colorScheme=S.theme==="dark"?"dark":S.theme==="light"||S.theme==="mint"||S.theme==="lavender"||S.theme==="ocean"||S.theme==="sunset"||S.theme==="rose"?"light":""};
 const settingsDlg=$("#settingsDlg");
 $("#settingsOpen").onclick=()=>{$("#dislikes").value=S.dislikes;$("#theme").value=S.theme;$("#defaultServings").value=S.n;$("#motion").value=S.motion;settingsDlg.showModal()};
 settingsDlg.onclick=e=>{if(e.target===settingsDlg||e.target.closest("[data-settings-close]"))settingsDlg.close()};
